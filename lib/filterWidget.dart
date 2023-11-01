@@ -60,7 +60,7 @@ class _FilterScreenState extends State<FilterScreen> {
   };
 
   List<String> filters = [
-    "Category",
+    "CATEGORY",
     "Sub-category",
     "Price Range",
     "Ratings",
