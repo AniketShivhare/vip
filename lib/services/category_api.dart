@@ -18,6 +18,7 @@ Future<CategoryModel> getCategory(token) async {
 }
 
 Future<SubCategoryModel> getSubCategory(token, String category) async {
+  category = category.replaceAll('&', '%26');
   final response = await http.get(
       Uri.parse(
           'https://api.pehchankidukan.com/seller/category?category=${category}'),
@@ -32,6 +33,8 @@ Future<SubCategoryModel> getSubCategory(token, String category) async {
 
 Future<SubCategory2Model> getSubCategory2(
     token, String category, String subCategory) async {
+  category = category.replaceAll('&', '%26');
+  subCategory = subCategory.replaceAll('&', '%26');
   final response = await http.get(
       Uri.parse(
           'https://api.pehchankidukan.com/seller/category?category=${category}&subCategory1=${subCategory}'),
