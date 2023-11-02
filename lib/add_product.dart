@@ -265,8 +265,8 @@ class AddProduct extends StatefulWidget {
 
 class _AddProductState extends State<AddProduct> {
   String category = "";
-  String subCategory = "";
   String subCategory1 = "";
+  String subCategory2 = "";
   List<ItemOption> itemOptions = [];
   TextEditingController productDescriptionController = TextEditingController();
   PageController pageController = PageController();
@@ -277,7 +277,7 @@ class _AddProductState extends State<AddProduct> {
     });
   }
 
-  final AllpCategory = TextEditingController();
+  String AllpCategory='';
   final ImagePicker imagePicker = ImagePicker();
   List<XFile>? imageFileList = [];
 
@@ -402,14 +402,36 @@ class _AddProductState extends State<AddProduct> {
                   setState(() {
                     category = snapshot.data!.data[0].category[index];
                   });
-                  Navigator.pop(context);
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Row(
+                          children: [
+                            InkWell(
+                                onTap: () => Navigator.pop(context),
+                                child: Icon(Icons.arrow_back_ios)),
+                            SizedBox(width: 5),
+                            Text(
+                              "Sub Category 1",
+                            ),
+                          ],
+                        ),
+                        content: subCategory1Dialog(),
+                      );
+                    },
+                  );
                 },
                 leading: CircleAvatar(),
                 trailing: Icon(
                   Icons.arrow_forward_ios,
                   size: 20,
                 ),
-                title: Text(snapshot.data!.data[0].category[index]),
+                title: Text(
+                  snapshot.data!.data[0].category[index],
+                  style: TextStyle(fontSize: 14),
+                ),
               );
             },
           );
@@ -418,79 +440,115 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
-  Widget subCategoryDialog() {
-    return Dialog(
-      child: FutureBuilder(
-        future: getSubCategory(TokenId.token, category),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text("Error : ${snapshot.error}"),
-            );
-          } else {
-            return ListView.builder(
-              itemCount: snapshot.data!.data[0].subCategory1.length,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  onTap: () {
-                    setState(() {
-                      subCategory = snapshot.data!.data[0].subCategory1[index];
-                    });
-                    Navigator.pop(context);
-                  },
-                  trailing: Icon(
-                    Icons.arrow_forward_ios,
-                    size: 20,
-                  ),
-                  title: Text(snapshot.data!.data[0].subCategory1[index]),
-                );
-              },
-            );
-          }
-        },
-      ),
+  Widget subCategory1Dialog() {
+    return FutureBuilder(
+      future: getSubCategory(TokenId.token, category),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text("Error : ${snapshot.error}"),
+          );
+        } else {
+          return ListView.builder(
+            itemCount: snapshot.data!.data[0].subCategory1.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                onTap: () {
+                  setState(() {
+                    subCategory1 = snapshot.data!.data[0].subCategory1[index];
+                  });
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Row(
+                          children: [
+                            InkWell(
+                                onTap: () => Navigator.pop(context),
+                                child: Icon(Icons.arrow_back_ios)),
+                            SizedBox(width: 5),
+                            Text(
+                              "Sub Category 2",
+                            ),
+                          ],
+                        ),
+                        content: subCategory2Dialog(),
+                      );
+                    },
+                  );
+                },
+                trailing: Icon(
+                  Icons.arrow_forward_ios,
+                  size: 20,
+                ),
+                title: Text(
+                  snapshot.data!.data[0].subCategory1[index],
+                  style: TextStyle(fontSize: 14),
+                ),
+              );
+            },
+          );
+        }
+      },
     );
   }
 
   Widget subCategory2Dialog() {
-    return Dialog(
-      child: FutureBuilder(
-        future: getSubCategory2(TokenId.token, category, subCategory),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text("Error : ${snapshot.error}"),
-            );
-          } else {
-            return ListView.builder(
-              itemCount: snapshot.data!.data.length,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  onTap: () {
-                    setState(() {
-                      subCategory1 = snapshot.data!.data[index];
-                    });
-                    Navigator.pop(context);
-                  },
-                  trailing: Icon(
-                    Icons.arrow_forward_ios,
-                    size: 20,
-                  ),
-                  title: Text(snapshot.data!.data[index]),
-                );
-              },
-            );
-          }
-        },
-      ),
+    return FutureBuilder(
+      future: getSubCategory2(TokenId.token, category, subCategory1),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text("Error : ${snapshot.error}"),
+          );
+        } else if (snapshot.data!.data.length == 0) {
+          Future.delayed(Duration(milliseconds: 1), () {
+            Navigator.pop(context);
+            Navigator.pop(context);
+            Navigator.pop(context);
+            subCategory2 = '';
+            setState(() {});
+          });
+          return Center(
+            child:
+                Text("No subcategories available for the selected criteria."),
+          );
+        } else {
+          print(snapshot.data!.data.length);
+          return ListView.builder(
+            itemCount: snapshot.data!.data.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                onTap: () {
+                  setState(() {
+                    subCategory2 = snapshot.data!.data[index];
+                  });
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+                trailing: Icon(
+                  Icons.arrow_forward_ios,
+                  size: 20,
+                ),
+                title: Text(
+                  snapshot.data!.data[index],
+                  style: TextStyle(fontSize: 14),
+                ),
+              );
+            },
+          );
+        }
+      },
     );
   }
 
@@ -519,7 +577,10 @@ class _AddProductState extends State<AddProduct> {
         });
       }
     });
-    AllpCategory.text = category + ' / ' + subCategory + ' / ' + subCategory1;
+    AllpCategory = '$category / $subCategory1';
+    if (subCategory2!='') {
+      AllpCategory += '/ $subCategory2';
+    }
     String productName = widget.productName;
     String productDescription = widget.productDescription;
     return Scaffold(
@@ -615,24 +676,6 @@ class _AddProductState extends State<AddProduct> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Container(
-                      //   margin: EdgeInsets.only(right: 10, left: 15, top: 20),
-                      //   child: Row(
-                      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      //     children: [
-                      //       Container(
-                      //         child: Text(
-                      //           'Add Product',
-                      //           style: TextStyle(
-                      //               fontSize: 28,
-                      //               fontFamily: 'Poppins',
-                      //               color: Colors.black87,
-                      //               fontWeight: FontWeight.bold),
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
                       SizedBox(
                         height: 10,
                       ),
@@ -658,213 +701,53 @@ class _AddProductState extends State<AddProduct> {
                               fontWeight: FontWeight.bold),
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin:
-                                EdgeInsets.only(left: 20, right: 20, top: 25),
-                            child: Text(
-                              'Product Category:',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontFamily: 'Poppins',
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ),
-                          category == "" || category.isEmpty
-                              ? Container(
-                                  margin: const EdgeInsets.only(
-                                      left: 20, right: 20),
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        // barrierDismissible: false,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: Text('Choose Category'),
-                                            content: categoryDialog(),
-                                          );
-                                        },
-                                      );
-                                    },
-                                    child: const Text('Choose Category'),
-                                  ),
-                                )
-                              : Container(
-                                  margin: const EdgeInsets.only(
-                                      left: 20, right: 20),
-                                  child: Text(category),
-                                ),
-                        ],
-                      ),
-                      category.isNotEmpty
+                      category.isNotEmpty && subCategory1.isNotEmpty ||
+                              subCategory2.isNotEmpty
                           ? Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
                                   margin: EdgeInsets.only(
-                                      left: 20, right: 20, top: 25),
+                                      left: 20, right: 20, top: 20),
                                   child: Text(
-                                    'Product Subcategory 1:',
+                                    'Category',
                                     style: TextStyle(
-                                      fontSize: 13,
+                                      fontSize: 15,
                                       fontFamily: 'Poppins',
                                       color: Colors.black87,
                                     ),
                                   ),
                                 ),
-                                subCategory == "" || subCategory.isEmpty
-                                    ? Container(
-                                        margin: const EdgeInsets.only(
-                                            left: 20, right: 20),
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            showDialog(
-                                              context: context,
-                                              barrierDismissible: false,
-                                              builder: (BuildContext context) {
-                                                return subCategoryDialog();
-                                              },
-                                            );
-                                          },
-                                          child: const Text(
-                                              'Choose SubCategory 1'),
-                                        ),
-                                      )
-                                    : Container(
-                                        margin: const EdgeInsets.only(
-                                            left: 20, right: 20),
-                                        child: Text(subCategory),
-                                      ),
-                              ],
-                            )
-                          : Container(),
-                      subCategory.isNotEmpty
-                          ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                                const SizedBox(height: 5),
                                 Container(
-                                  margin: EdgeInsets.only(
-                                      left: 20, right: 20, top: 25),
-                                  child: Text(
-                                    'Product Subcategory 2:',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontFamily: 'Poppins',
-                                      color: Colors.black87,
-                                    ),
-                                  ),
+                                  margin: EdgeInsets.only(left: 20, right: 20),
+                                  child: Text(AllpCategory.toString()),
                                 ),
-                                subCategory1 == "" || subCategory1.isEmpty
-                                    ? Container(
-                                        margin: const EdgeInsets.only(
-                                            left: 20, right: 20),
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            showDialog(
-                                              context: context,
-                                              barrierDismissible: false,
-                                              builder: (BuildContext context) {
-                                                return subCategory2Dialog();
-                                              },
-                                            );
-                                          },
-                                          child: const Text(
-                                              'Choose SubCategory 2'),
-                                        ),
-                                      )
-                                    : Container(
-                                        margin: const EdgeInsets.only(
-                                            left: 20, right: 20),
-                                        child: Text(subCategory),
-                                      ),
                               ],
                             )
                           : Container(),
-                      // DropdownButton(items: , onChanged: onChanged),
-                      // widget.category == "" ||
-                      //         widget.subCategory1 == "" ||
-                      //         widget.subCategory2 == ""
-                      //     ? Container()
-                      //     : Column(
-                      //         crossAxisAlignment: CrossAxisAlignment.start,
-                      //         children: [
-                      //           Container(
-                      //               margin: EdgeInsets.only(
-                      //                   left: 20, right: 20, top: 15),
-                      //               child: Column(
-                      //                 crossAxisAlignment:
-                      //                     CrossAxisAlignment.start,
-                      //                 children: [
-                      //                   Text("Product Category:",
-                      //                       textScaleFactor: 1.0,
-                      //                       style: TextStyle(
-                      //                           fontWeight: FontWeight.bold)),
-                      //                   Text(widget.category,
-                      //                       textScaleFactor: 1.5),
-                      //                 ],
-                      //               )),
-                      //           Container(
-                      //               margin: EdgeInsets.only(
-                      //                   left: 20, right: 20, top: 15),
-                      //               child: Column(
-                      //                 crossAxisAlignment:
-                      //                     CrossAxisAlignment.start,
-                      //                 children: [
-                      //                   Text("Product SubCategory1:",
-                      //                       textScaleFactor: 1.0,
-                      //                       style: TextStyle(
-                      //                           fontWeight: FontWeight.bold)),
-                      //                   Text(widget.subCategory1,
-                      //                       textScaleFactor: 1.5),
-                      //                 ],
-                      //               )),
-                      //           Container(
-                      //               margin: EdgeInsets.only(
-                      //                   left: 20, right: 20, top: 15),
-                      //               child: Column(
-                      //                 crossAxisAlignment:
-                      //                     CrossAxisAlignment.start,
-                      //                 children: [
-                      //                   Text("Product SubCategory2:",
-                      //                       textScaleFactor: 1.0,
-                      //                       style: TextStyle(
-                      //                           fontWeight: FontWeight.bold)),
-                      //                   Text(widget.subCategory2,
-                      //                       textScaleFactor: 1.5),
-                      //                 ],
-                      //               )),
-                      //         ],
-                      //       ),
+                      const SizedBox(height: 10),
                       Container(
-                        margin: EdgeInsets.only(left: 20, right: 20, top: 20),
-                        child: Text(
-                          'Category',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontFamily: 'Poppins',
-                            color: Colors.black87,
-                          ),
+                        margin: const EdgeInsets.only(left: 20, right: 20),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Choose Category'),
+                                  content: categoryDialog(),
+                                );
+                              },
+                            );
+                          },
+                          child: const Text('Choose Category'),
                         ),
                       ),
                       Container(
-                        margin: EdgeInsets.only(left: 20, right: 20),
-                        child: TextField(
-                          controller: AllpCategory,
-                          style: TextStyle(fontFamily: 'Poppins', fontSize: 18),
-                          decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Colors.teal.shade900)),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(right: 20, top: 20, left: 20),
-                        child: Text(
+                        margin:
+                            const EdgeInsets.only(right: 20, top: 20, left: 20),
+                        child: const Text(
                           'Choose Images',
                           style: TextStyle(
                             fontSize: 18,
@@ -1112,8 +995,8 @@ class _AddProductState extends State<AddProduct> {
                                                   productDescriptionController
                                                       .text,
                                               category: category,
-                                              subCategory1: subCategory,
-                                              subCategory2: subCategory1,
+                                              subCategory1: subCategory1,
+                                              subCategory2: subCategory2,
                                             ),
                                           ));
                                     }
