@@ -225,7 +225,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: TextButton(
                                 onPressed: () {
                                   if (_secondsRemaining == 0) {
-                                    _secondsRemaining = 60;
+                                    _secondsRemaining = 60; 
                                     startTimer();
                                   } else {
                                     print(_secondsRemaining);
@@ -237,9 +237,21 @@ class _LoginScreenState extends State<LoginScreen> {
                                         style: TextStyle(
                                             color: Colors.blue.shade900),
                                       )
-                                    : Text(
-                                        '$_secondsRemaining - Resend OTP',
-                                        style: TextStyle(color: Colors.grey),
+                                    : Column(
+crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            'Try again in $_secondsRemaining seconds',
+                                            style: TextStyle(
+                                                color: Colors.grey,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                          Text(
+                                            'Resend OTP',
+                                            style:
+                                                TextStyle(color: Colors.grey,fontWeight: FontWeight.w500),
+                                          ),
+                                        ],
                                       ),
                               ),
                             )
@@ -259,7 +271,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 )
                               : isOtpTrue
                                   ? Text(
-                                      'Login',
+                                      'Login / SignUp',
                                       style: TextStyle(
                                         fontFamily:
                                             GoogleFonts.comfortaa().fontFamily,

@@ -105,15 +105,9 @@ class _ManageProductsState extends State<ManageProducts> {
   }
 
   Future<void> pagination(index) async {
-
-    setState(() {
-      _productData = UserApi.getProducts(widget.token, widget.id, index);
-      print("pdddataaa");
-      print(_productData);
-      currentPage=index;
-      // print("${_productData.length}abb");
-
-    });
+    _productData = fetchOrders(sortt, widget.token, widget.id, index);
+    print("pdddataaa");
+    print(_productData);
   }
 
   void removeImage(int index) {
@@ -125,11 +119,10 @@ class _ManageProductsState extends State<ManageProducts> {
   @override
   initState() {
     super.initState();
-    if(FilterOptions.changed==true) {
-          _productData = UserApi.filterProduct( widget.token, widget.id);
-    FilterOptions.clear();
-    }
-    else {
+    if (FilterOptions.changed == true) {
+      _productData = UserApi.filterProduct(widget.token, widget.id);
+      FilterOptions.clear();
+    } else {
       sortt = widget.sortt;
       _productData = fetchOrders(sortt, TokenId.token, TokenId.id, currentPage);
       print("_productData");
@@ -194,85 +187,30 @@ class _ManageProductsState extends State<ManageProducts> {
             } else {
               final List<Product>? data = snapshot.data;
 
-              return Column(
-                children: [
-                  Container(
-                    color: Colors.grey.shade300,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          flex: 2,
-                          child: InkWell(
-                            onTap: () async {
-
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => FilterScreen(),
-                                  ));
-                            },
-                            child: Container(
-                              height: 50,
-                              margin:
-                                  EdgeInsets.only(left: 5, right: 2, top: 5),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30)),
-                                  border:
-                                      Border.all(color: Colors.black, width: 1),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black38.withOpacity(0.5),
-                                      blurRadius: 6,
-                                    ),
-                                  ],
-                                ),
-                                margin: EdgeInsets.only(bottom: 5),
-                                child: Center(
-                                  child: Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Image.asset(
-                                        'assets/images/filter.png',
-                                        width: 20,
-                                      ),
-                                      SizedBox(
-                                        width: 6,
-                                      ),
-                                      Text('Filter',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 14,
-                                            fontFamily: 'comfort',
-                                          )),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Container(
-                            height: 50,
-                            margin: EdgeInsets.only(left: 2, right: 5, top: 5),
-                            child: Align(
-                              alignment: Alignment.topLeft,
-                              child: FlutterPopupMenuButton(
-                                direction: MenuDirection.left,
-                                decoration: const BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20)),
-                                    color: Colors.white),
-                                popupMenuSize: const Size(220, 300),
-                                child: FlutterPopupMenuIcon(
-                                  key: GlobalKey(),
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                      color: Colors.lightBlue.shade100,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: InkWell(
+                              onTap: () async {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => FilterScreen(),
+                                    ));
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: Container(
+                                  height: 50,
+                                  margin: EdgeInsets.only(
+                                      left: 5, right: 2, top: 5),
                                   child: Container(
                                     decoration: BoxDecoration(
                                       color: Colors.white,
@@ -284,7 +222,7 @@ class _ManageProductsState extends State<ManageProducts> {
                                         BoxShadow(
                                           color:
                                               Colors.black38.withOpacity(0.5),
-                                          blurRadius: 5,
+                                          blurRadius: 6,
                                         ),
                                       ],
                                     ),
@@ -295,11 +233,14 @@ class _ManageProductsState extends State<ManageProducts> {
                                           SizedBox(
                                             width: 10,
                                           ),
-                                          Icon(Icons.sort, color: Colors.black),
+                                          Image.asset(
+                                            'assets/images/filter.png',
+                                            width: 20,
+                                          ),
                                           SizedBox(
                                             width: 6,
                                           ),
-                                          Text('Sort',
+                                          Text('Filter',
                                               style: TextStyle(
                                                 color: Colors.black,
                                                 fontSize: 14,
@@ -310,452 +251,491 @@ class _ManageProductsState extends State<ManageProducts> {
                                     ),
                                   ),
                                 ),
-                                children: [
-                                  FlutterPopupMenuItem(
-                                      onTap: () async {
-                                        setState(() {
-                                          _productData = fetchOrders(
-                                              "productDetails.mrpPrice",
-                                              token,
-                                              id,
-                                              currentPage);
-                                          sortt = "productDetails.mrpPrice";
-                                        });
-                                      },
-                                      closeOnItemClick: true,
-                                      child: ListTile(
-                                        title: const Text(
-                                          'Price(Low to High)',
-                                          style: TextStyle(fontSize: 15),
-                                        ),
-                                        leading: Container(
-                                          height: 15,
-                                          width: 15,
-                                          decoration: BoxDecoration(
-                                              color: Colors.redAccent
-                                                  .withOpacity(0.3),
-                                              shape: BoxShape.circle),
-                                        ),
-                                      )),
-                                  FlutterPopupMenuItem(
-                                      onTap: () {
-                                        setState(() {
-                                          _productData = fetchOrders(
-                                              "-productDetails.mrpPrice",
-                                              token,
-                                              id,
-                                              currentPage);
-                                          sortt = "-productDetails.mrpPrice";
-                                        });
-                                      },
-                                      closeOnItemClick: true,
-                                      child: ListTile(
-                                        title: const Text(
-                                          'Price(High to Low)',
-                                          style: TextStyle(fontSize: 15),
-                                        ),
-                                        leading: Container(
-                                          height: 15,
-                                          width: 15,
-                                          decoration: BoxDecoration(
-                                              color: Colors.redAccent
-                                                  .withOpacity(0.3),
-                                              shape: BoxShape.circle),
-                                        ),
-                                      )),
-                                  FlutterPopupMenuItem(
-                                      onTap: () {
-                                        setState(() {
-                                          _productData = fetchOrders(
-                                              "-productSoldCount",
-                                              token,
-                                              id,
-                                              currentPage);
-                                          sortt = "-productSoldCount";
-                                        });
-                                      },
-                                      closeOnItemClick: true,
-                                      child: ListTile(
-                                        title: const Text(
-                                          'Most Selling',
-                                          style: TextStyle(fontSize: 15),
-                                        ),
-                                        leading: Container(
-                                          height: 15,
-                                          width: 15,
-                                          decoration: BoxDecoration(
-                                              color: Colors.redAccent
-                                                  .withOpacity(0.3),
-                                              shape: BoxShape.circle),
-                                        ),
-                                      )),
-                                  FlutterPopupMenuItem(
-                                      onTap: () {
-                                        setState(() {
-                                          _productData = fetchOrders(
-                                              "created_at",
-                                              token,
-                                              id,
-                                              currentPage);
-                                        });
-                                      },
-                                      closeOnItemClick: true,
-                                      child: ListTile(
-                                        title: const Text(
-                                          'Rating',
-                                          style: TextStyle(fontSize: 15),
-                                        ),
-                                        leading: Container(
-                                          height: 15,
-                                          width: 15,
-                                          decoration: BoxDecoration(
-                                              color: Colors.redAccent
-                                                  .withOpacity(0.3),
-                                              shape: BoxShape.circle),
-                                        ),
-                                      )),
-                                  FlutterPopupMenuItem(
-                                      onTap: () {
-                                        setState(() {
-                                          _productData = fetchOrders(
-                                              "created_at",
-                                              token,
-                                              id,
-                                              currentPage);
-                                        });
-                                      },
-                                      closeOnItemClick: true,
-                                      child: ListTile(
-                                        title: const Text(
-                                          'Recently Added',
-                                          style: TextStyle(fontSize: 15),
-                                        ),
-                                        leading: Container(
-                                          height: 15,
-                                          width: 15,
-                                          decoration: BoxDecoration(
-                                              color: Colors.redAccent
-                                                  .withOpacity(0.3),
-                                              shape: BoxShape.circle),
-                                        ),
-                                      )),
-                                ],
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      controller: _scrollController,
-                      // scrollDirection: Axis.horizontal,
-                      itemCount: data?.length,
-                      itemBuilder: (context, index) {
-                        final prod = data?[index];
-                        String s = prod!.inStock.toString() == 'true'
-                            ? 'In stock'
-                            : 'Out of stock';
-
-                        String starRating = '';
-                        double prating = prod.productName.length % 6;
-                        if (prating == 0) {
-                          starRating = '⭐';
-                        } else {
-                          int fullStars = prating.floor();
-                          double remaining = (prating - fullStars) as double;
-
-                          starRating = '⭐' * fullStars;
-                        }
-
-                        // if (remaining > 0.25) {
-                        //   starRating += '¼';
-                        // }
-                        // if (remaining > 0.5) {
-                        //   starRating += '½';
-                        // }
-                        // if (remaining > 0.75) {
-                        //   starRating += '¾';
-                        // }
-
-                        return Container(
-                          color: Colors.grey.shade300,
-                          child: Column(
-                            children: [
-                              Card(
-                                margin: EdgeInsets.only(
-                                    left: 10, right: 10, top: 6, bottom: 6),
-                                child: Row(
-                                  children: [
-                                    Expanded(
+                          Expanded(
+                            flex: 2,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: Container(
+                                height: 50,
+                                margin:
+                                    EdgeInsets.only(left: 2, right: 5, top: 5),
+                                child: Align(
+                                  alignment: Alignment.topLeft,
+                                  child: FlutterPopupMenuButton(
+                                    direction: MenuDirection.left,
+                                    decoration: const BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20)),
+                                        color: Colors.white),
+                                    popupMenuSize: const Size(220, 300),
+                                    child: FlutterPopupMenuIcon(
+                                      key: GlobalKey(),
                                       child: Container(
-                                        // margin: EdgeInsets.only(bottom: 5, top: 5, left: 11,right: 10),
-
-                                        child: SingleChildScrollView(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(30)),
+                                          border: Border.all(
+                                              color: Colors.black, width: 1),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black38
+                                                  .withOpacity(0.5),
+                                              blurRadius: 5,
+                                            ),
+                                          ],
+                                        ),
+                                        margin: EdgeInsets.only(bottom: 5),
+                                        child: Center(
                                           child: Row(
                                             children: [
-                                              Expanded(
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                              Radius.circular(
-                                                                  10))),
-                                                  height: 170,
-                                                  padding: EdgeInsets.all(10),
-                                                  child: Column(
-                                                    children: [
-                                                      Expanded(
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          children: [
-                                                            Transform.scale(
-                                                              scale: 0.7,
-                                                              child:
-                                                                  CupertinoSwitch(
-                                                                activeColor:
-                                                                    Colors
-                                                                        .green,
-                                                                value: prod
-                                                                    .inStock,
-                                                                onChanged: (bool
-                                                                    value) {
-                                                                  s = value ==
-                                                                          true
-                                                                      ? 'In stock'
-                                                                      : 'Out of stock';
-                                                                  setState(() {
-                                                                    prod.inStock =
-                                                                        value;
-                                                                    updateStock(
-                                                                        value,
-                                                                        prod.id);
-                                                                  });
-                                                                },
-                                                              ),
-                                                            ),
-                                                            Expanded(
-                                                                flex: 2,
-                                                                child:
-                                                                    Container(
-                                                                  child: Text(s,
-                                                                      style: TextStyle(
-                                                                          color: Colors
-                                                                              .green
-                                                                              .shade900,
-                                                                          fontSize:
-                                                                              11,
-                                                                          fontFamily:
-                                                                              'Poppins',
-                                                                          fontWeight:
-                                                                              FontWeight.bold)),
-                                                                )),
-                                                            IconButton(
-                                                              icon: Icon(
-                                                                Icons.delete,
-                                                                color: Colors
-                                                                    .red
-                                                                    .shade900,
-                                                                size: 25,
-                                                              ),
-                                                              onPressed: () {
-                                                                showDeleteConfirmationDialog(
-                                                                    prod.id);
-                                                              },
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        height: 5,
-                                                      ),
-                                                      Expanded(
-                                                        flex: 3,
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          children: [
-                                                            Expanded(
-                                                                child:
-                                                                    Container(
-                                                              margin: EdgeInsets
-                                                                  .only(
-                                                                      right:
-                                                                          15),
-                                                              child: (prod.images
-                                                                          .length >
-                                                                      0)
-                                                                  ? Image
-                                                                      .network(
-                                                                      prod.images[
-                                                                          0],
-                                                                      height:
-                                                                          150,
-                                                                      width: 80,
-                                                                      fit: BoxFit
-                                                                          .fill,
-                                                                    )
-                                                                  : Image.asset(
-                                                                      'assets/images/a1.jpg',
-                                                                      height:
-                                                                          150,
-                                                                      width:
-                                                                          80),
-                                                            )),
-                                                            Expanded(
-                                                              flex: 2,
-                                                              child: Container(
-                                                                child: Column(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .start,
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                  children: [
-                                                                    Expanded(
-                                                                        child:
-                                                                            Container(
-                                                                      // margin: EdgeInsets.only(left: 20),
-                                                                      child: Text(
-                                                                          prod
-                                                                              .productName,
-                                                                          style: TextStyle(
-                                                                              color: Colors.black,
-                                                                              fontSize: 19,
-                                                                              fontFamily: 'comfart',
-                                                                              fontWeight: FontWeight.bold)),
-                                                                    )),
-                                                                    Expanded(
-                                                                      child:
-                                                                          Row(
-                                                                        children: [
-                                                                          Text(
-                                                                              '₹${prod.offerPrice.toString()}',
-                                                                              style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'comfort', fontWeight: FontWeight.bold)),
-                                                                          SizedBox(
-                                                                            width:
-                                                                                10,
-                                                                          ),
-                                                                          Text(
-                                                                              'MRP '
-                                                                              '₹${prod.mrpPrice.toString()}'
-                                                                              '${860}',
-                                                                              style: TextStyle(color: Colors.black, fontSize: 14, fontFamily: 'comfort', decoration: TextDecoration.lineThrough)),
-                                                                        ],
-                                                                      ),
-                                                                    ),
-                                                                    Expanded(
-                                                                      child:
-                                                                          Container(
-                                                                        width:
-                                                                            100,
-                                                                        height:
-                                                                            18,
-                                                                        decoration: const BoxDecoration(
-                                                                            //  border: Border.all(color: Colors.black),
-                                                                            borderRadius: BorderRadius.all(Radius.circular(5))),
-                                                                        //   margin: EdgeInsets.only(right: 20),
-                                                                        child: Text(
-                                                                            starRating,
-                                                                            style: const TextStyle(
-                                                                                color: Colors.black,
-                                                                                fontSize: 13.5,
-                                                                                fontFamily: 'comfort',
-                                                                                fontWeight: FontWeight.bold)),
-                                                                      ),
-                                                                    ),
-                                                                    Expanded(
-                                                                      child:
-                                                                          Container(
-                                                                        width:
-                                                                            220,
-                                                                        child:
-                                                                            MaterialButton(
-                                                                          color: Colors
-                                                                              .lightBlue
-                                                                              .shade400,
-                                                                          onPressed:
-                                                                              () {
-                                                                            Navigator.push(
-                                                                                context,
-                                                                                MaterialPageRoute(
-                                                                                    builder: (context) => UpdateProducts(
-                                                                                          pid: prod.id,
-                                                                                          token: token,
-                                                                                          id: id,
-                                                                                          productName: prod.productName,
-                                                                                          // productImage: prod!
-                                                                                          //     .image
-                                                                                          //     .toString(),
-                                                                                          productCategory: prod.category,
-                                                                                          productSubCategory1: prod.subCategory1,
-                                                                                          productSubCategory2: prod.subCategory2,
-
-                                                                                          quantityPricing: prod.productDetails,
-                                                                                          stockTF: prod.inStock,
-                                                                                          stockIO: s,
-                                                                                          // productType: prod!
-                                                                                          //     .productType,
-                                                                                          description: prod.description,
-                                                                                        )));
-                                                                          },
-                                                                          child:
-                                                                              Text(
-                                                                            'Edit',
-                                                                            style: TextStyle(
-                                                                                color: Colors.white,
-                                                                                fontWeight: FontWeight.bold,
-                                                                                fontSize: 16),
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
+                                              SizedBox(
+                                                width: 10,
                                               ),
+                                              Icon(Icons.sort,
+                                                  color: Colors.black),
+                                              SizedBox(
+                                                width: 6,
+                                              ),
+                                              Text('Sort',
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 14,
+                                                    fontFamily: 'comfort',
+                                                  )),
                                             ],
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ],
+                                    children: [
+                                      FlutterPopupMenuItem(
+                                          onTap: () async {
+                                            setState(() {
+                                              _productData = fetchOrders(
+                                                  "productDetails.mrpPrice",
+                                                  token,
+                                                  id,
+                                                  currentPage);
+                                              sortt = "productDetails.mrpPrice";
+                                            });
+                                          },
+                                          closeOnItemClick: true,
+                                          child: ListTile(
+                                            title: const Text(
+                                              'Price(Low to High)',
+                                              style: TextStyle(fontSize: 15),
+                                            ),
+                                            leading: Container(
+                                              height: 15,
+                                              width: 15,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.redAccent
+                                                      .withOpacity(0.3),
+                                                  shape: BoxShape.circle),
+                                            ),
+                                          )),
+                                      FlutterPopupMenuItem(
+                                          onTap: () {
+                                            setState(() {
+                                              _productData = fetchOrders(
+                                                  "-productDetails.mrpPrice",
+                                                  token,
+                                                  id,
+                                                  currentPage);
+                                              sortt =
+                                                  "-productDetails.mrpPrice";
+                                            });
+                                          },
+                                          closeOnItemClick: true,
+                                          child: ListTile(
+                                            title: const Text(
+                                              'Price(High to Low)',
+                                              style: TextStyle(fontSize: 15),
+                                            ),
+                                            leading: Container(
+                                              height: 15,
+                                              width: 15,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.redAccent
+                                                      .withOpacity(0.3),
+                                                  shape: BoxShape.circle),
+                                            ),
+                                          )),
+                                      FlutterPopupMenuItem(
+                                          onTap: () {
+                                            setState(() {
+                                              _productData = fetchOrders(
+                                                  "-productSoldCount",
+                                                  token,
+                                                  id,
+                                                  currentPage);
+                                              sortt = "-productSoldCount";
+                                            });
+                                          },
+                                          closeOnItemClick: true,
+                                          child: ListTile(
+                                            title: const Text(
+                                              'Most Selling',
+                                              style: TextStyle(fontSize: 15),
+                                            ),
+                                            leading: Container(
+                                              height: 15,
+                                              width: 15,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.redAccent
+                                                      .withOpacity(0.3),
+                                                  shape: BoxShape.circle),
+                                            ),
+                                          )),
+                                      FlutterPopupMenuItem(
+                                          onTap: () {
+                                            setState(() {
+                                              _productData = fetchOrders(
+                                                  "created_at",
+                                                  token,
+                                                  id,
+                                                  currentPage);
+                                            });
+                                          },
+                                          closeOnItemClick: true,
+                                          child: ListTile(
+                                            title: const Text(
+                                              'Rating',
+                                              style: TextStyle(fontSize: 15),
+                                            ),
+                                            leading: Container(
+                                              height: 15,
+                                              width: 15,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.redAccent
+                                                      .withOpacity(0.3),
+                                                  shape: BoxShape.circle),
+                                            ),
+                                          )),
+                                      FlutterPopupMenuItem(
+                                          onTap: () {
+                                            setState(() {
+                                              _productData = fetchOrders(
+                                                  "created_at",
+                                                  token,
+                                                  id,
+                                                  currentPage);
+                                            });
+                                          },
+                                          closeOnItemClick: true,
+                                          child: ListTile(
+                                            title: const Text(
+                                              'Recently Added',
+                                              style: TextStyle(fontSize: 15),
+                                            ),
+                                            leading: Container(
+                                              height: 15,
+                                              width: 15,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.redAccent
+                                                      .withOpacity(0.3),
+                                                  shape: BoxShape.circle),
+                                            ),
+                                          )),
+                                    ],
+                                  ),
                                 ),
                               ),
-
-                            ],
+                            ),
                           ),
-
-                        );
-
-                      },
-
+                        ],
+                      ),
                     ),
+                    Column(
+                      children: [
+                        ListView.builder(
+                          shrinkWrap: true,
+                          controller: _scrollController,
+                          // scrollDirection: Axis.horizontal,
+                          itemCount: data?.length,
+                          itemBuilder: (context, index) {
+                            final prod = data?[index];
+                            String s = prod!.inStock.toString() == 'true'
+                                ? 'In stock'
+                                : 'Out of stock';
 
-                  ),
-                  NumberPaginator(
-                    numberPages: numberOfPages,
-                    onPageChange: (index)  {
-                      index = index + 1;
-                      currentPage = index;
-                       pagination(index);
-                      print("Jfdsjadgbjfvbsdg");
-                    },
-                  ),
-                ],
+                            String starRating = '';
+                            double prating = prod.productName.length % 6;
+                            if (prating == 0) {
+                              starRating = '⭐';
+                            } else {
+                              int fullStars = prating.floor();
+                              double remaining =
+                                  (prating - fullStars) as double;
+
+                              starRating = '⭐' * fullStars;
+                            }
+                            return Container(
+                              color: Colors.grey.shade300,
+                              child: Column(
+                                children: [
+                                  Card(
+                                    margin: EdgeInsets.only(
+                                        left: 10, right: 10, top: 6, bottom: 6),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Container(
+                                            // margin: EdgeInsets.only(bottom: 5, top: 5, left: 11,right: 10),
+
+                                            child: SingleChildScrollView(
+                                              child: Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                          color: Colors.white,
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          10))),
+                                                      height: 170,
+                                                      padding:
+                                                          EdgeInsets.all(10),
+                                                      child: Column(
+                                                        children: [
+                                                          Expanded(
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
+                                                              children: [
+                                                                Transform.scale(
+                                                                  scale: 0.7,
+                                                                  child:
+                                                                      CupertinoSwitch(
+                                                                    activeColor:
+                                                                        Colors
+                                                                            .green,
+                                                                    value: prod
+                                                                        .inStock,
+                                                                    onChanged: (bool
+                                                                        value) {
+                                                                      s = value ==
+                                                                              true
+                                                                          ? 'In stock'
+                                                                          : 'Out of stock';
+                                                                      setState(
+                                                                          () {
+                                                                        prod.inStock =
+                                                                            value;
+                                                                        updateStock(
+                                                                            value,
+                                                                            prod.id);
+                                                                      });
+                                                                    },
+                                                                  ),
+                                                                ),
+                                                                Expanded(
+                                                                    flex: 2,
+                                                                    child:
+                                                                        Container(
+                                                                      child: Text(
+                                                                          s,
+                                                                          style: TextStyle(
+                                                                              color: Colors.green.shade900,
+                                                                              fontSize: 11,
+                                                                              fontFamily: 'Poppins',
+                                                                              fontWeight: FontWeight.bold)),
+                                                                    )),
+                                                                IconButton(
+                                                                  icon: Icon(
+                                                                    Icons
+                                                                        .delete,
+                                                                    color: Colors
+                                                                        .red
+                                                                        .shade900,
+                                                                    size: 25,
+                                                                  ),
+                                                                  onPressed:
+                                                                      () {
+                                                                    showDeleteConfirmationDialog(
+                                                                        prod.id);
+                                                                  },
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: 5,
+                                                          ),
+                                                          Expanded(
+                                                            flex: 3,
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
+                                                              children: [
+                                                                Expanded(
+                                                                    child:
+                                                                        Container(
+                                                                  margin: EdgeInsets
+                                                                      .only(
+                                                                          right:
+                                                                              15),
+                                                                  child: (prod.images
+                                                                              .length >
+                                                                          0)
+                                                                      ? Image
+                                                                          .network(
+                                                                          prod.images[
+                                                                              0],
+                                                                          height:
+                                                                              150,
+                                                                          width:
+                                                                              80,
+                                                                          fit: BoxFit
+                                                                              .fill,
+                                                                        )
+                                                                      : Image.asset(
+                                                                          'assets/images/a1.jpg',
+                                                                          height:
+                                                                              150,
+                                                                          width:
+                                                                              80),
+                                                                )),
+                                                                Expanded(
+                                                                  flex: 2,
+                                                                  child:
+                                                                      Container(
+                                                                    child:
+                                                                        Column(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .start,
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        Expanded(
+                                                                            child:
+                                                                                Container(
+                                                                          // margin: EdgeInsets.only(left: 20),
+                                                                          child: Text(
+                                                                              prod.productName,
+                                                                              style: TextStyle(color: Colors.black, fontSize: 19, fontFamily: 'comfart', fontWeight: FontWeight.bold)),
+                                                                        )),
+                                                                        Expanded(
+                                                                          child:
+                                                                              Row(
+                                                                            children: [
+                                                                              Text('₹${prod.offerPrice.toString()}', style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'comfort', fontWeight: FontWeight.bold)),
+                                                                              SizedBox(
+                                                                                width: 10,
+                                                                              ),
+                                                                              Text(
+                                                                                  'MRP '
+                                                                                  '₹${prod.mrpPrice.toString()}'
+                                                                                  '${860}',
+                                                                                  style: TextStyle(color: Colors.black, fontSize: 14, fontFamily: 'comfort', decoration: TextDecoration.lineThrough)),
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                        Expanded(
+                                                                          child:
+                                                                              Container(
+                                                                            width:
+                                                                                100,
+                                                                            height:
+                                                                                18,
+                                                                            decoration: const BoxDecoration(
+                                                                                //  border: Border.all(color: Colors.black),
+                                                                                borderRadius: BorderRadius.all(Radius.circular(5))),
+                                                                            //   margin: EdgeInsets.only(right: 20),
+                                                                            child:
+                                                                                Text(starRating, style: const TextStyle(color: Colors.black, fontSize: 13.5, fontFamily: 'comfort', fontWeight: FontWeight.bold)),
+                                                                          ),
+                                                                        ),
+                                                                        Expanded(
+                                                                          child:
+                                                                              Container(
+                                                                            width:
+                                                                                220,
+                                                                            child:
+                                                                                MaterialButton(
+                                                                              color: Colors.lightBlue.shade400,
+                                                                              onPressed: () {
+                                                                                Navigator.push(
+                                                                                    context,
+                                                                                    MaterialPageRoute(
+                                                                                        builder: (context) => UpdateProducts(
+                                                                                              pid: prod.id,
+                                                                                              token: token,
+                                                                                              id: id,
+                                                                                              productName: prod.productName,
+                                                                                              // productImage: prod!
+                                                                                              //     .image
+                                                                                              //     .toString(),
+                                                                                              productCategory: prod.category,
+                                                                                              productSubCategory1: prod.subCategory1,
+                                                                                              productSubCategory2: prod.subCategory2,
+
+                                                                                              quantityPricing: prod.productDetails,
+                                                                                              stockTF: prod.inStock,
+                                                                                              stockIO: s,
+                                                                                              // productType: prod!
+                                                                                              //     .productType,
+                                                                                              description: prod.description,
+                                                                                            )));
+                                                                              },
+                                                                              child: Text(
+                                                                                'Edit',
+                                                                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                        NumberPaginator(
+                          numberPages: numberOfPages,
+                          onPageChange: (index) {
+                            print("index is $index");
+                            index = index + 1;
+                            setState(() {
+                              currentPage = index;
+                              pagination(index);
+                            });
+                            print("Jfdsjadgbjfvbsdg");
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  ],
+                ),
               );
             }
           },

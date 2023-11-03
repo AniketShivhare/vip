@@ -385,12 +385,12 @@ class _AddProductState extends State<AddProduct> {
           );
         } else {
           return ListView.builder(
-            itemCount: snapshot.data!.data[0].category.length,
+            itemCount: snapshot.data!.data.length,
             itemBuilder: (BuildContext context, int index) {
               return ListTile(
                 onTap: () {
                   setState(() {
-                    category = snapshot.data!.data[0].category[index];
+                    category = snapshot.data!.data[index].toString();
                   });
                   showDialog(
                     context: context,
@@ -419,7 +419,7 @@ class _AddProductState extends State<AddProduct> {
                   size: 20,
                 ),
                 title: Text(
-                  snapshot.data!.data[0].category[index],
+                  snapshot.data!.data[index].toString(),
                   style: TextStyle(fontSize: 14),
                 ),
               );
@@ -444,12 +444,12 @@ class _AddProductState extends State<AddProduct> {
           );
         } else {
           return ListView.builder(
-            itemCount: snapshot.data!.data[0].subCategory1.length,
+            itemCount: snapshot.data!.data.length,
             itemBuilder: (BuildContext context, int index) {
               return ListTile(
                 onTap: () {
                   setState(() {
-                    subCategory1 = snapshot.data!.data[0].subCategory1[index];
+                    subCategory1 = snapshot.data!.data[index];
                   });
                   showDialog(
                     context: context,
@@ -477,7 +477,7 @@ class _AddProductState extends State<AddProduct> {
                   size: 20,
                 ),
                 title: Text(
-                  snapshot.data!.data[0].subCategory1[index],
+                  snapshot.data!.data[index],
                   style: TextStyle(fontSize: 14),
                 ),
               );
