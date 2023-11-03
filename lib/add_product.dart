@@ -228,16 +228,6 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
               onPressed: addOption,
               child: Text("Add items"),
             )),
-        // ElevatedButton(
-        //     onPressed: () {
-        //       for (var data in widget.options) {
-        //         print(data.price);
-        //         print(data.offerPrice);
-        //         print(data.quantity);
-        //         print(data.unit);
-        //       }
-        //     },
-        //     child: Text("Tap")),
       ],
     );
   }
@@ -277,7 +267,7 @@ class _AddProductState extends State<AddProduct> {
     });
   }
 
-  String AllpCategory='';
+  String AllpCategory = '';
   final ImagePicker imagePicker = ImagePicker();
   List<XFile> imageFileList = [];
 
@@ -578,7 +568,7 @@ class _AddProductState extends State<AddProduct> {
       }
     });
     AllpCategory = '$category / $subCategory1';
-    if (subCategory2!='') {
+    if (subCategory2 != '') {
       AllpCategory += '/ $subCategory2';
     }
     String productName = widget.productName;

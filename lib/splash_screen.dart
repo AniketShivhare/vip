@@ -40,25 +40,28 @@ class _SplashScreenState extends State<SplashScreen> {
                 height: double.infinity,
                 width: double.infinity,
                 decoration:
-                // BoxDecoration(
-                //   color: Colors.white
-                // ),
+                    // BoxDecoration(
+                    //   color: Colors.white
+                    // ),
 
-                BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Color(0x66FFA500),
-                          Color(0x99FFA500),
-                          Color(0xccFFA500),
-                          Color(0xffFFA500),
-                        ])),
+                    BoxDecoration(
+                        gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                      Color(0xff7091F5),
+                      Colors.white,
+                      // Color(0x99FFA500),
+                      // Color(0xccFFA500),
+                      // Color(0xffFFA500),
+                    ])),
                 child: Center(
-                  child: Image.asset(
-                    "assets/images/logo.png",
-                    height: 60,
-                    width: 180,
+                  child: Container(
+                    child: Image.asset(
+                      "assets/images/logo.png",
+                      height: 60,
+                      width: 180,
+                    ),
                   ),
                 ),
               ),
