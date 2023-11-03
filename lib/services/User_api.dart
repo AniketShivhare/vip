@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
 
+import 'package:e_commerce/services/filterData.dart';
 import 'package:e_commerce/services/tokenId.dart';
 import 'package:flutter/material.dart';
 import '../apis/ProductModel.dart';
@@ -13,6 +14,50 @@ import 'package:http/http.dart' as http;
 import 'Categories.dart';
 
 class UserApi {
+
+
+  static Future<List<Product>> filterProduct(  token, id) async {
+    print("called filterrr function");
+    print("id-$id");
+    print("token-$token");
+    String url = 'https://api.pehchankidukan.com/seller/${TokenId.id}/products';
+    int count=0;
+    if(FilterOptions.categories[0].isNotEmpty) {
+      url+='?';
+      url += 'category=${FilterOptions.categories[0]}';
+      count++;
+    }
+    if(FilterOptions.selectedSubCat) {
+      if(count==0)
+        url+='?';
+      List<String>? subCategory = FilterOptions.subcategories[FilterOptions.categories[0]];
+      if(count>0)
+        url += '&';
+      print(subCategory);
+      String? formattedSubCategories = subCategory?.map((category) => '"$category"').join(',');
+      formattedSubCategories = formattedSubCategories?.replaceAll('&', '%26');
+      url += 'subCategory1=[$formattedSubCategories]';
+    }
+    print("url12345");
+    print(url);
+    final uri = Uri.parse(url);
+    final response = await http.get(uri,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${TokenId.token}'
+      },
+    );
+    final body = response.body;
+    final productJson = jsonDecode(body);
+    print(response.statusCode);
+    print(productJson);
+    List<Product> products = (productJson['data'] as List<dynamic>?)
+        ?.map((e) => Product.fromJson(e as Map<String, dynamic>))
+        .toList() ?? [];
+    print(products);
+    print("product");
+    return products;
+  }
 
 
   static Future<void> deleteProduct(id) async {
@@ -40,6 +85,7 @@ class UserApi {
 
 
   static Future<void> getAllCategory() async {
+    if(Categories.categories.length>0)return;
     print("getallcategoryforfilter called");
     final apiUrl = "https://api.pehchankidukan.com/seller/category";
     final response = await http.get(
@@ -52,8 +98,8 @@ class UserApi {
 
     final jsonData = jsonDecode(response.body);
     print(jsonData);
-    final data = (jsonData["data"][0]["category"]);
-    Categories.categories.addAll(List<String>.from(data));
+    final data = (jsonData["data"]);
+    Categories.categories = (List<String>.from(data));
     // Categories.categories = jsonData["data"][0]["category"] as List<String>;
 
   }

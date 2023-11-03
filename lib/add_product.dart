@@ -279,7 +279,7 @@ class _AddProductState extends State<AddProduct> {
 
   String AllpCategory='';
   final ImagePicker imagePicker = ImagePicker();
-  List<XFile>? imageFileList = [];
+  List<XFile> imageFileList = [];
 
   void selectImages() async {
     final List<XFile>? selectedImages = await imagePicker.pickMultiImage();
@@ -592,7 +592,7 @@ class _AddProductState extends State<AddProduct> {
               child: Text(
                 "Add Product",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Colors.black,
                   fontSize: 20,
                 ),
               ),
@@ -600,7 +600,7 @@ class _AddProductState extends State<AddProduct> {
           ],
         ),
         centerTitle: true,
-        backgroundColor: Colors.lightBlue.shade900,
+        backgroundColor: Colors.lightBlue.shade100,
         iconTheme: IconThemeData(color: Colors.white),
       ),
       backgroundColor: Colors.grey.shade200,
@@ -612,7 +612,7 @@ class _AddProductState extends State<AddProduct> {
               Container(
                 height: 45,
                 decoration: BoxDecoration(
-                    color: Colors.lightBlue.shade900,
+                    color: Colors.lightBlue.shade100,
                     borderRadius: BorderRadius.only(
                         bottomRight: Radius.circular(30),
                         bottomLeft: Radius.circular(30))),

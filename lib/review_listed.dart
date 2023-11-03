@@ -14,7 +14,7 @@ import 'package:http/http.dart' as http;
 
 
 class ReviewListed extends StatefulWidget {
-  List<XFile>? imageFileList = [];
+  List<XFile> imageFileList = [];
   List<ItemOption> itemOptions = [];
   String productName = '';
   String productType = '';
@@ -72,7 +72,7 @@ class _ReviewListedState extends State<ReviewListed> {
 
       try {
         // Add each image file to the request
-        if (widget.imageFileList != null) {
+        if (widget.imageFileList.length >0) {
           final url1 = 'https://api.pehchankidukan.com/seller/${TokenId.id}/products/$pid';
           var request = http.MultipartRequest('PUT', (Uri.parse(url1)));
 
