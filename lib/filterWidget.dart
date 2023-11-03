@@ -1,45 +1,35 @@
-import 'package:e_commerce/manage_products.dart';
+import 'dart:async';
+
 import 'package:e_commerce/services/Categories.dart';
+import 'package:e_commerce/services/filterData.dart';
 import 'package:e_commerce/services/tokenId.dart';
 import 'package:flutter/material.dart';
-
 import 'googleFonts.dart';
-
+import 'main_dashboard.dart';
 void main() {
   runApp(MyApp());
 }
 
-
+bool ok=false;
 double _minPrice = 0;
 double _maxPrice = 100;
-
 TextEditingController _minPriceController = TextEditingController();
 TextEditingController _maxPriceController = TextEditingController();
+String selectedDiscountOption = 'Any Discount';
+String selectedRatingOption = 'Any Rating';
+bool priceChanged=false;
 
 class MyApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
-      // home: FilterScreen(token: '', id: ''),
-     // home: FilterScreen(token: '', id: ''),
+      home: FilterScreen(),
     );
   }
 }
 
-class FilterOptions {
-  late List<String> categories;
-  late Map<String, List<String>> subcategories;
-  late double minPrice;
-  late double maxPrice;
-  late List<String> sizes;
-  late List<String> brands;
-}
-
 
 class FilterScreen extends StatefulWidget {
-
   @override
   _FilterScreenState createState() => _FilterScreenState();
 }
@@ -53,16 +43,11 @@ class _FilterScreenState extends State<FilterScreen> {
 
 
   List<String> categories = Categories.categories;
-  Map<String, List<String>> subcategories = {
-    "Electronics": ["Laptops", "Smartphones", "Tablets"],
-    "Clothing": ["Shirts", "Dresses", "Jeans"],
-    "Furniture": ["Sofas", "Tables", "Chairs"],
-  };
+  Map<String, List<String>> subcategories = {};
 
   List<String> filters = [
-    "CATEGORY",
+    "Category",
     "Sub-category",
-    "Price Range",
     "Ratings",
     "Discount Range",
   ];
@@ -73,14 +58,10 @@ class _FilterScreenState extends State<FilterScreen> {
     });
   }
 
-
-
   void onResetFilters() {
     setState(() {
-      // Clear the selected categories, subcategories, and other filter options
       selectedCategories.clear();
       selectedSubcategories.clear();
-      // Reset the price range
       _minPrice = 0;
       _maxPrice = 100;
       _minPriceController.text = '0';
@@ -90,56 +71,67 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
   void onApplyFilters() {
-    selectedFilters.categories = selectedCategories;
-    selectedFilters.subcategories = selectedSubcategories;
-    selectedFilters.minPrice = _minPrice;
-    selectedFilters.maxPrice = _maxPrice;
+    FilterOptions.categories = selectedCategories;
+    FilterOptions.subcategories = selectedSubcategories;
+    FilterOptions.minPrice = _minPrice;
+    FilterOptions.maxPrice = _maxPrice;
 
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ManageProducts(token:  '', id: '',
-      selectedcategories: selectedFilters.categories,selectedsubcategories: selectedFilters.subcategories,
-      selectedmaxPrice: selectedFilters.minPrice,selectedminPrice: selectedFilters.maxPrice, sortt: "",),));
-
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MainDashboard(token: TokenId.token, id: TokenId.id, pageIndex: 0,sortt:""),
+      ),
+          (route) => false, // This line clears the navigator stack
+    );
   }
 
 
   Widget buildCategoryScreen() {
-
     return Container(
       padding: EdgeInsets.all(8),
       child: ListView.builder(
         itemCount: categories.length,
         itemBuilder: (context, index) {
-          final isChecked = selectedCategories.contains(categories[index]);
+          final isSelected = selectedCategories.contains(categories[index]);
 
-          return Container(
-            padding: EdgeInsets.all(2),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(child:
-                Container(
-                  padding: EdgeInsets.all(16),
-                  color: isChecked
-                      ? Colors.blue.withOpacity(0.5)
-                      : Colors.white,
-                  child: Text(categories[index]),
-                ),
-                ),
-                Checkbox(
-                  value: isChecked,
-                  onChanged: (selected) {
-                    setState(() {
-                      if (selected != null) {  // Ensure selected is not null
-                        if (selected) {
-                          selectedCategories.add(categories[index]);
-                        } else {
-                          selectedCategories.remove(categories[index]);
-                        }
-                      }
-                    });
-                  },
-                ),
-              ],
+          return GestureDetector(
+            onTap: () async {
+              setState(()  {
+                if (isSelected) {
+                  selectedCategories.clear();
+                  FilterOptions.changed=false;
+                  ok=false;
+                } else {
+                  selectedCategories = [categories[index]];
+                  FilterOptions.changed=true;
+                  ok=true;
+                }
+              });
+              await Categories.getSubCategories(categories[index]) ;
+              List<String> subCat = Categories.subCategories;
+              subcategories[selectedCategories[0]] = subCat;
+            },
+            child: Container(
+              padding: EdgeInsets.all(15),
+              color: isSelected ? Colors.blue.withOpacity(0.5) : Colors.white,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      categories[index],
+                      maxLines: 2, // Display text in up to 2 lines
+                      overflow: TextOverflow.ellipsis, // Handle overflow with ellipsis
+                    ),
+                  ),
+                  Radio<bool>(
+                    value: isSelected,
+                    groupValue: true,
+                    onChanged: (value) {
+                    },
+                  ),
+                ],
+              ),
             ),
           );
         },
@@ -148,11 +140,81 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
   Widget buildSubcategoryScreen() {
+    return ok
+        ? FutureBuilder<void>(
+      future: Future.delayed(const Duration(seconds: 2)),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return Container(
+              padding: EdgeInsets.all(8),
+              child: ListView.builder(
+                itemCount: 1,
+                itemBuilder: (context, categoryIndex) {
+                  final category = selectedCategories[categoryIndex];
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 12,),
+                      Text(category),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: subcategories[category]!.length,
+                        itemBuilder: (context, subcategoryIndex) {
+                          final subcategory = subcategories[category]![subcategoryIndex];
+                          final isSelected = selectedSubcategories[category]?.contains(subcategory) ?? false;
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  subcategory,
+                                  maxLines: 2, // Display text in up to 2 lines
+                                  overflow: TextOverflow.ellipsis, // Handle overflow with ellipsis
+                                ),
+                              ),
+                              Checkbox(
+                                value: isSelected,
+                                onChanged: (selected) {
+                                  setState(() {
+                                    if (selected != null) {
+                                      if (selected) {
+                                        if (selectedSubcategories[category] == null) {
+                                          FilterOptions.selectedSubCat=false;
+                                          selectedSubcategories[category] = [];
+                                        } else {
+                                          FilterOptions.selectedSubCat=true;
+                                        }
+                                        selectedSubcategories[category]!.add(subcategory);
 
-    return Container(
+                                      } else {
+                                        selectedSubcategories[category]?.remove(subcategory);
+                                      }
+                                    }
+                                  });
+
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                },
+              ),
+          );
+        } else {
+          ok=false;
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    )
+        : Container(
       padding: EdgeInsets.all(8),
       child: ListView.builder(
-        itemCount: selectedCategories.length,
+        itemCount: 1,
         itemBuilder: (context, categoryIndex) {
           final category = selectedCategories[categoryIndex];
           return Column(
@@ -169,7 +231,13 @@ class _FilterScreenState extends State<FilterScreen> {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(subcategory),
+                      Expanded(
+                        child: Text(
+                          subcategory,
+                          maxLines: 2, // Display text in up to 2 lines
+                          overflow: TextOverflow.ellipsis, // Handle overflow with ellipsis
+                        ),
+                      ),
                       Checkbox(
                         value: isSelected,
                         onChanged: (selected) {
@@ -177,14 +245,19 @@ class _FilterScreenState extends State<FilterScreen> {
                             if (selected != null) {
                               if (selected) {
                                 if (selectedSubcategories[category] == null) {
+                                  FilterOptions.selectedSubCat=false;
                                   selectedSubcategories[category] = [];
+                                } else {
+                                  FilterOptions.selectedSubCat=true;
                                 }
                                 selectedSubcategories[category]!.add(subcategory);
+
                               } else {
                                 selectedSubcategories[category]?.remove(subcategory);
                               }
                             }
                           });
+
                         },
                       ),
                     ],
@@ -199,65 +272,164 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
 
-  Widget buildPriceCategoryScreen() {
-    return PriceRangeSlider() ;
-  }
+
+
+
+
+
 
   Widget buildRatingsScreen() {
-    if (selectedCategoryIndex == -1) {
-      return Center(
-        child: Text("Please select a category first."),
-      );
-    } else {
-      final selectedCategory = categories[selectedCategoryIndex];
-      return ListView.builder(
-        itemCount: subcategories[selectedCategory]!.length,
-        itemBuilder: (context, index) {
-          return Container(
-            padding: EdgeInsets.all(16),
-            child: Text(subcategories[selectedCategory]![index]),
-          );
-        },
-      );
-    }
-  }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          child: Text('Ratings', style: headingSmallStyle),
+          alignment: Alignment.center,
+          padding: EdgeInsets.all(12),
+        ),
+        SizedBox(height: 12),
+        ListTile(
+          title: Text('Any Rating'),
+          leading: Radio<String>(
+            value: 'Any Rating',
+            groupValue: selectedRatingOption,
+            onChanged: (value) {
+              setState(() {
+                selectedRatingOption = value!;
+              });
+            },
+          ),
+        ),
+        ListTile(
+          title: Text('4.5 or above'),
+          leading: Radio<String>(
+            value: '4.5 or above',
+            groupValue: selectedRatingOption,
+            onChanged: (value) {
+              setState(() {
+                selectedRatingOption = value!;
+              });
+            },
+          ),
+        ),
+        ListTile(
+          title: Text('4 or above'),
+          leading: Radio<String>(
+            value: '4 or above',
+            groupValue: selectedRatingOption,
+            onChanged: (value) {
+              setState(() {
+                selectedRatingOption = value!;
+              });
+            },
+          ),
+        ),
+        ListTile(
+          title: Text('3.5 or above'),
+          leading: Radio<String>(
+            value: '3.5 or above',
+            groupValue: selectedRatingOption,
+            onChanged: (value) {
+              setState(() {
+                selectedRatingOption = value!;
+              });
+            },
+          ),
+        ),
+        ListTile(
+          title: Text('3 or above'),
+          leading: Radio<String>(
+            value: '3 or above',
+            groupValue: selectedRatingOption,
+            onChanged: (value) {
+              setState(() {
+                selectedRatingOption = value!;
+              });
+            },
+          ),
+        ),
 
-  Widget buildScreen() {
-    if (selectedCategoryIndex == -1) {
-      return Center(
-        child: Text("Please select a category first."),
-      );
-    } else {
-      final selectedCategory = categories[selectedCategoryIndex];
-      return ListView.builder(
-        itemCount: subcategories[selectedCategory]!.length,
-        itemBuilder: (context, index) {
-          return Container(
-            padding: EdgeInsets.all(16),
-            child: Text(subcategories[selectedCategory]![index]),
-          );
-        },
-      );
-    }
+        SizedBox(height: 16),
+        Text('Selected Rating: $selectedRatingOption', style: captionStyle),
+      ],
+    );
   }
 
   Widget buildDiscountScreen() {
-    if (selectedCategoryIndex == -1) {
-      return Center(
-        child: Text("Please select a category first."),
-      );
-    } else {
-      final selectedCategory = categories[selectedCategoryIndex];
-      return ListView.builder(
-        itemCount: subcategories[selectedCategory]!.length,
-        itemBuilder: (context, index) {
-          return Container(
-            padding: EdgeInsets.all(16),
-            child: Text(subcategories[selectedCategory]![index]),
-          );
-        },
-      );
-    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          child: Text('Discount', style: headingSmallStyle),
+          alignment: Alignment.center,
+          padding: EdgeInsets.all(12),
+        ),
+        SizedBox(height: 12),
+        // Create radio buttons for discount options
+        ListTile(
+          title: Text('Any Discount'),
+          leading: Radio<String>(
+            value: 'Any Discount',
+            groupValue: selectedDiscountOption,
+            onChanged: (value) {
+              setState(() {
+                selectedDiscountOption = value!;
+              });
+            },
+          ),
+        ),
+        ListTile(
+          title: Text('10% or more'),
+          leading: Radio<String>(
+            value: '10% or more',
+            groupValue: selectedDiscountOption,
+            onChanged: (value) {
+              setState(() {
+                selectedDiscountOption = value!;
+              });
+            },
+          ),
+        ),
+        ListTile(
+          title: Text('20% or more'),
+          leading: Radio<String>(
+            value: '20% or more',
+            groupValue: selectedDiscountOption,
+            onChanged: (value) {
+              setState(() {
+                selectedDiscountOption = value!;
+              });
+            },
+          ),
+        ),
+        ListTile(
+          title: Text('30% or more'),
+          leading: Radio<String>(
+            value: '20% or more',
+            groupValue: selectedDiscountOption,
+            onChanged: (value) {
+              setState(() {
+                selectedDiscountOption = value!;
+              });
+            },
+          ),
+        ),
+        ListTile(
+          title: Text('40% or more'),
+          leading: Radio<String>(
+            value: '20% or more',
+            groupValue: selectedDiscountOption,
+            onChanged: (value) {
+              setState(() {
+                selectedDiscountOption = value!;
+              });
+            },
+          ),
+        ),
+        SizedBox(height: 16),
+        Text('Selected Discount: $selectedDiscountOption', style: captionStyle),
+      ],
+    );
   }
 
 
@@ -267,9 +439,7 @@ class _FilterScreenState extends State<FilterScreen> {
       case 0:
         return buildCategoryScreen();
       case 1:
-        return buildSubcategoryScreen();
-      case 2:
-        return buildPriceCategoryScreen();
+        return  buildSubcategoryScreen();
       case 3:
         return buildRatingsScreen();
       case 4:
@@ -342,132 +512,10 @@ void showCategoryScreen(BuildContext context) {
   showModalBottomSheet(
     context: context,
     builder: (BuildContext context) {
-      // Sample list of categories and subcategories
 
       return FilterScreen();
     },
   );
-}
-
-class PriceRangeSlider extends StatefulWidget {
-  @override
-  _PriceRangeSliderState createState() => _PriceRangeSliderState();
-}
-
-class _PriceRangeSliderState extends State<PriceRangeSlider> {
-
-
-  @override
-  void initState() {
-    super.initState();
-    _minPriceController.text = '$_minPrice';
-    _maxPriceController.text = '$_maxPrice';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body:
-      Container(
-        width: 300,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Color(0x0F000000),
-              blurRadius: 22,
-              offset: Offset(0, 4),
-              spreadRadius: 0,
-            ),
-          ],
-        ),
-        padding: EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Text(
-              'Price',
-              style: headingSmallStyle,),
-            SizedBox(height: 18,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 10),
-                  child: Text(
-                    ' $_minPrice Rs. -',
-                    style: captionStyle,
-                  ),
-                ),
-                SizedBox(width: 12,),
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 10),
-                  child: Text(
-                    '$_maxPrice Rs.',
-                    style: captionStyle,
-                  ),
-                ),
-              ],),
-            RangeSlider(
-              values: RangeValues(_minPrice, _maxPrice),
-              min: 0,
-              max: 100,
-              onChanged: (RangeValues newValues) {
-                setState(() {
-                  _minPrice = newValues.start;
-                  _maxPrice = newValues.end;
-                  _minPriceController.text = '$_minPrice';
-                  _maxPriceController.text = '$_maxPrice';
-                });
-              },
-              divisions: 5,
-              labels: RangeLabels('$_minPrice', '$_maxPrice'),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    style: captionStyle,
-                    controller: _minPriceController,
-                    onChanged: (value) {
-                      if (double.tryParse(value) != null) {
-                        setState(() {
-                          _minPrice = double.parse(value);
-                        });
-                      }
-                    },
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: 'Min Price',
-                    ),
-                  ),
-                ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: TextField(
-                    style: captionStyle,
-                    controller: _maxPriceController,
-                    onChanged: (value) {
-                      if (double.tryParse(value) != null) {
-                        setState(() {
-                          _maxPrice = double.parse(value);
-                        });
-                      }
-                    },
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: 'Max Price',
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 

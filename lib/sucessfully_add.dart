@@ -179,18 +179,6 @@ class _SuccessfulAddState extends State<SuccessfulAdd> {
               ),
               Container(
                 width: double.maxFinite,
-                margin: const EdgeInsets.only(left: 20,right: 20,top: 30,bottom: 10),
-                child: MaterialButton(onPressed: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => AddProduct(token:token, id:id, productName: '', productDescription: '', productDetails: [],
-                    itemOptions: [],),
-                  ));
-                },color: Colors.lightBlue.shade700,
-                  height: 40, child: Text('+ Add more product',style: TextStyle(color: Colors.white,fontSize: 18),)
-                  ,
-                ),
-              ),
-              Container(
-                width: double.maxFinite,
                 margin: const EdgeInsets.only(left: 20,right: 20,top: 10,bottom: 30),
 
                 child: MaterialButton(onPressed: (){

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:e_commerce/filterWidget.dart';
+import 'package:e_commerce/services/filterData.dart';
 import 'package:e_commerce/services/tokenId.dart';
 import 'package:e_commerce/update_product.dart';
 import 'package:flutter/cupertino.dart';
@@ -72,7 +73,6 @@ class _ManageProductsState extends State<ManageProducts> {
                 print(id);
                 UserApi.deleteProduct(id);
                 // Remove the image from the list
-
                 _productData =
                     fetchOrders("", TokenId.token, TokenId.id, currentPage);
 
@@ -104,10 +104,15 @@ class _ManageProductsState extends State<ManageProducts> {
     }
   }
 
-  Future<void> pagination(currentPage) async {
+  Future<void> pagination(index) async {
+
     setState(() {
-      _productData =
-          fetchOrders("created_at", TokenId.token, TokenId.id, currentPage);
+      _productData = UserApi.getProducts(widget.token, widget.id, index);
+      print("pdddataaa");
+      print(_productData);
+      currentPage=index;
+      // print("${_productData.length}abb");
+
     });
   }
 
@@ -120,11 +125,16 @@ class _ManageProductsState extends State<ManageProducts> {
   @override
   initState() {
     super.initState();
-
-    sortt = widget.sortt;
-    _productData = fetchOrders(sortt, TokenId.token, TokenId.id, currentPage);
-    print("_productData");
-    print(_productData);
+    if(FilterOptions.changed==true) {
+          _productData = UserApi.filterProduct( widget.token, widget.id);
+    FilterOptions.clear();
+    }
+    else {
+      sortt = widget.sortt;
+      _productData = fetchOrders(sortt, TokenId.token, TokenId.id, currentPage);
+      print("_productData");
+      print(_productData);
+    }
   }
 
   @override
@@ -170,7 +180,7 @@ class _ManageProductsState extends State<ManageProducts> {
               ),
             ),
           ),
-          backgroundColor: Colors.lightBlue.shade900,
+          backgroundColor: Colors.lightBlue.shade100,
           iconTheme: IconThemeData(color: Colors.white),
         ),
         backgroundColor: Colors.white,
@@ -195,7 +205,7 @@ class _ManageProductsState extends State<ManageProducts> {
                           flex: 2,
                           child: InkWell(
                             onTap: () async {
-                              await UserApi.getAllCategory();
+
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -725,18 +735,23 @@ class _ManageProductsState extends State<ManageProducts> {
                                   ],
                                 ),
                               ),
+
                             ],
                           ),
+
                         );
+
                       },
+
                     ),
+
                   ),
                   NumberPaginator(
                     numberPages: numberOfPages,
-                    onPageChange: (index) async {
+                    onPageChange: (index)  {
                       index = index + 1;
                       currentPage = index;
-                      await pagination(currentPage);
+                       pagination(index);
                       print("Jfdsjadgbjfvbsdg");
                     },
                   ),
