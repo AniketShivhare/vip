@@ -826,10 +826,8 @@ class _AddProductState extends State<AddProduct> {
                           ),
                         ],
                       ),
-                      // widget.category == "Food" ||
-                      //         widget.subCategory1 == "Dairy" ||
-                      //         widget.subCategory1 == "Bread & Eggs"
-                      // ?
+                      category == "Food"
+                      ?
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -864,7 +862,7 @@ class _AddProductState extends State<AddProduct> {
                             ),
                           ),
                         ],
-                      ),
+                      ): Container(),
                       Container(
                         child: Form(
                           key: _formkey,
