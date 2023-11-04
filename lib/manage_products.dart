@@ -15,7 +15,6 @@ import 'package:http/http.dart' as http;
 
 class ManageProducts extends StatefulWidget {
   final String token, id;
-
   final List<String> selectedcategories;
   final Map<String, List<String>> selectedsubcategories;
   final double selectedminPrice, selectedmaxPrice;
@@ -28,7 +27,7 @@ class ManageProducts extends StatefulWidget {
       required this.selectedsubcategories,
       required this.selectedminPrice,
       required this.selectedmaxPrice,
-      required this.sortt})
+      required this.sortt,})
       : super(key: key);
 
   @override
@@ -47,7 +46,7 @@ class _ManageProductsState extends State<ManageProducts> {
   String response1 = "";
   Future<List<Product>>? _productData;
   int numberOfPages = 8;
-  int currentPage = 1;
+  late int currentPage = 1;
 
   Future<void> showDeleteConfirmationDialog(String id) async {
     print("idddd12");
@@ -56,8 +55,8 @@ class _ManageProductsState extends State<ManageProducts> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Delete Product?'),
-          content: Text('Are you sure you want to delete this product?'),
+          title: const Text('Delete Product?'),
+          content: const Text('Are you sure you want to delete this product?'),
           actions: [
             TextButton(
               child: Text('Cancel'),
@@ -105,9 +104,20 @@ class _ManageProductsState extends State<ManageProducts> {
   }
 
   Future<void> pagination(index) async {
-    _productData = fetchOrders(sortt, widget.token, widget.id, index);
-    print("pdddataaa");
-    print(_productData);
+
+    // setState(() {
+    //
+    //
+    //   print("pdddataaa");
+    //   print(_productData);
+    //
+    //   // print("${_productData.length}abb");
+    //
+    // });
+    setState(() {
+      currentPage = index;
+      _productData = UserApi.getProducts(widget.token, widget.id, index);
+    });
   }
 
   void removeImage(int index) {
@@ -134,7 +144,8 @@ class _ManageProductsState extends State<ManageProducts> {
   Widget build(BuildContext context) {
     String token = widget.token;
     String id = widget.id;
-
+print("currentPage1234");
+print(currentPage);
     return Scaffold(
         appBar: AppBar(
           title: Container(
@@ -173,7 +184,7 @@ class _ManageProductsState extends State<ManageProducts> {
               ),
             ),
           ),
-          backgroundColor: Colors.lightBlue.shade100,
+          backgroundColor: Colors.lightBlue.shade300,
           iconTheme: IconThemeData(color: Colors.white),
         ),
         backgroundColor: Colors.white,
@@ -736,7 +747,7 @@ class _ManageProductsState extends State<ManageProducts> {
                     ),
                   ],
                 ),
-              );
+                  ),
             }
           },
         ));

@@ -16,7 +16,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   String newtoken = "";
   bool isRememberMe = false;
   bool isOtpTrue = false;
@@ -91,12 +91,12 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void getDeviceToken() {
-    _firebaseMessaging.getToken().then((token) {
-      print("Device Token: $token");
-      newtoken = token!;
-    });
-  }
+  // void getDeviceToken() {
+  //   _firebaseMessaging.getToken().then((token) {
+  //     print("Device Token: $token");
+  //     newtoken = token!;
+  //   });
+  // }
 
   Widget customTextField({String? title, String? hint, controller}) {
     return Column(
@@ -132,6 +132,13 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _timer.cancel();
+  }
+
   void startTimer() {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (_secondsRemaining == 0) {
@@ -147,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    getDeviceToken();
+    // getDeviceToken();
   }
 
   @override

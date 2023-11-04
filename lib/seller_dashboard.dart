@@ -1042,7 +1042,7 @@ class _SellerDashboardState extends State<SellerDashboard> {
         ),
         centerTitle: true,
         //backgroundColor: Colors.grey.shade200,
-        backgroundColor: Colors.blue.shade100,
+        backgroundColor: Colors.blue.shade300,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       backgroundColor: Colors.white,

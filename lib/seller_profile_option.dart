@@ -18,7 +18,7 @@ class profileOptions extends StatelessWidget {
             child: Text(
               'Profile Page',
             )),
-        backgroundColor: Color(0xFF08FFC8),
+        backgroundColor: Colors.blue.shade100,
       ),
       body: Container(
         width: double.infinity,

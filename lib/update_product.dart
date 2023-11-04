@@ -998,43 +998,42 @@ class _UpdateProductsState extends State<UpdateProducts> {
                           ),
                         ),
                       ),
-                      pCategory == 'Food'
-                          ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(
-                                      left: 20, right: 20, top: 25),
-                                  child: Text(
-                                    'Product Type (Veg/Non-veg,/in case if applicable)',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontFamily: 'Poppins',
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  margin: EdgeInsets.only(left: 20, right: 20),
-                                  child: DropdownButton(
-                                    value: pType,
-                                    icon: const Icon(Icons.keyboard_arrow_down),
-                                    items: items2.map((String items2) {
-                                      return DropdownMenuItem(
-                                        value: items2,
-                                        child: Text(items2),
-                                      );
-                                    }).toList(),
-                                    onChanged: (String? newValue) {
-                                      setState(() {
-                                        pType = newValue!;
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ],
-                            )
-                          : Container(),
+
+                      pCategory == 'Food'?
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(left: 20, right: 20, top: 25),
+                            child: const Text(
+                              'Product Type (Veg/Non-veg,/in case if applicable)',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontFamily: 'Poppins',
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(left: 20, right: 20),
+                            child: DropdownButton(
+                              value: pType,
+                              icon: const Icon(Icons.keyboard_arrow_down),
+                              items: items2.map((String items2) {
+                                return DropdownMenuItem(
+                                  value: items2,
+                                  child: Text(items2),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  pType = newValue!;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ):Container(),
                       Container(
                         margin: EdgeInsets.only(left: 20, right: 20, top: 25),
                         child: Text(

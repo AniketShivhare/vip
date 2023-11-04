@@ -6,6 +6,7 @@ class Categories {
 
   static List<String> categories = [],
       subCategories = [];
+  static int pindex=1;
 
   static Future<void> getAllCategory12() async {
     if (categories.length > 0) return;

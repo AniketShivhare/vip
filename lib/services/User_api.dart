@@ -5,12 +5,9 @@ import 'dart:core';
 
 import 'package:e_commerce/services/filterData.dart';
 import 'package:e_commerce/services/tokenId.dart';
-import 'package:flutter/material.dart';
 import '../apis/ProductModel.dart';
-import '../apis/Seller.dart';
 import '../apis/orderModel.dart';
 import 'package:http/http.dart' as http;
-
 import 'Categories.dart';
 
 class UserApi {
@@ -274,11 +271,32 @@ print(keyword);
   // }
 
   // get all orders API
-  static Future fetchOrderData() async {
+  static Future<List<Order>> fetchOrderData(filterr) async {
+print("abcddddd");
+    var url = "https://api.pehchankidukan.com/seller/${TokenId.id}/orders?orderStatus=$filterr";
+    final uri = Uri.parse(url);
+    final response = await http.get(
+        uri,
+        headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${TokenId.token}'
+        });
+    final body = response.body;
+    final productJson = jsonDecode(body);
 
-    // const url = "";
-    // final uri = Uri.parse(url);
-    // final response = await http.get(uri);
+    if (response.statusCode == 200) {
+      print("order get succesfull");
+
+    } else {
+      print('Failed to get order. Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+    }
+    print(productJson);
+    List<Order> orders = (productJson['allOrders'] as List<dynamic>?)
+        ?.map((e) => Order.fromJson(e as Map<String, dynamic>))
+        .toList() ?? [];
+    print(orders);
+    return orders;
     // final body = response.body;
     // final json = jsonDecode(body);
 
@@ -408,8 +426,9 @@ print(keyword);
         ?.map((e) => Product.fromJson(e as Map<String, dynamic>))
         .toList() ?? [];
     // print(products[products.length-2].images[0]);
-    // print(products.length);
+    print(products.length);
     // print("products[0]");
+    print(products);
     return products;
   }
 }

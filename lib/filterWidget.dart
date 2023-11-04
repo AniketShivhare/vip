@@ -76,12 +76,12 @@ class _FilterScreenState extends State<FilterScreen> {
     FilterOptions.minPrice = _minPrice;
     FilterOptions.maxPrice = _maxPrice;
 
-    Navigator.pushAndRemoveUntil(
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => MainDashboard(token: TokenId.token, id: TokenId.id, pageIndex: 0,sortt:""),
       ),
-          (route) => false, // This line clears the navigator stack
+          // This line clears the navigator stack
     );
   }
 
@@ -120,15 +120,14 @@ class _FilterScreenState extends State<FilterScreen> {
                   Expanded(
                     child: Text(
                       categories[index],
-                      maxLines: 2, // Display text in up to 2 lines
-                      overflow: TextOverflow.ellipsis, // Handle overflow with ellipsis
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   Radio<bool>(
                     value: isSelected,
                     groupValue: true,
-                    onChanged: (value) {
-                    },
+                    onChanged:null
                   ),
                 ],
               ),
@@ -140,9 +139,14 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
   Widget buildSubcategoryScreen() {
+    if(selectedCategories.length==0) {
+      return const Center(
+        child: Text('Select Category First'),
+      );
+    }
     return ok
         ? FutureBuilder<void>(
-      future: Future.delayed(const Duration(seconds: 2)),
+      future: Future.delayed(const Duration(seconds: 1)),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           return Container(

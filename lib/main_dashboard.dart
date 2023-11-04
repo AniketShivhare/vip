@@ -74,7 +74,7 @@ class _MainDashboardState extends State<MainDashboard> with TickerProviderStateM
         productDescription: '', productDetails: [], itemOptions: [],
       ),
       SellerDashboard(token: '', id: ''),
-      Orders(),
+      sellerFrontPage(),
       profileOptions(),
     ];
     return Scaffold(
