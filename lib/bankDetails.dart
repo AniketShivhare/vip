@@ -38,6 +38,7 @@ class BankDetailsForm extends StatefulWidget {
 class _BankDetailsFormState extends State<BankDetailsForm> {
 
   final _formkey = GlobalKey<FormState>();
+  final TextEditingController bankAccountHolderNameController = TextEditingController();
   final TextEditingController bankAccountController = TextEditingController();
   final TextEditingController ifscController = TextEditingController();
   final TextEditingController panController = TextEditingController();
@@ -194,10 +195,29 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                   ],
                 ),
                 TextFormField(
+                  controller: bankAccountHolderNameController,
+                  decoration: const InputDecoration(
+                    // labelText: 'Bank Account Number',
+                    hintText: 'Enter Bank account Holder Name',
+                  ),
+                  onChanged: (value){
+                    setState(() {
+                      _formkey.currentState?.validate();
+                    });
+                  },
+
+                  validator: (value){
+                    if(value!.isEmpty || value.length < 2){
+                      return 'Please enter bank account holder name';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
                   controller: bankAccountController,
                   decoration: const InputDecoration(
                     // labelText: 'Bank Account Number',
-                    hintText: 'Enter bank account number',
+                    hintText: 'Enter Bank Account Number',
                   ),
                   onChanged: (value){
                     setState(() {
@@ -216,7 +236,7 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                   controller: ifscController,
                   decoration: const InputDecoration(
                     // labelText: 'IFSC Code',
-                    hintText: 'Enter IFSC code',
+                    hintText: 'Enter IFSC Code',
                   ),
                   onChanged: (value){
                     setState(() {
@@ -243,7 +263,7 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                   controller: panController,
                   decoration: const InputDecoration(
                     // labelText: 'PAN Card Number',
-                    hintText: 'Enter PAN card number',
+                    hintText: 'Enter PAN Card Number',
                   ),
                   onChanged: (value){
                     setState(() {
@@ -271,7 +291,7 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                   controller: gstController,
                   decoration: const InputDecoration(
                     // labelText: 'GST Number (Optional)',
-                    hintText: 'Enter GST number (if applicable)',
+                    hintText: 'Enter GST Number (if applicable)',
                   ),
                   onChanged: (value){
                     setState(() {
@@ -290,7 +310,7 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                   controller: fssaiController,
                   decoration: const InputDecoration(
                     // labelText: 'FSSAI License (Optional)',
-                    hintText: 'Enter FSSAI license number (if applicable)',
+                    hintText: 'Enter FSSAI License Number (if applicable)',
                   ),
                   onChanged: (value){
                     setState(() {
@@ -314,7 +334,7 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                   controller: fssaiExpiryController,
                   decoration: const InputDecoration(
                     // labelText: 'FSSAI License Expiry Date',
-                    hintText: 'Enter FSSAI license Expiry Date',
+                    hintText: 'Enter FSSAI License Expiry Date',
                   ),
 
                   onTap: () async {
@@ -348,31 +368,6 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
 
                 ),
 
-                // ElevatedButton(onPressed: () { date_picker();},
-                //   child: Text(
-                //     'FSSAI License Expiry Date',
-                //     style: TextStyle(color: Colors.blue, fontSize: 20.0),
-                //   ),
-                // ),
-
-                // ElevatedButton(
-                //   child: Text("open picker dialog"),
-                //   onPressed: () async {
-                //     var datePicked = await DatePicker.showSimpleDatePicker(
-                //       context,
-                //       initialDate: DateTime(2020),
-                //       firstDate: DateTime(2020),
-                //       lastDate: DateTime(2090),
-                //       dateFormat: "dd-MMMM-yyyy",
-                //       locale: DateTimePickerLocale.en_us,
-                //       looping: true,
-                //     );
-                //
-                //     final snackBar =
-                //     SnackBar(content: Text("Date Picked $datePicked"));
-                //     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                //   },
-                // ),
 
                 SizedBox(height: 30,),
 

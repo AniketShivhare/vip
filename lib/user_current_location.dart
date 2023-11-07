@@ -17,6 +17,7 @@ class _GetUserCurrentLocationScreenState extends State<GetUserCurrentLocationScr
   bool _isPermissionGranted = false;
 
 
+
   final Completer<GoogleMapController> _controller = Completer();
 
   static const CameraPosition _kGooglePlex = CameraPosition(
@@ -109,6 +110,7 @@ class _GetUserCurrentLocationScreenState extends State<GetUserCurrentLocationScr
       }
     } catch (e) {
       await showDialog(context: context, builder:(context) =>LocationPermissionDialog(),);
+      // print(_isopen);
       if(_isopen == false)
         return await getUserCurrentLocation();
       // print('Error getting location: $e');

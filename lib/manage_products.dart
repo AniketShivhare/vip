@@ -22,13 +22,13 @@ class ManageProducts extends StatefulWidget {
   final sortt;
   const ManageProducts(
       {Key? key,
-      required this.token,
-      required this.id,
-      required this.selectedcategories,
-      required this.selectedsubcategories,
-      required this.selectedminPrice,
-      required this.selectedmaxPrice,
-      required this.sortt,})
+        required this.token,
+        required this.id,
+        required this.selectedcategories,
+        required this.selectedsubcategories,
+        required this.selectedminPrice,
+        required this.selectedmaxPrice,
+        required this.sortt,})
       : super(key: key);
 
   @override
@@ -146,8 +146,8 @@ class _ManageProductsState extends State<ManageProducts> {
   Widget build(BuildContext context) {
     String token = widget.token;
     String id = widget.id;
-print("currentPage1234");
-print(currentPage);
+    print("currentPage1234");
+    print(currentPage);
     return Scaffold(
         appBar: AppBar(
           title: Container(
@@ -228,13 +228,13 @@ print(currentPage);
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius:
-                                          BorderRadius.all(Radius.circular(30)),
+                                      BorderRadius.all(Radius.circular(30)),
                                       border: Border.all(
                                           color: Colors.black, width: 1),
                                       boxShadow: [
                                         BoxShadow(
                                           color:
-                                              Colors.black38.withOpacity(0.5),
+                                          Colors.black38.withOpacity(0.5),
                                           blurRadius: 6,
                                         ),
                                       ],
@@ -274,7 +274,7 @@ print(currentPage);
                               child: Container(
                                 height: 50,
                                 margin:
-                                    EdgeInsets.only(left: 2, right: 5, top: 5),
+                                EdgeInsets.only(left: 2, right: 5, top: 5),
                                 child: Align(
                                   alignment: Alignment.topLeft,
                                   child: FlutterPopupMenuButton(
@@ -360,7 +360,7 @@ print(currentPage);
                                                   id,
                                                   currentPage);
                                               sortt =
-                                                  "-productDetails.mrpPrice";
+                                              "-productDetails.mrpPrice";
                                             });
                                           },
                                           closeOnItemClick: true,
@@ -483,7 +483,7 @@ print(currentPage);
                             } else {
                               int fullStars = prating.floor();
                               double remaining =
-                                  (prating - fullStars) as double;
+                              (prating - fullStars) as double;
 
                               starRating = '⭐' * fullStars;
                             }
@@ -508,58 +508,65 @@ print(currentPage);
                                                       decoration: BoxDecoration(
                                                           color: Colors.white,
                                                           borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          10))),
+                                                          BorderRadius.all(
+                                                              Radius
+                                                                  .circular(
+                                                                  10))),
                                                       height: 170,
                                                       padding:
-                                                          EdgeInsets.all(10),
+                                                      EdgeInsets.all(10),
                                                       child: Column(
                                                         children: [
                                                           Expanded(
                                                             child: Row(
                                                               mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceBetween,
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
                                                               children: [
                                                                 Transform.scale(
                                                                   scale: 0.7,
                                                                   child:
-                                                                      CupertinoSwitch(
+                                                                  CupertinoSwitch(
                                                                     activeColor:
-                                                                        Colors
-                                                                            .green,
+                                                                    Colors
+                                                                        .green,
                                                                     value: prod
                                                                         .inStock,
-                                                                    onChanged: (bool
+                                                                    onChanged: (
+                                                                        bool
                                                                         value) {
-                                                                      s = value ==
-                                                                              true
+                                                                      s =
+                                                                      value ==
+                                                                          true
                                                                           ? 'In stock'
                                                                           : 'Out of stock';
                                                                       setState(
-                                                                          () {
-                                                                        prod.inStock =
-                                                                            value;
-                                                                        updateStock(
-                                                                            value,
-                                                                            prod.id);
-                                                                      });
+                                                                              () {
+                                                                            prod
+                                                                                .inStock =
+                                                                                value;
+                                                                            updateStock(
+                                                                                value,
+                                                                                prod
+                                                                                    .id);
+                                                                          });
                                                                     },
                                                                   ),
                                                                 ),
                                                                 Expanded(
                                                                     flex: 2,
                                                                     child:
-                                                                        Container(
+                                                                    Container(
                                                                       child: Text(
                                                                           s,
                                                                           style: TextStyle(
-                                                                              color: Colors.green.shade900,
+                                                                              color: Colors
+                                                                                  .green
+                                                                                  .shade900,
                                                                               fontSize: 11,
                                                                               fontFamily: 'Poppins',
-                                                                              fontWeight: FontWeight.bold)),
+                                                                              fontWeight: FontWeight
+                                                                                  .bold)),
                                                                     )),
                                                                 IconButton(
                                                                   icon: Icon(
@@ -573,7 +580,8 @@ print(currentPage);
                                                                   onPressed:
                                                                       () {
                                                                     showDeleteConfirmationDialog(
-                                                                        prod.id);
+                                                                        prod
+                                                                            .id);
                                                                   },
                                                                 ),
                                                               ],
@@ -586,124 +594,182 @@ print(currentPage);
                                                             flex: 3,
                                                             child: Row(
                                                               mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceBetween,
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
                                                               children: [
                                                                 Expanded(
                                                                     child:
-                                                                        Container(
-                                                                  margin: EdgeInsets
-                                                                      .only(
+                                                                    Container(
+                                                                      margin: EdgeInsets
+                                                                          .only(
                                                                           right:
-                                                                              15),
-                                                                  child: (prod.images
-                                                                              .length >
+                                                                          15),
+                                                                      child: (prod
+                                                                          .images
+                                                                          .length >
                                                                           0)
-                                                                      ? Image
+                                                                          ? Image
                                                                           .network(
-                                                                          prod.images[
-                                                                              0],
-                                                                          height:
-                                                                              150,
-                                                                          width:
-                                                                              80,
-                                                                          fit: BoxFit
-                                                                              .fill,
-                                                                        )
-                                                                      : Image.asset(
+                                                                        prod
+                                                                            .images[
+                                                                        0],
+                                                                        height:
+                                                                        150,
+                                                                        width:
+                                                                        80,
+                                                                        fit: BoxFit
+                                                                            .fill,
+                                                                      )
+                                                                          : Image
+                                                                          .asset(
                                                                           'assets/images/a1.jpg',
                                                                           height:
-                                                                              150,
+                                                                          150,
                                                                           width:
-                                                                              80),
-                                                                )),
+                                                                          80),
+                                                                    )),
                                                                 Expanded(
                                                                   flex: 2,
                                                                   child:
-                                                                      Container(
+                                                                  Container(
                                                                     child:
-                                                                        Column(
+                                                                    Column(
                                                                       mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .start,
+                                                                      MainAxisAlignment
+                                                                          .start,
                                                                       crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
+                                                                      CrossAxisAlignment
+                                                                          .start,
                                                                       children: [
                                                                         Expanded(
                                                                             child:
-                                                                                Container(
-                                                                          // margin: EdgeInsets.only(left: 20),
-                                                                          child: Text(
-                                                                              prod.productName,
-                                                                              style: TextStyle(color: Colors.black, fontSize: 19, fontFamily: 'comfart', fontWeight: FontWeight.bold)),
-                                                                        )),
+                                                                            Container(
+                                                                              // margin: EdgeInsets.only(left: 20),
+                                                                              child: Text(
+                                                                                  prod
+                                                                                      .productName,
+                                                                                  style: TextStyle(
+                                                                                      color: Colors
+                                                                                          .black,
+                                                                                      fontSize: 19,
+                                                                                      fontFamily: 'comfart',
+                                                                                      fontWeight: FontWeight
+                                                                                          .bold)),
+                                                                            )),
                                                                         Expanded(
                                                                           child:
-                                                                              Row(
+                                                                          Row(
                                                                             children: [
-                                                                              Text('₹${prod.offerPrice.toString()}', style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'comfort', fontWeight: FontWeight.bold)),
+                                                                              Text(
+                                                                                  '₹${prod
+                                                                                      .offerPrice
+                                                                                      .toString()}',
+                                                                                  style: TextStyle(
+                                                                                      color: Colors
+                                                                                          .black,
+                                                                                      fontSize: 16,
+                                                                                      fontFamily: 'comfort',
+                                                                                      fontWeight: FontWeight
+                                                                                          .bold)),
                                                                               SizedBox(
                                                                                 width: 10,
                                                                               ),
                                                                               Text(
                                                                                   'MRP '
-                                                                                  '₹${prod.mrpPrice.toString()}'
-                                                                                  '${860}',
-                                                                                  style: TextStyle(color: Colors.black, fontSize: 14, fontFamily: 'comfort', decoration: TextDecoration.lineThrough)),
+                                                                                      '₹${prod
+                                                                                      .mrpPrice
+                                                                                      .toString()}'
+                                                                                      '${860}',
+                                                                                  style: TextStyle(
+                                                                                      color: Colors
+                                                                                          .black,
+                                                                                      fontSize: 14,
+                                                                                      fontFamily: 'comfort',
+                                                                                      decoration: TextDecoration
+                                                                                          .lineThrough)),
                                                                             ],
                                                                           ),
                                                                         ),
                                                                         Expanded(
                                                                           child:
-                                                                              Container(
+                                                                          Container(
                                                                             width:
-                                                                                100,
+                                                                            100,
                                                                             height:
-                                                                                18,
+                                                                            18,
                                                                             decoration: const BoxDecoration(
-                                                                                //  border: Border.all(color: Colors.black),
-                                                                                borderRadius: BorderRadius.all(Radius.circular(5))),
+                                                                              //  border: Border.all(color: Colors.black),
+                                                                                borderRadius: BorderRadius
+                                                                                    .all(
+                                                                                    Radius
+                                                                                        .circular(
+                                                                                        5))),
                                                                             //   margin: EdgeInsets.only(right: 20),
                                                                             child:
-                                                                                Text(starRating, style: const TextStyle(color: Colors.black, fontSize: 13.5, fontFamily: 'comfort', fontWeight: FontWeight.bold)),
+                                                                            Text(
+                                                                                starRating,
+                                                                                style: const TextStyle(
+                                                                                    color: Colors
+                                                                                        .black,
+                                                                                    fontSize: 13.5,
+                                                                                    fontFamily: 'comfort',
+                                                                                    fontWeight: FontWeight
+                                                                                        .bold)),
                                                                           ),
                                                                         ),
                                                                         Expanded(
                                                                           child:
-                                                                              Container(
+                                                                          Container(
                                                                             width:
-                                                                                220,
+                                                                            220,
                                                                             child:
-                                                                                MaterialButton(
-                                                                              color: Colors.lightBlue.shade400,
+                                                                            MaterialButton(
+                                                                              color: Colors
+                                                                                  .lightBlue
+                                                                                  .shade400,
                                                                               onPressed: () {
-                                                                                Navigator.push(
+                                                                                Navigator
+                                                                                    .push(
                                                                                     context,
                                                                                     MaterialPageRoute(
-                                                                                        builder: (context) => UpdateProducts(
-                                                                                              pid: prod.id,
+                                                                                        builder: (
+                                                                                            context) =>
+                                                                                            UpdateProducts(
+                                                                                              pid: prod
+                                                                                                  .id,
                                                                                               token: token,
                                                                                               id: id,
-                                                                                              productName: prod.productName,
+                                                                                              productName: prod
+                                                                                                  .productName,
                                                                                               // productImage: prod!
                                                                                               //     .image
                                                                                               //     .toString(),
-                                                                                              productCategory: prod.category,
-                                                                                              productSubCategory1: prod.subCategory1,
-                                                                                              productSubCategory2: prod.subCategory2,
+                                                                                              productCategory: prod
+                                                                                                  .category,
+                                                                                              productSubCategory1: prod
+                                                                                                  .subCategory1,
+                                                                                              productSubCategory2: prod
+                                                                                                  .subCategory2,
 
-                                                                                              quantityPricing: prod.productDetails,
-                                                                                              stockTF: prod.inStock,
+                                                                                              quantityPricing: prod
+                                                                                                  .productDetails,
+                                                                                              stockTF: prod
+                                                                                                  .inStock,
                                                                                               stockIO: s,
                                                                                               // productType: prod!
                                                                                               //     .productType,
-                                                                                              description: prod.description,
+                                                                                              description: prod
+                                                                                                  .description,
                                                                                             )));
                                                                               },
                                                                               child: Text(
                                                                                 'Edit',
-                                                                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                                                                                style: TextStyle(
+                                                                                    color: Colors
+                                                                                        .white,
+                                                                                    fontWeight: FontWeight
+                                                                                        .bold,
+                                                                                    fontSize: 16),
                                                                               ),
                                                                             ),
                                                                           ),
@@ -765,7 +831,7 @@ print(currentPage);
                   ],
                 ),
               );
-            }
+          }
           },
         ));
   }

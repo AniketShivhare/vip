@@ -775,7 +775,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
                               Container(
-                                height: 150,
+                                height: 120,
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: GridView.builder(
@@ -788,22 +788,27 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                       itemBuilder:
                                           (BuildContext context, int index) {
                                         return Stack(
+
                                           children: [
-                                            Hero(
-                                              tag: 'image_$index',
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  showImageExpansion(index);
-                                                },
-                                                child: Image.network(
-                                                  imgList[index],
-                                                  fit: BoxFit.cover,
+                                            Container(
+                                              height:100,
+                                              width: 100,
+                                              child: Hero(
+                                                tag: 'image_$index',
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    showImageExpansion(index);
+                                                  },
+                                                  child: Image.network(
+                                                    imgList[index],
+                                                    fit: BoxFit.cover,
+                                                  ),
                                                 ),
                                               ),
                                             ),
                                             Positioned(
-                                              top: 0,
-                                              right: 0,
+                                              top: -10,
+                                              right: -5,
                                               child: IconButton(
                                                 icon: Icon(
                                                   Icons.cancel_outlined,
@@ -866,8 +871,8 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                   Expanded(
                                     flex: 2,
                                     child: Container(
-                                      height: 150,
-                                      width: 150,
+                                      height: 120,
+                                      width: 100,
                                       child: Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: GridView.builder(
@@ -881,23 +886,27 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                                 int index) {
                                               return Stack(
                                                 children: [
-                                                  Hero(
-                                                    tag: 'image_$index',
-                                                    child: GestureDetector(
-                                                        onTap: () {
-                                                          showCameraImageExpansion(
-                                                              index);
-                                                        },
-                                                        child: Image.file(
-                                                          File(imageFileList![
-                                                                  index]
-                                                              .path),
-                                                          fit: BoxFit.cover,
-                                                        )),
+                                                  Container(
+                                                    height:100,
+                                                    width: 100,
+                                                    child: Hero(
+                                                      tag: 'image_$index',
+                                                      child: GestureDetector(
+                                                          onTap: () {
+                                                            showCameraImageExpansion(
+                                                                index);
+                                                          },
+                                                          child: Image.file(
+                                                            File(imageFileList![
+                                                                    index]
+                                                                .path),
+                                                            fit: BoxFit.cover,
+                                                          )),
+                                                    ),
                                                   ),
                                                   Positioned(
-                                                    top: 0,
-                                                    right: 0,
+                                                    top: -10,
+                                                    right: -5,
                                                     child: IconButton(
                                                       icon: Icon(
                                                         Icons.cancel_outlined,

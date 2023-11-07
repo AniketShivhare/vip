@@ -1,6 +1,8 @@
 
+import 'package:e_commerce/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'main_dashboard.dart';
 
@@ -35,6 +37,8 @@ class _UploadImagesState extends State<UploadImages> {
   XFile? gstImage;
   XFile? fssaiImage;
   XFile? cancelledCheckImage;
+  XFile? shopImage;
+  XFile? shopLogo;
 
   Future<void> _getImage() async {
     final ImagePicker _picker = ImagePicker();
@@ -43,6 +47,32 @@ class _UploadImagesState extends State<UploadImages> {
     if (pickedFile != null) {
       setState(() {
         ownerPhoto = pickedFile;
+      });
+    } else {
+      // User canceled image selection
+    }
+  }
+
+  Future<void> _getShopImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        shopImage = pickedFile;
+      });
+    } else {
+      // User canceled image selection
+    }
+  }
+
+  Future<void> _getShopLogo() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        shopLogo = pickedFile;
       });
     } else {
       // User canceled image selection
@@ -131,7 +161,33 @@ class _UploadImagesState extends State<UploadImages> {
                   ],
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _getShopImage,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    if (shopImage != null)
+                      Icon(Icons.check, color: Colors.green),
+                    SizedBox(width: 10,),
+                    Text('Upload Shop Image'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _getShopLogo,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    if (shopLogo != null)
+                      Icon(Icons.check, color: Colors.green),
+                    SizedBox(width: 10,),
+                    Text('Upload Shop Logo'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _getGSTImage,
                 child: Row(
@@ -145,7 +201,7 @@ class _UploadImagesState extends State<UploadImages> {
                   ],
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _getFSSAIImage,
                 child: Row(
@@ -159,7 +215,7 @@ class _UploadImagesState extends State<UploadImages> {
                   ],
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _getCancelledCheque,
                 child: Row(
@@ -173,14 +229,15 @@ class _UploadImagesState extends State<UploadImages> {
                   ],
                 ),
               ),
-              const SizedBox(height: 70),
+              const SizedBox(height: 50),
               Center(
                 child: Container(
 
                   width: 200,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async{
 
+                      saveData();
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
@@ -207,5 +264,12 @@ class _UploadImagesState extends State<UploadImages> {
         ),
       ),
     );
+  }
+  Future<void> saveData() async{
+    var sharedPref = await SharedPreferences.getInstance();
+    sharedPref.setBool(SplashScreenState.KEYLOGIN, true);
+    sharedPref.setString(SplashScreenState.KEYTOKEN, widget.token);
+    sharedPref.setString(SplashScreenState.KEYID, widget.id);
+
   }
 }

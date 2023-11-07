@@ -437,15 +437,35 @@ class _SellerRegistrationPageState extends State<Regest> {
 
                 const SizedBox(height: 32),
 
-                Container(
-                  child: ElevatedButton(
-                    child: Text('current location'),
-                    onPressed: ()=> GetUserCurrentLocationScreen(),
-                    style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(Colors.grey.shade300)
+                ElevatedButton(onPressed: (){
+                  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context){
+                    return const GetUserCurrentLocationScreen();
+                  }));
+                }, child:
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Save My current location"),
+                    const Text(
+                      '*',
+                      style: TextStyle(fontSize: 18,color: Colors.red),
                     ),
+                  ],
+                ),
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.grey.shade300)
                   ),
                 ),
+
+                // Container(
+                //   child: ElevatedButton(
+                //     child: Text('current location'),
+                //     onPressed: ()=> GetUserCurrentLocationScreen(),
+                //     style: ButtonStyle(
+                //         backgroundColor: MaterialStateProperty.all<Color>(Colors.grey.shade300)
+                //     ),
+                //   ),
+                // ),
 
                 // ElevatedButton(onPressed: (){
                 //   // Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context){
@@ -518,7 +538,17 @@ class _SellerRegistrationPageState extends State<Regest> {
                 const SizedBox(height: 32),
                 Container(
                   child: ElevatedButton(
-                    child: Text('Shop Time'),
+                    child:
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Shop Time'),
+                        const Text(
+                          '*',
+                          style: TextStyle(fontSize: 18,color: Colors.red),
+                        ),
+                      ],
+                    ),
                     onPressed: (){
                       showDialog(context: context,
                           barrierDismissible: false,

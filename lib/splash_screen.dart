@@ -1,17 +1,26 @@
 // import 'package:e_commerce/app/screens/user_login_screen/userLoginScreen.dart';
 import 'package:e_commerce/seller_login.dart';
+import 'package:e_commerce/services/tokenId.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'main_dashboard.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  SplashScreenState createState() => SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class SplashScreenState extends State<SplashScreen> {
+
+  static const String KEYLOGIN = "login";
+  static const String KEYTOKEN = "keytoken";
+  static const String KEYID = "keyid";
+
   bool isRememberMe = false;
   late Animation<double> animation;
   late AnimationController controller;
@@ -19,13 +28,14 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const LoginScreen(),
-          ));
-    });
+    // Future.delayed(const Duration(seconds: 2), () {
+    //   Navigator.pushReplacement(
+    //       context,
+    //       MaterialPageRoute(
+    //         builder: (context) => const LoginScreen(),
+    //       ));
+    // });
+    whereToGo();
   }
 
   @override
@@ -70,5 +80,51 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
       ),
     );
+  }
+  void whereToGo() async {
+
+    // String keyTo="";
+    // String keyI="";
+    var sharedPref = await SharedPreferences.getInstance();
+
+    var isLoggedIn = sharedPref.getBool(KEYLOGIN);
+
+    String keyToken;
+    keyToken = sharedPref.getString(KEYTOKEN) ?? "tt";
+
+    String keyId;
+    keyId = sharedPref.getString(KEYID) ?? "tt";
+    TokenId.token=keyToken;
+    //
+    TokenId.id=keyId;
+
+
+    Future.delayed(const Duration(seconds: 2), () {
+
+      print(KEYTOKEN);
+      print(KEYID);
+      if(isLoggedIn!=null) {
+        if(isLoggedIn) {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>  MainDashboard(token: keyToken!, id: keyId!, pageIndex: 2,sortt:""),
+              ));
+        } else{
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const LoginScreen(),
+              ));
+        }
+      } else{
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const LoginScreen(),
+            ));
+      }
+
+    });
   }
 }
