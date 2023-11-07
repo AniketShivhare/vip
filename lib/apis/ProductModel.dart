@@ -1,11 +1,10 @@
 class QuantityPricing {
-  int offerPrice;
+  double offerPrice;
   String quantity;
   double mrpPrice;
   String unit;
 
   QuantityPricing({
-
     required this.offerPrice,
     required this.quantity,
     required this.mrpPrice,
@@ -14,10 +13,10 @@ class QuantityPricing {
 
   factory QuantityPricing.fromJson(Map<String, dynamic> json) {
     return QuantityPricing(
-      offerPrice: json['offerPrice'],
-      quantity: json['quantity'],
-      unit: json['unit'],
-      mrpPrice: json['mrpPrice'].toDouble(),
+      offerPrice: (json['offerPrice']!=null) ? json['offerPrice'].toDouble() : 0.0,
+      quantity: (json['quantity']!=null)?  json['quantity'].toString() : '',
+      unit: json['unit'] ?? '',
+      mrpPrice: (json['mrpPrice']!=null) ? json['mrpPrice'].toDouble() : 0.0,
     );
   }
 
@@ -40,14 +39,14 @@ class Product {
   String subCategory2;
   List<String> images;
   String description;
-  String quantityType;
+  // String quantityType;
   double mrpPrice;
   double offerPrice;
-  String productType;
-  bool isReturnable;
-  bool replacement;
-  int returnPeriod;
-  int replacementPeriod;
+  // String productType;
+  // bool isReturnable;
+  // bool replacement;
+  // String returnPeriod;
+  // String replacementPeriod;
   bool inStock;
   List<QuantityPricing> productDetails;
 
@@ -60,14 +59,14 @@ class Product {
     required this.subCategory2,
     required this.images,
     required this.description,
-    required this.quantityType,
+    // required this.quantityType,
     required this.mrpPrice,
     required this.offerPrice,
-    required this.productType,
-    required this.isReturnable,
-    required this.replacement,
-    required this.returnPeriod,
-    required this.replacementPeriod,
+    // required this.productType,
+    // required this.isReturnable,
+    // required this.replacement,
+    // required this.returnPeriod,
+    // required this.replacementPeriod,
     required this.inStock,
     required this.productDetails,
   });
@@ -99,16 +98,16 @@ class Product {
       category: json['category'] ?? "",
       images: json['images'] != null ? List<String>.from(json['images']) : [],
       description: json['description'] ?? "",
-      quantityType: json['quantityType'] ?? "",
-      mrpPrice: (json['mrpPrice'] as num?)?.toDouble() ?? 0.0,
-      offerPrice: (json['offerPrice'] as num?)?.toDouble() ?? 0.0,
-      productType: json['productType'] ?? "",
-      isReturnable: json['returnReplacement'] != null ? json['returnReplacement']['isReturnable'] ?? false : false,
-      replacement: json['returnReplacement'] != null ? json['returnReplacement']['replacement'] ?? false : false,
-      returnPeriod: json['returnReplacement'] != null ? json['returnReplacement']['returnPeriod'] ?? 0 : 0,
-      replacementPeriod: json['returnReplacement'] != null ? json['returnReplacement']['replacementPeriod'] ?? 0 : 0,
-      inStock: json['inStock'] ?? false,
-      productDetails: json['productDetails'] != null
+      // quantityType: json['quantityType'] ?? "",
+      mrpPrice: json['mrpPrice']!=null ? (json['mrpPrice'] as num?)?.toDouble() ?? 0.0: 0.0,
+      offerPrice: json['offerPrice']!=null ? (json['offerPrice'] as num?)?.toDouble() ?? 0.0: 0.0,
+      // productType: json['productType'] ?? "",
+      // isReturnable: json['returnReplacement'] != null ? json['returnReplacement']['isReturnable'] ?? false : false,
+      // replacement: json['returnReplacement'] != null ? json['returnReplacement']['replacement'] ?? false : false,
+      // returnPeriod: json['returnPeriod'] != null ? json['returnPeriod'] ?? "" : "",
+      // replacementPeriod: json['replacementPeriod'] != null ? json['replacementPeriod'] ?? "" : "",
+      inStock:  json['inStock'] ?? false,
+      productDetails: json['productDetails'].length>0
           ? List<QuantityPricing>.from(json['productDetails'].map((x) => QuantityPricing.fromJson(x)))
           : [],
       subCategory1: json['subCategory1'] ?? "",

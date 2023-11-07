@@ -82,7 +82,8 @@ class UserApi {
 
 
   static Future<void> getAllCategory() async {
-    if(Categories.categories.length>0)return;
+    // if(Categories.categories.length>0)
+    return;
     print("getallcategoryforfilter called");
     final apiUrl = "https://api.pehchankidukan.com/seller/category";
     final response = await http.get(
@@ -151,16 +152,27 @@ print(keyword);
 
     // if (response.statusCode == 201) {
       final Map<String, dynamic> responseBody = jsonDecode(response.body);
-      print(responseBody['status']);
+      print("gjfdcchvjb");
+      print(responseBody['data']);
       print(responseBody['length']);
-      print(responseBody['message']);
-    List<Product> products = (responseBody['data'] as List<dynamic>?)
-        ?.map((e) => Product.fromJson(e as Map<String, dynamic>))
-        .toList() ?? [];
+      // print(responseBody['message']);
+  List<Product> products=[];
+    try{
+      products = (responseBody['data'] as List<dynamic>?)
+          ?.map((e) => Product.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [];
+      print(products.length);
+      print(products[1].productName);
+      return products;
+    }
+    catch (e){
+      print("errorrr");
+      print(e);
+    }
     // print(products[0].productName);
-    // print(products[1].productName);
-    return products;
-      return responseBody['data'];
+    // print(products[0].productName);
+
+      return products;
     //
     // } else {
     //   throw Exception('Failed to retrieve seller products: ${response.reasonPhrase}');
@@ -269,37 +281,35 @@ print(keyword);
   //   Seller seller = Seller.fromJson(json);
   //   return seller;
   // }
-
   // get all orders API
-  static Future<List<Order>> fetchOrderData(filterr) async {
-print("abcddddd");
-    var url = "https://api.pehchankidukan.com/seller/${TokenId.id}/orders?orderStatus=$filterr";
-    final uri = Uri.parse(url);
-    final response = await http.get(
+  static Future<void> fetchOrderData(filter) async {
+    // final orderStreamController = StreamController<List<Order>>();
+    try {
+      var url = "https://api.pehchankidukan.com/seller/${TokenId.id}/orders?orderStatus=$filter";
+      final uri = Uri.parse(url);
+      final response = await http.get(
         uri,
         headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${TokenId.token}'
-        });
-    final body = response.body;
-    final productJson = jsonDecode(body);
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${TokenId.token}'
+        },
+      );
 
-    if (response.statusCode == 200) {
-      print("order get succesfull");
-
-    } else {
-      print('Failed to get order. Status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      if (response.statusCode == 200) {
+        final body = response.body;
+        final productJson = jsonDecode(body);
+        List<Order> orders = (productJson['allOrders'] as List<dynamic>?)
+            ?.map((e) => Order.fromJson(e as Map<String, dynamic>))
+            .toList() ?? [];
+        // orderStreamController.add(orders); // Emit the new orders to the stream
+        print("Order get successfulll");
+      } else {
+        print('Failed to get orders. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      print('Error while fetching orders: $e');
     }
-    print(productJson);
-    List<Order> orders = (productJson['allOrders'] as List<dynamic>?)
-        ?.map((e) => Order.fromJson(e as Map<String, dynamic>))
-        .toList() ?? [];
-    print(orders);
-    return orders;
-    // final body = response.body;
-    // final json = jsonDecode(body);
-
   }
 
 
@@ -426,8 +436,9 @@ print("abcddddd");
         ?.map((e) => Product.fromJson(e as Map<String, dynamic>))
         .toList() ?? [];
     // print(products[products.length-2].images[0]);
+
+    print("products[0]");
     print(products.length);
-    // print("products[0]");
     print(products);
     return products;
   }

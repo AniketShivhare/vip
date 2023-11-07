@@ -10,10 +10,10 @@ import 'main.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ItemOption {
-  String price;
+  double price;
   String quantity;
   String unit;
-  String offerPrice;
+  double offerPrice;
 
   ItemOption({
     required this.price,
@@ -51,10 +51,10 @@ class PriceQuantitySpinnerRow extends StatefulWidget {
 
 class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
   ItemOption newItem = ItemOption(
-    price: '',
-    quantity: '',
+    price: 0,
+    quantity: "0",
     unit: 'kg',
-    offerPrice: '',
+    offerPrice: 0,
   );
   List<String> dropDownItems = [
     "kg",
@@ -83,10 +83,10 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
   void addOption() {
     widget.onOptionAdded(newItem);
     newItem = ItemOption(
-      price: '',
-      quantity: '',
+      price: 0,
+      quantity: "0",
       unit: 'kg',
-      offerPrice: '',
+      offerPrice: 0,
     );
   }
 
@@ -107,7 +107,7 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                           child: TextFormField(
                             keyboardType: TextInputType.number,
                             controller:
-                                TextEditingController(text: option.quantity),
+                                TextEditingController(text: option.quantity.toString()),
                             onChanged: (value) => option.quantity = value,
                             decoration: InputDecoration(
                               hintText: 'Quantity',
@@ -171,8 +171,8 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                           child: TextFormField(
                             keyboardType: TextInputType.number,
                             controller:
-                                TextEditingController(text: option.price),
-                            onChanged: (value) => option.price = value,
+                                TextEditingController(text: option.price.toString()),
+                            onChanged: (value) => option.price = value as double,
                             decoration: InputDecoration(
                               hintText: 'Price (In Rs.)',
                               label: const Text('Price (In Rs.)'),
@@ -195,8 +195,8 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                           child: TextFormField(
                             keyboardType: TextInputType.number,
                             controller:
-                                TextEditingController(text: option.offerPrice),
-                            onChanged: (value) => option.offerPrice = value,
+                                TextEditingController(text: option.offerPrice.toString()),
+                            onChanged: (value) => option.offerPrice = value as double,
                             decoration: InputDecoration(
                               hintText: 'Offer Price',
                               label: const Text('Offer Price'),
@@ -546,10 +546,10 @@ class _AddProductState extends State<AddProduct> {
   void initState() {
     valueUpdate(widget.productName, widget.productDescription);
     itemOptions.add(ItemOption(
-      price: '',
-      quantity: '',
+      price: 0,
+      quantity: "0",
       unit: 'kg',
-      offerPrice: '',
+      offerPrice: 0,
     ));
   }
 

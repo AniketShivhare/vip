@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:e_commerce/filterWidget.dart';
+import 'package:e_commerce/services/Categories.dart';
 import 'package:e_commerce/services/filterData.dart';
 import 'package:e_commerce/services/tokenId.dart';
 import 'package:e_commerce/update_product.dart';
@@ -46,7 +47,7 @@ class _ManageProductsState extends State<ManageProducts> {
   String response1 = "";
   Future<List<Product>>? _productData;
   int numberOfPages = 8;
-  late int currentPage = 1;
+  int currentPage = 1;
 
   Future<void> showDeleteConfirmationDialog(String id) async {
     print("idddd12");
@@ -93,17 +94,18 @@ class _ManageProductsState extends State<ManageProducts> {
         _productData =
             fetchOrders("created_at", TokenId.token, TokenId.id, currentPage);
       });
-      return;
+      print(_productData);
     } else if (query.length < 3) {
       return;
     } else {
       setState(() {
         _productData = UserApi.searchProducts(query, TokenId.token, TokenId.id);
       });
+      print(_productData);
     }
   }
 
-  Future<void> pagination(index) async {
+  Future<void> pagination() async {
 
     // setState(() {
     //
@@ -114,10 +116,10 @@ class _ManageProductsState extends State<ManageProducts> {
     //   // print("${_productData.length}abb");
     //
     // });
-    setState(() {
-      currentPage = index;
-      _productData = UserApi.getProducts(widget.token, widget.id, index);
-    });
+    // setState(() {
+    //   currentPage = index;
+      _productData = UserApi.getProducts(widget.token, widget.id, Categories.pindex);
+    // });
   }
 
   void removeImage(int index) {
@@ -730,15 +732,30 @@ print(currentPage);
                             );
                           },
                         ),
+                        // NumberPaginator(
+                        //   numberPages: numberOfPages,
+                        //   onPageChange: (index) {
+                        //     print("index is $index");
+                        //     index = index + 1;
+                        //     setState(() {
+                        //       currentPage = index;
+                        //       pagination(index);
+                        //     });
+                        //     print("Jfdsjadgbjfvbsdg");
+                        //   },
+                        // ),
                         NumberPaginator(
                           numberPages: numberOfPages,
-                          onPageChange: (index) {
+                          onPageChange: (index)  {
+                            index = index + 1; // Convert to 1-based index
                             print("index is $index");
-                            index = index + 1;
+                            Categories.pindex=index;
+                            pagination();
                             setState(() {
-                              currentPage = index;
-                              pagination(index);
+                              currentPage = index - 1; // Convert back to 0-based index
+                               // Pass the 1-based index to the function
                             });
+
                             print("Jfdsjadgbjfvbsdg");
                           },
                         ),
@@ -747,7 +764,7 @@ print(currentPage);
                     ),
                   ],
                 ),
-                  ),
+              );
             }
           },
         ));

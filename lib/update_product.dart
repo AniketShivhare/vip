@@ -34,10 +34,10 @@ class PriceQuantitySpinnerRow extends StatefulWidget {
 
 class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
   ItemOption newItem = ItemOption(
-    price: '',
-    quantity: '',
+    price: 0,
+    quantity: "0",
     unit: 'kg',
-    offerPrice: '',
+    offerPrice: 0,
   );
   List<String> dropDownItems = [
     "kg",
@@ -56,10 +56,10 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
   void addOption() {
     widget.onOptionAdded(newItem);
     newItem = ItemOption(
-      price: '',
-      quantity: '',
+      price: 0,
+      quantity: "0",
       unit: 'kg',
-      offerPrice: '',
+      offerPrice: 0,
     );
   }
 
@@ -93,8 +93,8 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                             ),
                             child: TextFormField(
                               controller:
-                                  TextEditingController(text: option.quantity),
-                              onChanged: (value) => option.quantity = value,
+                                  TextEditingController(text: option.quantity.toString()),
+                              onChanged: (value) => option.quantity = value ,
                               decoration: InputDecoration(
                                 hintText: 'Quantity',
                                 border: InputBorder.none,
@@ -170,8 +170,8 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                             ),
                             child: TextFormField(
                               controller:
-                                  TextEditingController(text: option.price),
-                              onChanged: (value) => option.price = value,
+                                  TextEditingController(text: option.price.toString()),
+                              onChanged: (value) => option.price = value as double,
                               decoration: InputDecoration(
                                 hintText: 'Price (In Rs.)',
                                 border: InputBorder.none,
@@ -201,8 +201,8 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                             ),
                             child: TextFormField(
                               controller: TextEditingController(
-                                  text: option.offerPrice),
-                              onChanged: (value) => option.offerPrice = value,
+                                  text: option.offerPrice.toString()),
+                              onChanged: (value) => option.offerPrice = value as double,
                               decoration: InputDecoration(
                                 hintText: 'Offer Price',
                                 border: InputBorder.none,
@@ -1105,7 +1105,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                               // onChanged: (value) => option.quantity = value,
                                               onChanged: (value) {
                                                 itemOptions[index].quantity =
-                                                    value;
+                                                    value ;
                                               },
                                               decoration: InputDecoration(
                                                 hintText: 'Quantity',
@@ -1177,7 +1177,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                                       .toString()),
                                               onChanged: (value) {
                                                 itemOptions[index].price =
-                                                    value;
+                                                    value as double;
                                               },
                                               decoration: InputDecoration(
                                                 hintText: 'Price (In Rs.)',
@@ -1207,7 +1207,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                                       .toString()),
                                               onChanged: (value) {
                                                 itemOptions[index].offerPrice =
-                                                    value;
+                                                    value as double;
                                               },
                                               decoration: InputDecoration(
                                                 hintText: 'Offer Price',
@@ -1321,9 +1321,9 @@ class _UpdateProductsState extends State<UpdateProducts> {
     print("dummyProductList");
     itemOptions.forEach((itemOption) {
       dummyProductList.add(QuantityPricing(
-          offerPrice: int.parse(itemOption.offerPrice),
-          quantity: itemOption.price,
-          mrpPrice: double.parse(itemOption.quantity),
+          offerPrice: (itemOption.offerPrice),
+          quantity: itemOption.quantity,
+          mrpPrice: (itemOption.price),
           unit: itemOption.unit));
     });
     itemOptions = [];
