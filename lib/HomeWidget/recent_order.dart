@@ -160,7 +160,7 @@ class _RecentOrderState extends State<RecentOrder> {
                               Container(
                                 height: 35,
                                 color: Colors.blue[900],
-                                width: size.width * 0.44,
+                                width: size.width * 0.4,
                                 child: ElevatedButton(
                                     onPressed: () {},
                                     style: ElevatedButton.styleFrom(
@@ -172,13 +172,13 @@ class _RecentOrderState extends State<RecentOrder> {
                                       'Make Order Ready',
                                       style: TextStyle(
                                           color: Colors.white,
-                                          fontSize: 2vw),
+                                          fontSize: 12),
                                     ))),
                               ),
                               Text(
                                 'Total Bill: ${price[index]} ',
-                                style: const TextStyle(
-                                  fontSize: 17,
+                                style: TextStyle(
+                                  fontSize: size.width * 0.05,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),

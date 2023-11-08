@@ -3,20 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+bool isGetCurrentLocation = false;
+
 class GetUserCurrentLocationScreen extends StatefulWidget {
-  const GetUserCurrentLocationScreen({super.key});
+  final Function updateParentState;
+  const GetUserCurrentLocationScreen(
+      {super.key, required this.updateParentState});
 
   @override
-  State<GetUserCurrentLocationScreen> createState() => _GetUserCurrentLocationScreenState();
+  State<GetUserCurrentLocationScreen> createState() =>
+      _GetUserCurrentLocationScreenState();
 }
 
 bool _isopen = false;
 
-class _GetUserCurrentLocationScreenState extends State<GetUserCurrentLocationScreen> {
-
+class _GetUserCurrentLocationScreenState
+    extends State<GetUserCurrentLocationScreen> {
   bool _isPermissionGranted = false;
-
-
 
   final Completer<GoogleMapController> _controller = Completer();
 
@@ -35,33 +38,25 @@ class _GetUserCurrentLocationScreenState extends State<GetUserCurrentLocationScr
     // )
   ];
 
-  loadData(){
-    getUserCurrentLocation().then((value) async{
+  loadData() {
+    getUserCurrentLocation().then((value) async {
       print('my current location');
-      print(value.latitude.toString() +" "+value.longitude.toString());
+      print(value.latitude.toString() + " " + value.longitude.toString());
 
-      _markers.add(
-          Marker(
-              markerId: MarkerId('2'),
-              position: LatLng(value.latitude, value.longitude),
-              infoWindow: InfoWindow(
-                  title: 'My Current Location'
-              )
-          )
-      );
+      _markers.add(Marker(
+          markerId: MarkerId('2'),
+          position: LatLng(value.latitude, value.longitude),
+          infoWindow: InfoWindow(title: 'My Current Location')));
 
-      CameraPosition cameraPosition = CameraPosition(target: LatLng(value.latitude, value.longitude),zoom: 16);
+      CameraPosition cameraPosition = CameraPosition(
+          target: LatLng(value.latitude, value.longitude), zoom: 16);
 
       final GoogleMapController controller = await _controller.future;
 
       controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-      setState(() {
-
-      });
-
+      setState(() {});
     });
   }
-
 
   // Future<Position> getUserCurrentLocation() async{
   //
@@ -77,19 +72,16 @@ class _GetUserCurrentLocationScreenState extends State<GetUserCurrentLocationScr
   //   return await Geolocator.getCurrentPosition();
   // }
 
-
-
-
   Future<Position> getUserCurrentLocation() async {
     try {
-
       await Geolocator.requestPermission();
       // _isPermissionGranted = true;
       // return await Geolocator.getCurrentPosition();
 
       LocationPermission status = await Geolocator.checkPermission();
 
-      if (status == LocationPermission.always || status == LocationPermission.whileInUse) {
+      if (status == LocationPermission.always ||
+          status == LocationPermission.whileInUse) {
         // Permission granted, get the current position
 
         _isPermissionGranted = true;
@@ -98,33 +90,26 @@ class _GetUserCurrentLocationScreenState extends State<GetUserCurrentLocationScr
       } else if (status == LocationPermission.denied) {
         // Permission denied
         print('Location permission denied by user.');
-        // Handle the denial case, e.g., show a message to the user
-        // You can also navigate to settings to allow location manually
-        // using `openAppSettings` from the `app_settings` package
-        // See: https://pub.dev/packages/app_settings
-        // return await getUserCurrentLocation();
+
         throw Exception('Location permission denied by user.');
       } else {
-        // Handle other cases, e.g., show a message to the user
         throw Exception('Location permission status: $status');
       }
     } catch (e) {
-      await showDialog(context: context, builder:(context) =>LocationPermissionDialog(),);
+      await showDialog(
+        context: context,
+        builder: (context) => LocationPermissionDialog(),
+      );
       // print(_isopen);
-      if(_isopen == false)
-        return await getUserCurrentLocation();
+      if (_isopen == false) return await getUserCurrentLocation();
       // print('Error getting location: $e');
       //
       throw Exception('Error getting location: $e');
     }
   }
 
-
-
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadData();
   }
@@ -137,73 +122,30 @@ class _GetUserCurrentLocationScreenState extends State<GetUserCurrentLocationScr
           initialCameraPosition: _kGooglePlex,
           zoomControlsEnabled: false,
           markers: Set<Marker>.of(_markers),
-          onMapCreated: (GoogleMapController controller){
+          onMapCreated: (GoogleMapController controller) {
             _controller.complete(controller);
           },
         ),
       ),
 
-      //   floatingActionButton: FloatingActionButton(
-      //     onPressed: (){
-      //       getUserCurrentLocation().then((value) async{
-      //         print('my current location');
-      //         print(value.latitude.toString() +" "+value.longitude.toString());
-      //
-      //         _markers.add(
-      //           Marker(
-      //               markerId: MarkerId('2'),
-      //               position: LatLng(value.latitude, value.longitude),
-      //               infoWindow: InfoWindow(
-      //                 title: 'My Current Location'
-      //               )
-      //           )
-      //         );
-      //
-      //         CameraPosition cameraPosition = CameraPosition(target: LatLng(value.latitude, value.longitude),zoom: 15);
-      //
-      //         final GoogleMapController controller = await _controller.future;
-      //
-      //         controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-      //         setState(() {
-      //
-      //         });
-      //
-      //       });
-      // },
-      //    child: Icon(Icons.local_activity),
-      //   ),
-
-
-      // floatingActionButton: Container(
-      //   width: 100,
-      //   height: 45,
-      //   child: FloatingActionButton(
-      //     backgroundColor: Colors.red,
-      //     onPressed: (){
-      //       Navigator.pop(context);},
-      //     child: Text('Save',style: TextStyle(color: Colors.white,fontSize: 20),),
-      //   ),
-      // ),
-
-
       floatingActionButton: _isPermissionGranted
           ? Container(
-        width: 100,
-        height: 45,
-        child: FloatingActionButton(
-          backgroundColor: Colors.red,
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text(
-            'Save',
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
-        ),
-      )
-          : SizedBox.shrink(),// Hide the FAB if permission is not granted
-
-
+              width: 100,
+              height: 45,
+              child: FloatingActionButton(
+                backgroundColor: Colors.red,
+                onPressed: () {
+                  isGetCurrentLocation = true;
+                  widget.updateParentState();
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Save',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ),
+            )
+          : SizedBox.shrink(), // Hide the FAB if permission is not granted
     );
   }
 }
@@ -219,7 +161,7 @@ class LocationPermissionDialog extends StatelessWidget {
       actions: <Widget>[
         ElevatedButton(
           onPressed: () {
-            _isopen=true;
+            _isopen = true;
             Navigator.pop(context);
             Navigator.pop(context); // Close the dialog
           },
@@ -227,14 +169,7 @@ class LocationPermissionDialog extends StatelessWidget {
         ),
         ElevatedButton(
           onPressed: () {
-            // Open the app settings to allow the user to grant location permission
-            // You should replace 'package:permission_handler/permission_handler.dart'
-            // with the appropriate package for handling permissions in your app.
-            // Also, make sure to include the necessary permission handling logic.
-            // For example:
-            // PermissionHandler().openAppSettings();
-            // GetUserCurrentLocationScreen().getUserCurrentLocation();
-            _isopen=false;
+            _isopen = false;
             Navigator.pop(context);
           },
           child: Text('Grant Permission'),

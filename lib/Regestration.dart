@@ -20,8 +20,8 @@ import 'package:multiselect/multiselect.dart';
 // import 'package:flutter_project/dialog_of_registration.dart';
 // import 'package:flutter_project/current_location_screen.dart';
 
-bool food_present=false;
-
+bool food_present = false;
+bool isNexttap = false;
 
 class Regest extends StatefulWidget {
   final String token, id;
@@ -32,8 +32,6 @@ class Regest extends StatefulWidget {
 }
 
 class _SellerRegistrationPageState extends State<Regest> {
-
-
   final _formkey = GlobalKey<FormState>();
   TextEditingController shopNameController = TextEditingController();
   TextEditingController ownerNameController = TextEditingController();
@@ -42,15 +40,13 @@ class _SellerRegistrationPageState extends State<Regest> {
   TextEditingController addressController = TextEditingController();
   TextEditingController shopTimingController = TextEditingController();
 
-
   late String lat, long;
   late String msg;
-  Color customColor =  const Color(0xFFDEDC07);
+  Color customColor = const Color(0xFFDEDC07);
 
   // static get isSelected => null;
 
   // CurrentLocationScreen currentLocationScreen = CurrentLocationScreen();
-
 
   Future<Position?> _getCurrentLocation() async {
     print("sdfsdfsd");
@@ -66,7 +62,8 @@ class _SellerRegistrationPageState extends State<Regest> {
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {// Permission is still denied, handle accordingly
+      if (permission == LocationPermission.denied) {
+        // Permission is still denied, handle accordingly
         return null;
       }
     }
@@ -81,9 +78,8 @@ class _SellerRegistrationPageState extends State<Regest> {
       return null;
     }
   }
+
   Future<void> postPersonalDetails() async {
-
-
     // UpdateSeller seller = UpdateSeller(
     //   shopName: shopNameController.text,
     //   ownerName: ownerNameController.text,
@@ -102,77 +98,75 @@ class _SellerRegistrationPageState extends State<Regest> {
     };
     // await UserApi.updateSeller(widget.token, widget.id, updatedFields);
 
-    Navigator.push(context, MaterialPageRoute(builder: (context) => BankDetailsForm( token:widget.token, id:widget.id)));
-
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                BankDetailsForm(token: widget.token, id: widget.id)));
   }
+
   bool dia = false;
   List<Widget> uiPhone = [];
-  void addNewPhoneNo (){
+  void addNewPhoneNo() {
     setState(() {
-      uiPhone.add(
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-
-              TextFormField(
-                controller: mobileNoController,
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  hintText: ' Enter mobile number',
-                ),
-              ),
-              SizedBox(height: 16,)
-            ],
+      uiPhone.add(Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextFormField(
+            controller: mobileNoController,
+            keyboardType: TextInputType.phone,
+            decoration: const InputDecoration(
+              hintText: ' Enter mobile number',
+            ),
+          ),
+          SizedBox(
+            height: 16,
           )
-
-      );
+        ],
+      ));
     });
   }
 
-
   List<Widget> uiLandline = [];
-  void addNewLandline (){
+  void addNewLandline() {
     setState(() {
-      uiLandline.add(
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-
-              TextFormField(
-                controller: landlineNoController,
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  hintText: ' Enter landline number (optional)',
-                ),
-              ),
-              SizedBox(height: 16,)
-            ],
+      uiLandline.add(Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextFormField(
+            controller: landlineNoController,
+            keyboardType: TextInputType.phone,
+            decoration: const InputDecoration(
+              hintText: ' Enter landline number (optional)',
+            ),
+          ),
+          SizedBox(
+            height: 16,
           )
+        ],
+      ));
+    });
+  }
 
-      );
+  void updateState() {
+    setState(() {
+      
     });
   }
 
   @override
   Widget build(BuildContext context) {
-
-
-
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80,
         title: const Text('Basic Details'),
         centerTitle: true,
         leading: IconButton(
-          onPressed: () {
-
-          },
+          onPressed: () {},
           icon: const Icon(Icons.arrow_back),
         ),
-
         elevation: 20,
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -195,18 +189,21 @@ class _SellerRegistrationPageState extends State<Regest> {
                               color: Colors.cyanAccent,
                               width: 2.0, // Adjust border width as needed
                             ),
-                            borderRadius: BorderRadius.circular(10)
-                        ),
+                            borderRadius: BorderRadius.circular(10)),
                         child: const Center(
-                          child: Text('1',
-                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+                          child: Text(
+                            '1',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15),
                           ),
                         ),
                       ),
                       Container(
                         height: 1.0,
                         width: 90,
-                        decoration:  BoxDecoration(
+                        decoration: BoxDecoration(
                           color: customColor,
                         ),
                       ),
@@ -220,18 +217,21 @@ class _SellerRegistrationPageState extends State<Regest> {
                               color: customColor,
                               width: 2.0, // Adjust border width as needed
                             ),
-                            borderRadius: BorderRadius.circular(10)
-                        ),
+                            borderRadius: BorderRadius.circular(10)),
                         child: const Center(
-                          child: Text('2',
-                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+                          child: Text(
+                            '2',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15),
                           ),
                         ),
                       ),
                       Container(
                         height: 1.0,
                         width: 90,
-                        decoration:  BoxDecoration(
+                        decoration: BoxDecoration(
                           color: customColor,
                         ),
                       ),
@@ -245,11 +245,14 @@ class _SellerRegistrationPageState extends State<Regest> {
                               color: customColor,
                               width: 2.0, // Adjust border width as needed
                             ),
-                            borderRadius: BorderRadius.circular(10)
-                        ),
+                            borderRadius: BorderRadius.circular(10)),
                         child: const Center(
-                          child: Text('3',
-                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+                          child: Text(
+                            '3',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15),
                           ),
                         ),
                       ),
@@ -263,9 +266,14 @@ class _SellerRegistrationPageState extends State<Regest> {
                   children: [
                     const Text(
                       'Shop Name',
-                      style: TextStyle(fontSize: 18,),
+                      style: TextStyle(
+                        fontSize: 18,
+                      ),
                     ),
-                    const Text('*',style: TextStyle(fontSize: 18,color: Colors.red),)
+                    const Text(
+                      '*',
+                      style: TextStyle(fontSize: 18, color: Colors.red),
+                    )
                   ],
                 ),
 
@@ -274,14 +282,13 @@ class _SellerRegistrationPageState extends State<Regest> {
                   decoration: const InputDecoration(
                     hintText: ' Enter shop name',
                   ),
-                  onChanged: (value){
+                  onChanged: (value) {
                     setState(() {
                       _formkey.currentState?.validate();
                     });
                   },
-
-                  validator: (value){
-                    if(value!.isEmpty || value.length < 2){
+                  validator: (value) {
+                    if (value!.isEmpty || value.length < 2) {
                       return 'Please enter shop name';
                     }
                     return null;
@@ -293,9 +300,14 @@ class _SellerRegistrationPageState extends State<Regest> {
                   children: [
                     const Text(
                       'Owner Name',
-                      style: TextStyle(fontSize: 18,),
+                      style: TextStyle(
+                        fontSize: 18,
+                      ),
                     ),
-                    const Text('*',style: TextStyle(fontSize: 18,color: Colors.red),)
+                    const Text(
+                      '*',
+                      style: TextStyle(fontSize: 18, color: Colors.red),
+                    )
                   ],
                 ),
                 TextFormField(
@@ -303,14 +315,13 @@ class _SellerRegistrationPageState extends State<Regest> {
                   decoration: const InputDecoration(
                     hintText: ' Enter owner name',
                   ),
-                  onChanged: (value){
+                  onChanged: (value) {
                     setState(() {
                       _formkey.currentState?.validate();
                     });
                   },
-
-                  validator: (value){
-                    if(value!.isEmpty || value.length < 2){
+                  validator: (value) {
+                    if (value!.isEmpty || value.length < 2) {
                       return 'Please enter owner name';
                     }
                     return null;
@@ -322,9 +333,14 @@ class _SellerRegistrationPageState extends State<Regest> {
                   children: [
                     const Text(
                       'Mobile No.',
-                      style: TextStyle(fontSize: 18,),
+                      style: TextStyle(
+                        fontSize: 18,
+                      ),
                     ),
-                    const Text('*',style: TextStyle(fontSize: 18,color: Colors.red),)
+                    const Text(
+                      '*',
+                      style: TextStyle(fontSize: 18, color: Colors.red),
+                    )
                   ],
                 ),
                 TextFormField(
@@ -333,14 +349,13 @@ class _SellerRegistrationPageState extends State<Regest> {
                   decoration: const InputDecoration(
                     hintText: ' Enter mobile number',
                   ),
-                  onChanged: (value){
+                  onChanged: (value) {
                     setState(() {
                       _formkey.currentState?.validate();
                     });
                   },
-
-                  validator: (value){
-                    if(value!.isEmpty || value.length < 2){
+                  validator: (value) {
+                    if (value!.isEmpty || value.length < 2) {
                       return 'Please enter Mobile No.';
                     }
                     return null;
@@ -348,18 +363,27 @@ class _SellerRegistrationPageState extends State<Regest> {
                 ),
                 const SizedBox(height: 16),
 
-                Column(children: uiPhone,),
+                Column(
+                  children: uiPhone,
+                ),
                 const SizedBox(height: 16),
-                ElevatedButton(onPressed: addNewPhoneNo, child: Text('Add another Mobile No.')),
+                ElevatedButton(
+                    onPressed: addNewPhoneNo,
+                    child: Text('Add another Mobile No.')),
                 const SizedBox(height: 16),
 
                 Row(
                   children: [
                     const Text(
                       'Landline No.',
-                      style: TextStyle(fontSize: 18,),
+                      style: TextStyle(
+                        fontSize: 18,
+                      ),
                     ),
-                    const Text('*',style: TextStyle(fontSize: 18,color: Colors.red),)
+                    const Text(
+                      '*',
+                      style: TextStyle(fontSize: 18, color: Colors.red),
+                    )
                   ],
                 ),
                 TextFormField(
@@ -368,14 +392,13 @@ class _SellerRegistrationPageState extends State<Regest> {
                   decoration: const InputDecoration(
                     hintText: ' Enter landline number (optional)',
                   ),
-                  onChanged: (value){
+                  onChanged: (value) {
                     setState(() {
                       _formkey.currentState?.validate();
                     });
                   },
-
-                  validator: (value){
-                    if(value!.isEmpty || value.length < 2){
+                  validator: (value) {
+                    if (value!.isEmpty || value.length < 2) {
                       return 'Please enter Landline No.';
                     }
                     return null;
@@ -383,18 +406,27 @@ class _SellerRegistrationPageState extends State<Regest> {
                 ),
                 const SizedBox(height: 16),
 
-                Column(children: uiLandline,),
+                Column(
+                  children: uiLandline,
+                ),
                 const SizedBox(height: 16),
-                ElevatedButton(onPressed: addNewLandline, child: Text('Add another Landline')),
+                ElevatedButton(
+                    onPressed: addNewLandline,
+                    child: Text('Add another Landline')),
                 const SizedBox(height: 16),
 
                 Row(
                   children: [
                     const Text(
                       'Address',
-                      style: TextStyle(fontSize: 18,),
+                      style: TextStyle(
+                        fontSize: 18,
+                      ),
                     ),
-                    const Text('*',style: TextStyle(fontSize: 18,color: Colors.red),)
+                    const Text(
+                      '*',
+                      style: TextStyle(fontSize: 18, color: Colors.red),
+                    )
                   ],
                 ),
                 TextFormField(
@@ -403,14 +435,13 @@ class _SellerRegistrationPageState extends State<Regest> {
                   decoration: const InputDecoration(
                     hintText: ' Enter address',
                   ),
-                  onChanged: (value){
+                  onChanged: (value) {
                     setState(() {
                       _formkey.currentState?.validate();
                     });
                   },
-
-                  validator: (value){
-                    if(value!.isEmpty || value.length < 2){
+                  validator: (value) {
+                    if (value!.isEmpty || value.length < 2) {
                       return 'Please enter address';
                     }
                     return null;
@@ -434,28 +465,36 @@ class _SellerRegistrationPageState extends State<Regest> {
                 //   ),
                 // ),
 
-
                 const SizedBox(height: 32),
 
-                ElevatedButton(onPressed: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context){
-                    return const GetUserCurrentLocationScreen();
-                  }));
-                }, child:
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Save My current location"),
-                    const Text(
-                      '*',
-                      style: TextStyle(fontSize: 18,color: Colors.red),
-                    ),
-                  ],
-                ),
-                  style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(Colors.grey.shade300)
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => GetUserCurrentLocationScreen(
+                          updateParentState: updateState),
+                    ));
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Save My current location"),
+                      const Text(
+                        '*',
+                        style: TextStyle(fontSize: 18, color: Colors.red),
+                      ),
+                    ],
                   ),
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.grey.shade300)),
                 ),
+                (!isGetCurrentLocation && isNexttap)
+                    ? Text(
+                        'Please give your shop current location.',
+                        style: TextStyle(
+                            color: Color.fromRGBO(183, 21, 9, 1), fontSize: 12),
+                      )
+                    : Text(''),
 
                 // Container(
                 //   child: ElevatedButton(
@@ -472,7 +511,6 @@ class _SellerRegistrationPageState extends State<Regest> {
                 //   //   return const CurrentLocationScreen();
                 //   // }));
                 // }, child: const Text("User current location")),
-
 
                 //
                 // const SizedBox(height: 32),
@@ -499,8 +537,6 @@ class _SellerRegistrationPageState extends State<Regest> {
                 //     ],
                 //   ),
                 // ),
-
-
 
                 // ElevatedButton(
                 //   onPressed: () async {
@@ -533,90 +569,104 @@ class _SellerRegistrationPageState extends State<Regest> {
                 //   child: const Text('Request Location Permission'),
                 // ),
 
-
-
                 const SizedBox(height: 32),
                 Container(
                   child: ElevatedButton(
-                    child:
-                    Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text('Shop Time'),
                         const Text(
                           '*',
-                          style: TextStyle(fontSize: 18,color: Colors.red),
+                          style: TextStyle(fontSize: 18, color: Colors.red),
                         ),
                       ],
                     ),
-                    onPressed: (){
-                      showDialog(context: context,
+                    onPressed: () {
+                      showDialog(
+                          context: context,
                           barrierDismissible: false,
-                          builder: (BuildContext context){
-                            return SimpleCustomAlert();
-                          }
-                      );
+                          builder: (BuildContext context) {
+                            return SimpleCustomAlert(
+                                updateParentState: updateState);
+                          });
                     },
                     style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(Colors.grey.shade300)
-                    ),
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            Colors.grey.shade300)),
                   ),
                 ),
+                (!isshopTimeDone && isNexttap)
+                    ? Text(
+                        'Please give your shop Time.',
+                        style: TextStyle(
+                            color: Color.fromRGBO(183, 21, 9, 1), fontSize: 12),
+                      )
+                    : Text(''),
 
                 const SizedBox(height: 32),
-                dropDown(initialValue:food_present,token: TokenId.token,
+                dropDown(
+                    initialValue: food_present,
+                    token: TokenId.token,
                     id: TokenId.id,
                     updateInitialValue: (value) {
                       setState(() {
                         food_present = value;
                       });
                     }),
+                (!isSelectStoreCategory && isNexttap)
+                    ? Text(
+                        'Please Select your shop Category.',
+                        style: TextStyle(
+                            color: Color.fromRGBO(183, 21, 9, 1), fontSize: 12),
+                      )
+                    : Text(''),
                 const SizedBox(height: 32),
-                dropDown2(),
+                dropDown2(updateParentSelectStoreType: updateState),
+                (!isSelectStoreType && isNexttap)
+                    ? Text(
+                        'Please Select your shop Type.',
+                        style: TextStyle(
+                            color: Color.fromRGBO(183, 21, 9, 1), fontSize: 12),
+                      )
+                    : Text(''),
                 const SizedBox(height: 32),
                 // if(food_present)
                 //   { foodInformation() };
 
-
                 food_present ? foodInformation() : Container(),
 
-
                 // foodInformation(),
-
 
                 Container(
                   width: double.infinity,
                   child: Center(
                     child: ElevatedButton(
                       style: ButtonStyle(
-                          minimumSize: MaterialStateProperty.all(const Size(double.infinity, 50)),
-                          backgroundColor: MaterialStateProperty.all<Color>(Colors.grey.shade300)
-
-                      ),
-                      onPressed: (){
-
-                        if(_formkey.currentState!.validate() || true){
-                            print('success');
-                            postPersonalDetails();
+                          minimumSize: MaterialStateProperty.all(
+                              const Size(double.infinity, 50)),
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              Colors.grey.shade300)),
+                      onPressed: () {
+                        if (_formkey.currentState!.validate() || true) {
+                          print('success');
+                          postPersonalDetails();
+                        } else {
+                          isNexttap = true;
+                          setState(() {});
                         }
-                        },
-                        child: const Text('Next'
-                      ),
+                      },
+                      child: const Text('Next'),
                     ),
                   ),
                 ),
-
               ],
             ),
           ),
         ),
       ),
     );
-
-
-
   }
-
 
 //   Future<LocationPermission> _requestLocationPermission() async {
 //     LocationPermission permission = await Geolocator.requestPermission();

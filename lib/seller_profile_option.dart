@@ -1,4 +1,3 @@
-
 import 'package:e_commerce/seller_profile_bankAccountDetails.dart';
 import 'package:e_commerce/seller_profile_personalDetails.dart';
 import 'package:e_commerce/seller_profile_shopDetails.dart';
@@ -12,12 +11,13 @@ class profileOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: Center(
             child: Text(
-              'Profile Page',
-            )),
+          'Profile Page',
+        )),
         backgroundColor: Colors.blue.shade100,
       ),
       body: Container(
@@ -30,8 +30,8 @@ class profileOptions extends StatelessWidget {
               height: 50,
             ),
             Container(
-              height: 50,
-              width: 290,
+              height: 20000 / size.width,
+              width: size.width * 0.9,
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -48,11 +48,11 @@ class profileOptions extends StatelessWidget {
                       size: 28.0,
                     ),
                     SizedBox(
-                      width: 10,
+                      width: size.width * 0.03,
                     ),
                     Text("Personal Details",
                         style:
-                        TextStyle(fontSize: 18, color: Color(0xFF204969))),
+                            TextStyle(fontSize: 18, color: Color(0xFF204969))),
                     SizedBox(
                       width: 40,
                     ),
@@ -70,7 +70,47 @@ class profileOptions extends StatelessWidget {
             ),
             Container(
               height: 50,
-              width: 290,
+              width: 340,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SellerProfilePersonalDetails()),
+                  );
+                },
+                child: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.start,
+                  children: <Widget>[
+                    Icon(
+                      Icons.person,
+                      color: Colors.black38,
+                      size: 28.0,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text("Personal Details",
+                        style:
+                            TextStyle(fontSize: 18, color: Color(0xFF204969))),
+                    SizedBox(
+                      width: 40,
+                    ),
+                    Icon(
+                      Icons.arrow_circle_right_sharp,
+                      color: Color(0xFF204969),
+                      size: 28.0,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              height: 50,
+              width: size.width * 0.9,
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -87,11 +127,11 @@ class profileOptions extends StatelessWidget {
                       size: 28.0,
                     ),
                     SizedBox(
-                      width: 10,
+                      width: size.width * 0.03,
                     ),
                     Text("Shop Details",
                         style:
-                        TextStyle(fontSize: 18, color: Color(0xFF204969))),
+                            TextStyle(fontSize: 18, color: Color(0xFF204969))),
                     SizedBox(
                       width: 70,
                     ),
@@ -109,7 +149,7 @@ class profileOptions extends StatelessWidget {
             ),
             Container(
               height: 50,
-              width: 290,
+              width: size.width * 0.9,
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -126,11 +166,11 @@ class profileOptions extends StatelessWidget {
                       size: 28.0,
                     ),
                     SizedBox(
-                      width: 10,
+                      width: size.width * 0.03,
                     ),
                     Text("Bank Account Details",
                         style:
-                        TextStyle(fontSize: 18, color: Color(0xFF204969))),
+                            TextStyle(fontSize: 18, color: Color(0xFF204969))),
                     // SizedBox(
                     //   width:1,
                     // ),

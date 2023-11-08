@@ -393,7 +393,6 @@
 //     }
 // }
 
-
 import 'package:e_commerce/services/User_api.dart';
 import 'package:e_commerce/services/tokenId.dart';
 import 'package:e_commerce/shopTime_weekDays_class.dart';
@@ -407,8 +406,11 @@ var close_time_controller = TextEditingController();
 List<TextEditingController> other_open_time_controllers = [];
 List<TextEditingController> other_close_time_controllers = [];
 
+bool isshopTimeDone = false;
+
 class SimpleCustomAlert extends StatefulWidget {
-  SimpleCustomAlert() : super();
+  final Function updateParentState;
+  SimpleCustomAlert({required this.updateParentState}) : super();
 
   @override
   _SimpleCustomAlertState createState() => _SimpleCustomAlertState();
@@ -519,7 +521,7 @@ class _SimpleCustomAlertState extends State<SimpleCustomAlert> {
                               builder: (BuildContext context) {
                                 return OtherCloseTimingPage(
                                     closeTimeController:
-                                    newCloseTimeController);
+                                        newCloseTimeController);
                               },
                             );
                           },
@@ -765,6 +767,7 @@ class _SimpleCustomAlertState extends State<SimpleCustomAlert> {
                 ),
                 child: ElevatedButton(
                   onPressed: () {
+                    isshopTimeDone = true;
                     otherSelectedWeekdays.add(newOtherSelectedWeekdays);
                     setState(() {
                       hasErrors = !_formKey.currentState!.validate();
@@ -776,10 +779,16 @@ class _SimpleCustomAlertState extends State<SimpleCustomAlert> {
                     print(other_close_time_controllers);
                     print(open_time_controller);
                     print(close_time_controller);
-                    postShopTime(selectedOffWeekdays, selectedWeekdays,
-                        otherSelectedWeekdays, other_open_time_controllers,
-                        other_close_time_controllers, open_time_controller, close_time_controller);
+                    postShopTime(
+                        selectedOffWeekdays,
+                        selectedWeekdays,
+                        otherSelectedWeekdays,
+                        other_open_time_controllers,
+                        other_close_time_controllers,
+                        open_time_controller,
+                        close_time_controller);
                     if (!hasErrors) {
+                      widget.updateParentState();
                       Navigator.pop(context);
                     }
                   },
@@ -808,7 +817,8 @@ class _SimpleCustomAlertState extends State<SimpleCustomAlert> {
       String dateTimeString = "$staticDate $timeString";
 
       // Parse the combined string and format it to ISO 8601
-      DateTime dateTime = DateFormat("yyyy-MM-dd hh:mm a").parse(dateTimeString);
+      DateTime dateTime =
+          DateFormat("yyyy-MM-dd hh:mm a").parse(dateTimeString);
       String isoFormat = dateTime.toIso8601String();
 
       // print(isoFormat); // Print the ISO 8601 date and time
@@ -820,23 +830,26 @@ class _SimpleCustomAlertState extends State<SimpleCustomAlert> {
     }
   }
 
-
-
-
-  Future<void> postShopTime (List<String> selectedOffWeekdays, List<String> selectedWeekdays,
-      List<List<String>> otherSelectedWeekdays, List<TextEditingController> other_open_time_controllers,
-      List<TextEditingController> other_close_time_controllers, TextEditingController open_time_controller,
+  Future<void> postShopTime(
+      List<String> selectedOffWeekdays,
+      List<String> selectedWeekdays,
+      List<List<String>> otherSelectedWeekdays,
+      List<TextEditingController> other_open_time_controllers,
+      List<TextEditingController> other_close_time_controllers,
+      TextEditingController open_time_controller,
       TextEditingController close_time_controller) async {
-    final token=TokenId.token;
-    final id=TokenId.id;
+    final token = TokenId.token;
+    final id = TokenId.id;
     Map<String, dynamic> updatedFields = {
-        "shopTimings":[{
+      "shopTimings": [
+        {
           'day': selectedWeekdays[0],
           'openingTime': timeToIso(open_time_controller.text),
           'closingTime': timeToIso(close_time_controller.text),
-        }]
+        }
+      ]
     };
-    for(int i=1;i<selectedWeekdays.length;i++) {
+    for (int i = 1; i < selectedWeekdays.length; i++) {
       updatedFields['shopTimings'].add({
         'day': selectedWeekdays[i],
         'openingTime': timeToIso(open_time_controller.text),
@@ -844,15 +857,15 @@ class _SimpleCustomAlertState extends State<SimpleCustomAlert> {
       });
     }
     // List<Map<String, dynamic>> shopTimings;
-    updatedFields['offDays']=selectedOffWeekdays;
-    for(int i=1;i<otherSelectedWeekdays.length;i++) {
-        for(int j=0;j<otherSelectedWeekdays[i].length;j++) {
-          updatedFields['shopTimings'].add({
-            'day': otherSelectedWeekdays[i][j],
-            'openingTime': timeToIso(other_open_time_controllers[i].text),
-            'closingTime': timeToIso(other_close_time_controllers[i].text),
-          });
-        }
+    updatedFields['offDays'] = selectedOffWeekdays;
+    for (int i = 1; i < otherSelectedWeekdays.length; i++) {
+      for (int j = 0; j < otherSelectedWeekdays[i].length; j++) {
+        updatedFields['shopTimings'].add({
+          'day': otherSelectedWeekdays[i][j],
+          'openingTime': timeToIso(other_open_time_controllers[i].text),
+          'closingTime': timeToIso(other_close_time_controllers[i].text),
+        });
+      }
     }
 // print(updatedFields);
 // print("updatedFields");

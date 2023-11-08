@@ -452,7 +452,7 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        if(_formkey.currentState!.validate() || true){
+                        if (_formkey.currentState!.validate() || true) {
                           print('success');
                           postPersonalDetails();
                         }

@@ -10,11 +10,20 @@ class dropDown extends StatefulWidget {
   final bool initialValue;
   final Function(bool) updateInitialValue;
   final String token, id;
-  const dropDown({Key? key, required this.initialValue, required  this.updateInitialValue, required this.token, required this.id,}) : super(key: key);
+  const dropDown({
+    Key? key,
+    required this.initialValue,
+    required this.updateInitialValue,
+    required this.token,
+    required this.id,
+  }) : super(key: key);
 
   @override
   State<dropDown> createState() => _dropDownState();
 }
+
+bool isSelectStoreType = false;
+bool isSelectStoreCategory = false;
 
 class _dropDownState extends State<dropDown> {
   List<String> StoreCategory = [
@@ -41,10 +50,13 @@ class _dropDownState extends State<dropDown> {
   Future<void> saveStoreCategory() async {
     print(selectedStoreCategory);
     print("selectedStoreCategory");
+    if (selectedStoreCategory.isNotEmpty) {
+      isSelectStoreCategory = true;
+    } else {
+      isSelectStoreCategory = false;
+    }
     Map<String, dynamic> updatedFields = {
-      "shopCategoryDetails": {
-        "category": selectedStoreCategory
-      }
+      "shopCategoryDetails": {"category": selectedStoreCategory}
     };
     await UserApi.updateSeller(widget.token, widget.id, updatedFields);
   }
@@ -95,20 +107,18 @@ class _dropDownState extends State<dropDown> {
   }
 }
 
-
-
-
-
 class dropDown2 extends StatefulWidget {
-
-  const dropDown2({Key? key}) : super(key: key);
+  final Function updateParentSelectStoreType;
+  const dropDown2({required this.updateParentSelectStoreType, Key? key})
+      : super(key: key);
 
   @override
   State<dropDown2> createState() => _dropDown2State();
 }
 
 class _dropDown2State extends State<dropDown2> {
-  List<String> StoreType = ["Item 1",
+  List<String> StoreType = [
+    "Item 1",
     "Item 2",
     "Item 3",
     "Item 4",
@@ -117,21 +127,28 @@ class _dropDown2State extends State<dropDown2> {
     "Item 7",
     "Item 8",
     "Item 9",
-    "Item 10"];
+    "Item 10"
+  ];
   List<String> selectedStoreType = [];
   Future<void> saveStoreType() async {
+    if (selectedStoreType.isNotEmpty) {
+      isSelectStoreType = true;
+      widget.updateParentSelectStoreType();
+    } else {
+      isSelectStoreType = false;
+      widget.updateParentSelectStoreType();
+    }
+    
     Map<String, dynamic> updatedFields = {
-      "shopCategoryDetails": {
-        "storeType": selectedStoreType
-      }
+      "shopCategoryDetails": {"storeType": selectedStoreType}
     };
     await UserApi.updateSeller(TokenId.token, TokenId.id, updatedFields);
   }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-
         Container(
           width: 400,
           child: DropDownMultiSelect(
@@ -141,9 +158,9 @@ class _dropDown2State extends State<dropDown2> {
               print('selected Store type $value');
               setState(() {
                 selectedStoreType = value;
+                saveStoreType();
               });
               print('you have selected $selectedStoreType Store Types.');
-              saveStoreType();
             },
             whenEmpty: 'Select Store Type',
           ),
@@ -152,7 +169,6 @@ class _dropDown2State extends State<dropDown2> {
     );
   }
 }
-
 
 class foodInformation extends StatefulWidget {
   const foodInformation({super.key});
@@ -164,13 +180,15 @@ class foodInformation extends StatefulWidget {
 class _foodInformationState extends State<foodInformation> {
   @override
   Widget build(BuildContext context) {
-    return  Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           child: cuisines(),
         ),
-        SizedBox(height: 20,),
+        SizedBox(
+          height: 20,
+        ),
         Container(
           child: RadioExample(),
         )
@@ -178,7 +196,6 @@ class _foodInformationState extends State<foodInformation> {
     );
   }
 }
-
 
 class cuisines extends StatefulWidget {
   const cuisines({Key? key}) : super(key: key);
@@ -188,19 +205,69 @@ class cuisines extends StatefulWidget {
 }
 
 class _cuisinesState extends State<cuisines> {
-  List<String> cuisinesType = ['Bengali', 'Bihari', 'Biryani', 'Breakfast', 'British', 'Burger', 'Cafe Food', 'Cafeteria', 'Cake', 'Chili', 'Chinese', 'Continental', 'Desserts', 'European Food', 'Fast Food', 'French', 'Fusion', 'Gourmet Fast Food', 'Grill House', 'Gujarati', 'Home-made', 'Hyderabadi', 'Indian', 'Italian', 'Japanese', 'Juices', 'Kashmiri',
-    'Kerala', 'Lucknowi', 'Mexican', 'Maharashtrian', 'Mithai', 'Multi Cuisine', 'North Indian', 'Pacific', 'Pasta', 'Pastry', 'Pizza', 'Rajasthani', 'Russian', 'Salad', 'Seafood', 'Shake', 'Snacks', 'South Indian', 'Turkish', 'Uzbek', 'Vegan', 'Vegetarian', 'World Cuisine', 'Wraps', 'Others'];
+  List<String> cuisinesType = [
+    'Bengali',
+    'Bihari',
+    'Biryani',
+    'Breakfast',
+    'British',
+    'Burger',
+    'Cafe Food',
+    'Cafeteria',
+    'Cake',
+    'Chili',
+    'Chinese',
+    'Continental',
+    'Desserts',
+    'European Food',
+    'Fast Food',
+    'French',
+    'Fusion',
+    'Gourmet Fast Food',
+    'Grill House',
+    'Gujarati',
+    'Home-made',
+    'Hyderabadi',
+    'Indian',
+    'Italian',
+    'Japanese',
+    'Juices',
+    'Kashmiri',
+    'Kerala',
+    'Lucknowi',
+    'Mexican',
+    'Maharashtrian',
+    'Mithai',
+    'Multi Cuisine',
+    'North Indian',
+    'Pacific',
+    'Pasta',
+    'Pastry',
+    'Pizza',
+    'Rajasthani',
+    'Russian',
+    'Salad',
+    'Seafood',
+    'Shake',
+    'Snacks',
+    'South Indian',
+    'Turkish',
+    'Uzbek',
+    'Vegan',
+    'Vegetarian',
+    'World Cuisine',
+    'Wraps',
+    'Others'
+  ];
   List<String> selectedCuisinesType = [];
-
 
   Future<void> saveStoreCategory() async {
     Map<String, dynamic> updatedFields = {
-      "shopCategoryDetails": {
-        "cusinesOffered": selectedCuisinesType
-      }
+      "shopCategoryDetails": {"cusinesOffered": selectedCuisinesType}
     };
     await UserApi.updateSeller(TokenId.token, TokenId.id, updatedFields);
   }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -226,7 +293,6 @@ class _cuisinesState extends State<cuisines> {
   }
 }
 
-
 class RadioExample extends StatefulWidget {
   @override
   _RadioExampleState createState() => _RadioExampleState();
@@ -235,68 +301,62 @@ class RadioExample extends StatefulWidget {
 class _RadioExampleState extends State<RadioExample> {
   bool? _isYes;
   Future<void> saveStoreCategory() async {
-    Map<String, dynamic> updatedFields ;
-    if(_isYes==true) {
+    Map<String, dynamic> updatedFields;
+    if (_isYes == true) {
       updatedFields = {
-      "shopCategoryDetails": {
-        "isPureVeg":"true"
-      }
-    };
+        "shopCategoryDetails": {"isPureVeg": "true"}
+      };
     } else {
       updatedFields = {
-        "shopCategoryDetails": {
-          "isPureVeg":"false"
-        }
+        "shopCategoryDetails": {"isPureVeg": "false"}
       };
     }
     await UserApi.updateSeller(TokenId.token, TokenId.id, updatedFields);
   }
+
   @override
   Widget build(BuildContext context) {
-    return
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: Text(
-              ' Is Your Shop Pure Veg?',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Text(
+            ' Is Your Shop Pure Veg?',
+            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
           ),
-          ListTile(
-            title: const Text('Yes'),
-            leading: Radio(
-              value: true,
-              groupValue: _isYes,
-              onChanged: (bool? value) {
-                setState(() {
-                  _isYes = value;
-                  saveStoreCategory();
-                });
-
-              },
-            ),
+        ),
+        ListTile(
+          title: const Text('Yes'),
+          leading: Radio(
+            value: true,
+            groupValue: _isYes,
+            onChanged: (bool? value) {
+              setState(() {
+                _isYes = value;
+                saveStoreCategory();
+              });
+            },
           ),
-          ListTile(
-            title: const Text('No'),
-            leading: Radio(
-              value: false,
-              groupValue: _isYes,
-              onChanged: (bool? value) {
-                setState(() {
-                  _isYes = value;
-                  saveStoreCategory();
-                });
-              },
-            ),
+        ),
+        ListTile(
+          title: const Text('No'),
+          leading: Radio(
+            value: false,
+            groupValue: _isYes,
+            onChanged: (bool? value) {
+              setState(() {
+                _isYes = value;
+                saveStoreCategory();
+              });
+            },
           ),
-          SizedBox(height: 20.0),
-          // _isYes != null
-          //     ? Text(_isYes == true ? 'You selected: Yes' : 'You selected: No')
-          //     : Container(),
-        ],
-      );
-
+        ),
+        SizedBox(height: 20.0),
+        // _isYes != null
+        //     ? Text(_isYes == true ? 'You selected: Yes' : 'You selected: No')
+        //     : Container(),
+      ],
+    );
   }
 }

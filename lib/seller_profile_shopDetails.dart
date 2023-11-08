@@ -993,7 +993,9 @@ print(url);
                                context: context,
                                barrierDismissible: false,
                                builder: (BuildContext context) {
-                                 return SimpleCustomAlert();
+                                return SimpleCustomAlert(
+                                  updateParentState: () {},
+                                );
                                });
                            setState(() {
                              isShopTimeEdited=true ;
