@@ -149,9 +149,8 @@ class _SellerRegistrationPageState extends State<Regest> {
   }
 
   void updateState() {
-    setState(() {
-      
-    });
+    print('page reload successfully');
+    setState(() {});
   }
 
   @override
@@ -634,9 +633,12 @@ class _SellerRegistrationPageState extends State<Regest> {
                 // if(food_present)
                 //   { foodInformation() };
 
-                food_present ? foodInformation() : Container(),
+                food_present
+                    ? foodInformation(updateParentFoodPresent: updateState)
+                    : Container(),
 
                 // foodInformation(),
+                SizedBox(height: 20.0),
 
                 Container(
                   width: double.infinity,
@@ -648,13 +650,45 @@ class _SellerRegistrationPageState extends State<Regest> {
                           backgroundColor: MaterialStateProperty.all<Color>(
                               Colors.grey.shade300)),
                       onPressed: () {
-                        if (_formkey.currentState!.validate() || true) {
-                          print('success');
-                          postPersonalDetails();
+                        if (food_present) {
+                          if (true)
+                          // (_formkey.currentState!.validate() &&
+                          //     isGetCurrentLocation &&
+                          //     isshopTimeDone &&
+                          //     isSelectStoreCategory &&
+                          //     isSelectStoreType &&
+                          //     isFoodSelectAsStoreCategory &&
+                          //     isPureVegFilled)
+                          {
+                            print('success');
+                            postPersonalDetails();
+                          } else {
+                            isNexttap = true;
+                            setState(() {});
+                          }
                         } else {
-                          isNexttap = true;
-                          setState(() {});
+                          if (true)
+                          // (_formkey.currentState!.validate() &&
+                          //     isGetCurrentLocation &&
+                          //     isshopTimeDone &&
+                          //     isSelectStoreCategory &&
+                          //     isSelectStoreType)
+                          {
+                            print('success');
+                            postPersonalDetails();
+                          } else {
+                            isNexttap = true;
+                            setState(() {});
+                          }
                         }
+
+                        // if (_formkey.currentState!.validate()) {
+                        //   print('success');
+                        //   postPersonalDetails();
+                        // } else {
+                        //   isNexttap = true;
+                        //   setState(() {});
+                        // }
                       },
                       child: const Text('Next'),
                     ),

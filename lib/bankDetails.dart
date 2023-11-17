@@ -11,7 +11,6 @@ import 'package:intl/intl.dart';
 
 import 'main_dashboard.dart';
 
-
 void main() {
   runApp(BankDetailsApp());
 }
@@ -22,7 +21,10 @@ class BankDetailsApp extends StatelessWidget {
     return MaterialApp(
       title: 'Bank Details Form',
       debugShowCheckedModeBanner: false,
-      home: BankDetailsForm( token: '', id: '',),//seller: UpdateSeller(),
+      home: BankDetailsForm(
+        token: '',
+        id: '',
+      ), //seller: UpdateSeller(),
     );
   }
 }
@@ -30,15 +32,15 @@ class BankDetailsApp extends StatelessWidget {
 class BankDetailsForm extends StatefulWidget {
   // late UpdateSeller seller;
   String token, id;
-  BankDetailsForm({ required this.token, required this.id});
+  BankDetailsForm({required this.token, required this.id});
   @override
   _BankDetailsFormState createState() => _BankDetailsFormState();
 }
 
 class _BankDetailsFormState extends State<BankDetailsForm> {
-
   final _formkey = GlobalKey<FormState>();
-  final TextEditingController bankAccountHolderNameController = TextEditingController();
+  final TextEditingController bankAccountHolderNameController =
+      TextEditingController();
   final TextEditingController bankAccountController = TextEditingController();
   final TextEditingController ifscController = TextEditingController();
   final TextEditingController panController = TextEditingController();
@@ -47,7 +49,6 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
   final TextEditingController fssaiExpiryController = TextEditingController();
   final TextEditingController shopActController = TextEditingController();
   final TextEditingController shopActExpiryController = TextEditingController();
-
 
   Future<void> postPersonalDetails() async {
     print("printing cc no");
@@ -66,12 +67,17 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
 
     };
     // await UserApi.updateSeller(widget.token, widget.id, updatedFields);
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => UploadImages( token: widget.token, id: widget.id,)));
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => UploadImages(
+                  token: widget.token,
+                  id: widget.id,
+                )));
   }
 
   DateTime selectedDate = DateTime(2020);
-  DateTime selectedDate1 = DateTime(2020);
+  DateTime selectedDate1 = DateTime(2020); 
   // Future<void> _selectDate(BuildContext context) async {
   //   DateTime? picked = await showDatePicker(
   //     context: context,
@@ -121,11 +127,12 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                               color: Colors.cyanAccent,
                               width: 2.0, // Adjust border width as needed
                             ),
-                            borderRadius: BorderRadius.circular(10)
-                        ),
+                            borderRadius: BorderRadius.circular(10)),
                         child: const Center(
-                          child: Text('1',
-                            style: TextStyle(color: Colors.black,
+                          child: Text(
+                            '1',
+                            style: TextStyle(
+                                color: Colors.black,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 15),
                           ),
@@ -148,11 +155,12 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                               color: Colors.cyanAccent,
                               width: 2.0, // Adjust border width as needed
                             ),
-                            borderRadius: BorderRadius.circular(10)
-                        ),
+                            borderRadius: BorderRadius.circular(10)),
                         child: const Center(
-                          child: Text('2',
-                            style: TextStyle(color: Colors.black,
+                          child: Text(
+                            '2',
+                            style: TextStyle(
+                                color: Colors.black,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 15),
                           ),
@@ -175,11 +183,12 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                               color: customColor,
                               width: 2.0, // Adjust border width as needed
                             ),
-                            borderRadius: BorderRadius.circular(10)
-                        ),
+                            borderRadius: BorderRadius.circular(10)),
                         child: const Center(
-                          child: Text('3',
-                            style: TextStyle(color: Colors.black,
+                          child: Text(
+                            '3',
+                            style: TextStyle(
+                                color: Colors.black,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 15),
                           ),
@@ -188,13 +197,18 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                     ],
                   ),
                 ),
-                SizedBox(height: 30,),
+                SizedBox(
+                  height: 30,
+                ),
 
                 Row(
                   children: [
+                    const Text('Bank Account Details',
+                        style: TextStyle(fontSize: 18)),
                     const Text(
-                        'Bank Account Details', style: TextStyle(fontSize: 18)),
-                    const Text('*',style: TextStyle(fontSize: 18,color: Colors.red),)
+                      '*',
+                      style: TextStyle(fontSize: 18, color: Colors.red),
+                    )
                   ],
                 ),
                 TextFormField(
@@ -203,14 +217,13 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                     // labelText: 'Bank Account Number',
                     hintText: 'Enter Bank account Holder Name',
                   ),
-                  onChanged: (value){
+                  onChanged: (value) {
                     setState(() {
                       _formkey.currentState?.validate();
                     });
                   },
-
-                  validator: (value){
-                    if(value!.isEmpty || value.length < 2){
+                  validator: (value) {
+                    if (value!.isEmpty || value.length < 2) {
                       return 'Please enter bank account holder name';
                     }
                     return null;
@@ -222,14 +235,13 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                     // labelText: 'Bank Account Number',
                     hintText: 'Enter Bank Account Number',
                   ),
-                  onChanged: (value){
+                  onChanged: (value) {
                     setState(() {
                       _formkey.currentState?.validate();
                     });
                   },
-
-                  validator: (value){
-                    if(value!.isEmpty || value.length < 2){
+                  validator: (value) {
+                    if (value!.isEmpty || value.length < 2) {
                       return 'Please enter bank account number';
                     }
                     return null;
@@ -241,14 +253,13 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                     // labelText: 'IFSC Code',
                     hintText: 'Enter IFSC Code',
                   ),
-                  onChanged: (value){
+                  onChanged: (value) {
                     setState(() {
                       _formkey.currentState?.validate();
                     });
                   },
-
-                  validator: (value){
-                    if(value!.isEmpty || value.length < 2){
+                  validator: (value) {
+                    if (value!.isEmpty || value.length < 2) {
                       return 'Please enter IFSC code';
                     }
                     return null;
@@ -259,7 +270,10 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                 Row(
                   children: [
                     Text('PAN Card Number', style: TextStyle(fontSize: 18)),
-                    const Text('*',style: TextStyle(fontSize: 18,color: Colors.red),)
+                    const Text(
+                      '*',
+                      style: TextStyle(fontSize: 18, color: Colors.red),
+                    )
                   ],
                 ),
                 TextFormField(
@@ -268,14 +282,13 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                     // labelText: 'PAN Card Number',
                     hintText: 'Enter PAN Card Number',
                   ),
-                  onChanged: (value){
+                  onChanged: (value) {
                     setState(() {
                       _formkey.currentState?.validate();
                     });
                   },
-
-                  validator: (value){
-                    if(value!.isEmpty || value.length < 2){
+                  validator: (value) {
+                    if (value!.isEmpty || value.length < 2) {
                       return 'Please enter PAN card number';
                     }
                     return null;
@@ -285,9 +298,12 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
 
                 Row(
                   children: [
+                    const Text('GST Number/FSSAI License',
+                        style: TextStyle(fontSize: 18)),
                     const Text(
-                        'GST Number/FSSAI License', style: TextStyle(fontSize: 18)),
-                    const Text('*',style: TextStyle(fontSize: 18,color: Colors.red),)
+                      '*',
+                      style: TextStyle(fontSize: 18, color: Colors.red),
+                    )
                   ],
                 ),
                 TextFormField(
@@ -296,14 +312,13 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                     // labelText: 'GST Number (Optional)',
                     hintText: 'Enter GST Number (if applicable)',
                   ),
-                  onChanged: (value){
+                  onChanged: (value) {
                     setState(() {
                       _formkey.currentState?.validate();
                     });
                   },
-
-                  validator: (value){
-                    if(value!.isEmpty || value.length < 2){
+                  validator: (value) {
+                    if (value!.isEmpty || value.length < 2) {
                       return 'Please enter GST number';
                     }
                     return null;
@@ -315,14 +330,13 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                     // labelText: 'FSSAI License (Optional)',
                     hintText: 'Enter FSSAI License Number (if applicable)',
                   ),
-                  onChanged: (value){
+                  onChanged: (value) {
                     setState(() {
                       _formkey.currentState?.validate();
                     });
                   },
-
-                  validator: (value){
-                    if(value!.isEmpty || value.length < 2){
+                  validator: (value) {
+                    if (value!.isEmpty || value.length < 2) {
                       return 'Please enter FSSAI license number';
                     }
                     return null;
@@ -331,7 +345,6 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
 
                 SizedBox(height: 30),
 
-
                 TextFormField(
                   readOnly: true,
                   controller: fssaiExpiryController,
@@ -339,7 +352,6 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                     // labelText: 'FSSAI License Expiry Date',
                     hintText: 'Enter FSSAI License Expiry Date',
                   ),
-
                   onTap: () async {
                     var datePicked = await DatePicker.showSimpleDatePicker(
                       context,
@@ -349,7 +361,6 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                       dateFormat: "dd-MMMM-yyyy",
                       locale: DateTimePickerLocale.en_us,
                       looping: true,
-
                     );
 
                     if (datePicked != null && datePicked != selectedDate) {
@@ -358,27 +369,29 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                       });
                     }
 
-
-                    String input = DateFormat('dd-MMM-yyyy').format(datePicked!);
-
-
+                    String input =
+                        DateFormat('dd-MMM-yyyy').format(datePicked!);
 
                     fssaiExpiryController.text = (input);
                     final snackBar =
-                    SnackBar(content: Text("Date Picked $datePicked"));
+                        SnackBar(content: Text("Date Picked $datePicked"));
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   },
 
                 ),
 
-
-                SizedBox(height: 30,),
+                SizedBox(
+                  height: 30,
+                ),
 
                 Row(
                   children: [
+                    const Text('Shop Act License Number',
+                        style: TextStyle(fontSize: 18)),
                     const Text(
-                        'Shop Act License Number', style: TextStyle(fontSize: 18)),
-                    const Text('*',style: TextStyle(fontSize: 18,color: Colors.red),)
+                      '*',
+                      style: TextStyle(fontSize: 18, color: Colors.red),
+                    )
                   ],
                 ),
                 TextFormField(
@@ -387,20 +400,18 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                     // labelText: 'Shop Act License Number(Optional)',
                     hintText: 'Enter Shop Act license Number',
                   ),
-                  onChanged: (value){
+                  onChanged: (value) {
                     setState(() {
                       _formkey.currentState?.validate();
                     });
                   },
-
-                  validator: (value){
-                    if(value!.isEmpty || value.length < 2){
+                  validator: (value) {
+                    if (value!.isEmpty || value.length < 2) {
                       return 'Please enter Shop Act License Number';
                     }
                     return null;
                   },
                 ),
-
 
                 // TextFormField(
                 //   controller: shopActExpiryController,
@@ -417,7 +428,6 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                     hintText: 'Enter Shop Act license Expiry Date',
                   ),
                   onTap: () async {
-
                     var datePicked1 = await DatePicker.showSimpleDatePicker(
                       context,
                       initialDate: selectedDate1,
@@ -428,28 +438,24 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
                       looping: true,
                     );
 
-
                     if (datePicked1 != null && datePicked1 != selectedDate1) {
                       setState(() {
                         selectedDate1 = datePicked1;
                       });
-
                     }
 
-
-                    String input1 = DateFormat('dd-MMM-yyyy').format(datePicked1!);
-
-
+                    String input1 =
+                        DateFormat('dd-MMM-yyyy').format(datePicked1!);
 
                     shopActExpiryController.text = (input1);
                     final snackBar =
-                    SnackBar(content: Text("Date Picked $datePicked1"));
+                        SnackBar(content: Text("Date Picked $datePicked1"));
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   },
-
-
                 ),
-                SizedBox(height: 30,),
+                SizedBox(
+                  height: 30,
+                ),
                 Center(
                   child: Container(
                     width: double.infinity,

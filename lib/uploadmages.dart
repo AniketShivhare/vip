@@ -19,7 +19,10 @@ class BankDetailsApp1 extends StatelessWidget {
     return MaterialApp(
       title: 'Bank Details Form',
       debugShowCheckedModeBanner: false,
-      home: UploadImages(token: '', id: '',),
+      home: UploadImages(
+        token: '',
+        id: '',
+      ),
     );
   }
 }
@@ -28,11 +31,14 @@ class UploadImages extends StatefulWidget {
   final token;
   final id;
 
-  UploadImages({Key? key, required  this.token, required this.id}) : super(key: key); // Constructor
+  UploadImages({Key? key, required this.token, required this.id})
+      : super(key: key); // Constructor
 
   @override
   _UploadImagesState createState() => _UploadImagesState();
 }
+
+bool isFinish = false;
 
 class _UploadImagesState extends State<UploadImages> {
   XFile? ownerPhoto;
@@ -111,7 +117,6 @@ class _UploadImagesState extends State<UploadImages> {
     }
   }
 
-
   Future<void> _getGSTImage() async {
     final ImagePicker _picker = ImagePicker();
     final XFile? pickedFile = await _picker.pickImage(
@@ -126,7 +131,6 @@ class _UploadImagesState extends State<UploadImages> {
       // User canceled image selection
     }
   }
-
 
   Future<void> _getFSSAIImage() async {
     final ImagePicker _picker = ImagePicker();
@@ -193,11 +197,20 @@ class _UploadImagesState extends State<UploadImages> {
                   children: <Widget>[
                     if (ownerPhoto != null)
                       Icon(Icons.check, color: Colors.green),
-                    SizedBox(width: 10,),
+                    SizedBox(
+                      width: 10,
+                    ),
                     Text('Upload Owner Photo'),
                   ],
                 ),
               ),
+              (ownerPhoto == null && isFinish)
+                  ? Text(
+                      'Please Upload Owner Photo.',
+                      style: TextStyle(
+                          color: Color.fromRGBO(183, 21, 9, 1), fontSize: 12),
+                    )
+                  : Text(''),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _getShopImage,
@@ -206,11 +219,20 @@ class _UploadImagesState extends State<UploadImages> {
                   children: <Widget>[
                     if (shopImage != null)
                       Icon(Icons.check, color: Colors.green),
-                    SizedBox(width: 10,),
+                    SizedBox(
+                      width: 10,
+                    ),
                     Text('Upload Shop Image'),
                   ],
                 ),
               ),
+              (shopImage == null && isFinish)
+                  ? Text(
+                      'Please Upload Shop Image.',
+                      style: TextStyle(
+                          color: Color.fromRGBO(183, 21, 9, 1), fontSize: 12),
+                    )
+                  : Text(''),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _getShopLogo,
@@ -219,11 +241,20 @@ class _UploadImagesState extends State<UploadImages> {
                   children: <Widget>[
                     if (shopLogo != null)
                       Icon(Icons.check, color: Colors.green),
-                    SizedBox(width: 10,),
+                    SizedBox(
+                      width: 10,
+                    ),
                     Text('Upload Shop Logo'),
                   ],
                 ),
               ),
+              (shopLogo == null && isFinish)
+                  ? Text(
+                      'Please Upload Shop Logo.',
+                      style: TextStyle(
+                          color: Color.fromRGBO(183, 21, 9, 1), fontSize: 12),
+                    )
+                  : Text(''),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _getGSTImage,
@@ -232,26 +263,42 @@ class _UploadImagesState extends State<UploadImages> {
                   children: <Widget>[
                     if (gstImage != null)
                       Icon(Icons.check, color: Colors.green),
-                    SizedBox(width: 10,),
+                    SizedBox(
+                      width: 10,
+                    ),
                     Text('Upload GST Image'),
-
                   ],
                 ),
               ),
+              (gstImage == null && isFinish)
+                  ? Text(
+                      'Please Upload GST Image.',
+                      style: TextStyle(
+                          color: Color.fromRGBO(183, 21, 9, 1), fontSize: 12),
+                    )
+                  : Text(''),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _getFSSAIImage,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    if ( fssaiImage != null)
+                    if (fssaiImage != null)
                       Icon(Icons.check, color: Colors.green),
-                    SizedBox(width: 10,),
+                    SizedBox(
+                      width: 10,
+                    ),
                     Text('Upload FSSAI Image'),
-
                   ],
                 ),
               ),
+              (fssaiImage == null && isFinish)
+                  ? Text(
+                      'Please Upload FSSAI Image.',
+                      style: TextStyle(
+                          color: Color.fromRGBO(183, 21, 9, 1), fontSize: 12),
+                    )
+                  : Text(''),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _getCancelledCheque,
@@ -260,45 +307,67 @@ class _UploadImagesState extends State<UploadImages> {
                   children: <Widget>[
                     if (cancelledCheckImage != null)
                       Icon(Icons.check, color: Colors.green),
-                    SizedBox(width: 10,),
+                    SizedBox(
+                      width: 10,
+                    ),
                     Text('Upload Cancelled Cheque Image'),
-
                   ],
                 ),
               ),
-              const SizedBox(height: 70),
+              (cancelledCheckImage == null && isFinish)
+                  ? Text(
+                      'Please Upload Cancelled Cheque Image.',
+                      style: TextStyle(
+                          color: Color.fromRGBO(183, 21, 9, 1), fontSize: 12),
+                    )
+                  : Text(''),
+              const SizedBox(height: 50),
               Center(
                 child: Container(
                   width: 200,
                   child: ElevatedButton(
                     onPressed: () async {
-                      saveData();
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              MainDashboard(token: widget.token,
-                                  id: widget.id,
-                                  pageIndex: 2,
-                                  sortt: "created_at"),
-                        ),
-                            (
-                            route) => false, // This line clears the navigator stack
-                      );
+                      if (true)
+                      // (ownerPhoto != null &&
+                      //     gstImage != null &&
+                      //     fssaiImage != null &&
+                      //     cancelledCheckImage != null &&
+                      //     shopImage != null &&
+                      //     shopLogo != null)
+                      {
+                        saveData();
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MainDashboard(
+                                token: widget.token,
+                                id: widget.id,
+                                pageIndex: 2,
+                                sortt: "created_at"),
+                          ),
+                          (route) =>
+                              false, // This line clears the navigator stack
+                        );
+                      } else {
+                        setState(() {
+                          isFinish = true;
+                        });
+                      }
                       // Process the form data and perform submission
                       // Process the form data and perform submission
-
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
                             5), // Set this to 0 for a square button
                       ),
-                      backgroundColor: Colors
-                          .blue, // Change this to the color you want
+                      backgroundColor:
+                          Colors.blue, // Change this to the color you want
                     ),
                     child: const Text(
-                      'Finish', style: TextStyle(color: Colors.white),),
+                      'Finish',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ),

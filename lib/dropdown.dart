@@ -24,6 +24,8 @@ class dropDown extends StatefulWidget {
 
 bool isSelectStoreType = false;
 bool isSelectStoreCategory = false;
+bool isFoodSelectAsStoreCategory = false;
+bool isPureVegFilled = false;
 
 class _dropDownState extends State<dropDown> {
   List<String> StoreCategory = [
@@ -87,6 +89,7 @@ class _dropDownState extends State<dropDown> {
 
                 setState(() {
                   food_present = true;
+                  // isFoodSelectAsStoreCategory = true;
                 });
                 widget.updateInitialValue(food_present);
                 print(food_present);
@@ -94,6 +97,7 @@ class _dropDownState extends State<dropDown> {
               } else {
                 setState(() {
                   food_present = false;
+                  // isFoodSelectAsStoreCategory = true;
                 });
                 widget.updateInitialValue(food_present);
                 // print('$searchString not found in the list.');
@@ -138,7 +142,7 @@ class _dropDown2State extends State<dropDown2> {
       isSelectStoreType = false;
       widget.updateParentSelectStoreType();
     }
-    
+
     Map<String, dynamic> updatedFields = {
       "shopCategoryDetails": {"storeType": selectedStoreType}
     };
@@ -171,7 +175,8 @@ class _dropDown2State extends State<dropDown2> {
 }
 
 class foodInformation extends StatefulWidget {
-  const foodInformation({super.key});
+  final Function updateParentFoodPresent;
+  const foodInformation({required this.updateParentFoodPresent, Key? key});
 
   @override
   State<foodInformation> createState() => _foodInformationState();
@@ -184,21 +189,39 @@ class _foodInformationState extends State<foodInformation> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          child: cuisines(),
+          child:
+              cuisines(updateParentFoodPresent: widget.updateParentFoodPresent),
         ),
+        (!isFoodSelectAsStoreCategory && isNexttap)
+            ? Text(
+                'Please Select Cuisines Type.',
+                style: TextStyle(
+                    color: Color.fromRGBO(183, 21, 9, 1), fontSize: 12),
+              )
+            : Text(''),
         SizedBox(
           height: 20,
         ),
         Container(
-          child: RadioExample(),
-        )
+          child: RadioExample(
+              updateParentFoodPresent: widget.updateParentFoodPresent),
+        ),
+        (!isPureVegFilled && isNexttap)
+            ? Text(
+                'Please Select Your shop pure veg.',
+                style: TextStyle(
+                    color: Color.fromRGBO(183, 21, 9, 1), fontSize: 12),
+              )
+            : Text(''),
       ],
     );
   }
 }
 
 class cuisines extends StatefulWidget {
-  const cuisines({Key? key}) : super(key: key);
+  final Function updateParentFoodPresent;
+  const cuisines({required this.updateParentFoodPresent, Key? key})
+      : super(key: key);
 
   @override
   State<cuisines> createState() => _cuisinesState();
@@ -262,6 +285,15 @@ class _cuisinesState extends State<cuisines> {
   List<String> selectedCuisinesType = [];
 
   Future<void> saveStoreCategory() async {
+    if (selectedCuisinesType.isNotEmpty) {
+      isFoodSelectAsStoreCategory = true;
+      widget.updateParentFoodPresent();
+      print('me bhara hu');
+    } else {
+      isFoodSelectAsStoreCategory = false;
+      widget.updateParentFoodPresent();
+      print('me khali hu');
+    }
     Map<String, dynamic> updatedFields = {
       "shopCategoryDetails": {"cusinesOffered": selectedCuisinesType}
     };
@@ -294,6 +326,8 @@ class _cuisinesState extends State<cuisines> {
 }
 
 class RadioExample extends StatefulWidget {
+  final Function updateParentFoodPresent;
+  RadioExample({required this.updateParentFoodPresent});
   @override
   _RadioExampleState createState() => _RadioExampleState();
 }
@@ -302,15 +336,27 @@ class _RadioExampleState extends State<RadioExample> {
   bool? _isYes;
   Future<void> saveStoreCategory() async {
     Map<String, dynamic> updatedFields;
+
     if (_isYes == true) {
+      isPureVegFilled = true;
       updatedFields = {
         "shopCategoryDetails": {"isPureVeg": "true"}
       };
-    } else {
+      widget.updateParentFoodPresent();
+    } else if (_isYes == false) {
+      isPureVegFilled = true;
       updatedFields = {
         "shopCategoryDetails": {"isPureVeg": "false"}
       };
+      widget.updateParentFoodPresent();
+    } else {
+      isPureVegFilled = false;
+      updatedFields = {
+        "shopCategoryDetails": {"isPureVeg": "false"}
+      };
+      widget.updateParentFoodPresent();
     }
+
     await UserApi.updateSeller(TokenId.token, TokenId.id, updatedFields);
   }
 
@@ -352,7 +398,7 @@ class _RadioExampleState extends State<RadioExample> {
             },
           ),
         ),
-        SizedBox(height: 20.0),
+        // SizedBox(height: 20.0),
         // _isYes != null
         //     ? Text(_isYes == true ? 'You selected: Yes' : 'You selected: No')
         //     : Container(),
