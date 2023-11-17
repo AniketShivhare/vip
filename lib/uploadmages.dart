@@ -47,6 +47,7 @@ class _UploadImagesState extends State<UploadImages> {
   XFile? cancelledCheckImage;
   XFile? shopImage;
   XFile? shopLogo;
+  XFile? PANIMage;
 
    Future<void> uploadImage(XFile imageFile, String imageName) async {
     final url1 = 'https://api.pehchankidukan.com/seller/${TokenId.id}';
@@ -163,6 +164,21 @@ class _UploadImagesState extends State<UploadImages> {
     }
   }
 
+  Future<void> _getPANImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? pickedFile =
+        await _picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      await uploadImage(pickedFile, "PANImage");
+      setState(() {
+        PANIMage = pickedFile;
+      });
+    } else {
+      // User canceled image selection
+    }
+  }
+
   // Similarly, create functions for other image types and update their respective variables.
 
   @override
@@ -211,7 +227,7 @@ class _UploadImagesState extends State<UploadImages> {
                           color: Color.fromRGBO(183, 21, 9, 1), fontSize: 12),
                     )
                   : Text(''),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: _getShopImage,
                 child: Row(
@@ -233,7 +249,7 @@ class _UploadImagesState extends State<UploadImages> {
                           color: Color.fromRGBO(183, 21, 9, 1), fontSize: 12),
                     )
                   : Text(''),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: _getShopLogo,
                 child: Row(
@@ -255,7 +271,7 @@ class _UploadImagesState extends State<UploadImages> {
                           color: Color.fromRGBO(183, 21, 9, 1), fontSize: 12),
                     )
                   : Text(''),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: _getGSTImage,
                 child: Row(
@@ -277,7 +293,7 @@ class _UploadImagesState extends State<UploadImages> {
                           color: Color.fromRGBO(183, 21, 9, 1), fontSize: 12),
                     )
                   : Text(''),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: _getFSSAIImage,
                 child: Row(
@@ -299,7 +315,7 @@ class _UploadImagesState extends State<UploadImages> {
                           color: Color.fromRGBO(183, 21, 9, 1), fontSize: 12),
                     )
                   : Text(''),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: _getCancelledCheque,
                 child: Row(
@@ -321,6 +337,28 @@ class _UploadImagesState extends State<UploadImages> {
                           color: Color.fromRGBO(183, 21, 9, 1), fontSize: 12),
                     )
                   : Text(''),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: _getPANImage,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    if (PANIMage != null)
+                      Icon(Icons.check, color: Colors.green),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text('Upload PAN card Image'),
+                  ],
+                ),
+              ),
+              (PANIMage == null && isFinish)
+                  ? Text(
+                      'Please Upload PAN card Image.',
+                      style: TextStyle(
+                          color: Color.fromRGBO(183, 21, 9, 1), fontSize: 12),
+                    )
+                  : Text(''),
               const SizedBox(height: 50),
               Center(
                 child: Container(
@@ -333,7 +371,8 @@ class _UploadImagesState extends State<UploadImages> {
                       //     fssaiImage != null &&
                       //     cancelledCheckImage != null &&
                       //     shopImage != null &&
-                      //     shopLogo != null)
+                      //     shopLogo != null &&
+                      //     PANIMage != null)
                       {
                         saveData();
                         Navigator.pushAndRemoveUntil(

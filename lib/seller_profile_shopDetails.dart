@@ -357,6 +357,58 @@ class _SellerProfileShopDetailsState extends State<SellerProfileShopDetails> {
   }
 
 
+  List<String> additionalLandlineNumbers = ["1234567890", "9876543210"];
+  bool showMoreNumbers = false;
+
+  List<Widget> buildAdditionalLandlineNumberWidgets() {
+    List<Widget> widgets = [];
+
+    for (int i = 0; i < additionalLandlineNumbers.length; i++) {
+      widgets.add(Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                  offset: Offset(0, 5),
+                  color: Colors.deepOrange.withOpacity(.2),
+                  spreadRadius: 2,
+                  blurRadius: 10,
+                ),
+              ],
+            ),
+            child: TextFormField(
+              initialValue: additionalLandlineNumbers[i],
+              // readOnly: true,
+              decoration: InputDecoration(
+                labelText: 'Other Landline Number',
+                hintText: 'Enter your other Landline number',
+                prefixIcon: const Icon(Icons.phone),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+              ),
+              keyboardType: TextInputType.phone,
+              onChanged: (value) {
+                setState(() {
+                  isLandLineNoEdited = true;
+                });
+              },
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+        ],
+      ));
+    }
+
+    return widgets;
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -858,6 +910,33 @@ class _SellerProfileShopDetailsState extends State<SellerProfileShopDetails> {
                           }),
                     ),
                     const SizedBox(height: 20),
+                    if (additionalLandlineNumbers.length > 0)
+                      Column(
+                        children: [
+                          // const SizedBox(height: 20),
+                          showMoreNumbers
+                              ? Column(
+                                  children:
+                                      buildAdditionalLandlineNumberWidgets(),
+                                )
+                              : Column(
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          showMoreNumbers = true;
+                                        });
+                                      },
+                                      child: const Text(
+                                          'view all Landline Numbers'),
+                                    ),
+                                    SizedBox(
+                                      height: 15,
+                                    )
+                                  ],
+                                ),
+                        ],
+                      ),
                     Container(
                       decoration: BoxDecoration(
                           color: Colors.white,

@@ -8,7 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:photo_view/photo_view.dart';
 import 'apis/sellerProfile.dart';
 
-
 class SellerProfilePersonalDetails extends StatefulWidget {
   const SellerProfilePersonalDetails({super.key});
   // final String title;
@@ -34,7 +33,7 @@ class _SellerProfilePersonalDetailsState
 
   Future<void> fetchSeller() async {
     seller = await SellerApi().getSellerProfile(sellerToken, sellerId);
-    if(seller.data.profilePhoto.isNotEmpty) {
+    if (seller.data.profilePhoto.isNotEmpty) {
       imageUrl = seller.data.profilePhoto;
     }
     print("asfdfds");
@@ -54,8 +53,8 @@ class _SellerProfilePersonalDetailsState
       "phone": phoneController.text,
     };
     final response =
-    await SellerApi().updateProfile(json, sellerId, sellerToken);
-    if(imageFile1 != null) {
+        await SellerApi().updateProfile(json, sellerId, sellerToken);
+    if (imageFile1 != null) {
       await UserApi.uploadImage(imageFile1!, "profilePhoto");
     }
     ScaffoldMessenger.of(context)
@@ -63,17 +62,16 @@ class _SellerProfilePersonalDetailsState
     Navigator.pop(context);
   }
 
-
-   String? imageUrl =  'https://media.istockphoto.com/id/1644722689/photo/autumn-decoration-with-leafs-on-rustic-background.jpg?s=2048x2048&w=is&k=20&c=dZFmEik-AnmQJum5Ve8GbQj-cjkPsFTJP26lPY5RTJg=';
-   String heroTag = "sellerProfile";
-   File? imageFile;
-   XFile? imageFile1;
+  String? imageUrl =
+      'https://media.istockphoto.com/id/1644722689/photo/autumn-decoration-with-leafs-on-rustic-background.jpg?s=2048x2048&w=is&k=20&c=dZFmEik-AnmQJum5Ve8GbQj-cjkPsFTJP26lPY5RTJg=';
+  String heroTag = "sellerProfile";
+  File? imageFile;
+  XFile? imageFile1;
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-
       setState(() {
         imageFile = File(pickedFile.path);
         imageFile1 = (pickedFile);
@@ -90,38 +88,90 @@ class _SellerProfilePersonalDetailsState
   Future<bool> _onWillPop() async {
     if (isImageEdited || isUserNameEdited || isMobileNoEdited) {
       return await showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Unsaved Changes'),
-            content: Text('You have unsaved changes. Do you want to save them?'),
-            actions: <Widget>[
-              TextButton(
-                child: Text('Discard'),
-                onPressed: () {
-                  Navigator.of(context).pop(true); // Discard changes and go back
-                },
-              ),
-              TextButton(
-                child: Text('Save'),
-                onPressed: () {
-                  postPersonalDetails;
-                  Navigator.of(context).pop(true);
-                },
-              ),
-            ],
-          );
-        },
-      ) ?? false;
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Unsaved Changes'),
+                content:
+                    Text('You have unsaved changes. Do you want to save them?'),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('Discard'),
+                    onPressed: () {
+                      Navigator.of(context)
+                          .pop(true); // Discard changes and go back
+                    },
+                  ),
+                  TextButton(
+                    child: Text('Save'),
+                    onPressed: () {
+                      postPersonalDetails;
+                      Navigator.of(context).pop(true);
+                    },
+                  ),
+                ],
+              );
+            },
+          ) ??
+          false;
     }
     return true; // If no changes are made, allow navigation without a dialog
   }
 
+  List<String> additionalMobileNumbers = ["1234567890", "9876543210"];
+  bool showMoreNumbers = false;
+
+  List<Widget> buildAdditionalMobileNumberWidgets() {
+    List<Widget> widgets = [];
+
+    for (int i = 0; i < additionalMobileNumbers.length; i++) {
+      widgets.add(Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                  offset: Offset(0, 5),
+                  color: Colors.deepOrange.withOpacity(.2),
+                  spreadRadius: 2,
+                  blurRadius: 10,
+                ),
+              ],
+            ),
+            child: TextFormField(
+              initialValue: additionalMobileNumbers[i],
+              // readOnly: true,
+              decoration: InputDecoration(
+                labelText: 'Other Mobile Number',
+                hintText: 'Enter your  other mobile number',
+                prefixIcon: const Icon(Icons.phone),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+              ),
+              keyboardType: TextInputType.phone,
+              onChanged: (value) {
+                setState(() {
+                  isMobileNoEdited = true;
+                });
+              },
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+        ],
+      ));
+    }
+
+    return widgets;
+  }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-
       onWillPop: _onWillPop,
       child: Scaffold(
           appBar: AppBar(
@@ -144,11 +194,14 @@ class _SellerProfilePersonalDetailsState
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => HeroImageDetail(imageFile: imageFile, imageUrl: imageUrl, heroTag: heroTag),
+                                builder: (context) => HeroImageDetail(
+                                    imageFile: imageFile,
+                                    imageUrl: imageUrl,
+                                    heroTag: heroTag),
                               ),
                             );
                           },
-                          child:Hero(
+                          child: Hero(
                             tag: heroTag,
                             child: Stack(
                               children: [
@@ -156,13 +209,16 @@ class _SellerProfilePersonalDetailsState
                                   width: 80, // Adjust the width as needed
                                   height: 80, // Adjust the height as needed
                                   child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(5), // Adjust the border radius as needed
+                                    borderRadius: BorderRadius.circular(
+                                        5), // Adjust the border radius as needed
                                     child: Image(
                                       image: imageFile != null
                                           ? FileImage(imageFile!)
                                           : imageUrl != null
-                                          ? NetworkImage(imageUrl!)
-                                          : AssetImage('assets/placeholder.png') as ImageProvider,
+                                              ? NetworkImage(imageUrl!)
+                                              : AssetImage(
+                                                      'assets/placeholder.png')
+                                                  as ImageProvider,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -170,28 +226,26 @@ class _SellerProfilePersonalDetailsState
                                 Positioned(
                                   top: 55,
                                   left: 55,
-                                  child: Stack(
-                                      children:[
-                                        Container(
-                                          height: 25,
-                                          width: 25,
-                                          color: Colors.white,
-                                        ),
-                                        Positioned(
-                                            top: -10,
-                                            left: -11,
-                                            child:IconButton(
-                                              icon: Icon(
-                                                Icons.camera_alt_outlined,
-                                                color: Colors.black,
-                                              ),
-                                              onPressed: () {
-                                                // Handle the edit image action here
-                                                _pickImage();
-                                              },
-                                            )),
-                                      ]
-                                  ),
+                                  child: Stack(children: [
+                                    Container(
+                                      height: 25,
+                                      width: 25,
+                                      color: Colors.white,
+                                    ),
+                                    Positioned(
+                                        top: -10,
+                                        left: -11,
+                                        child: IconButton(
+                                          icon: Icon(
+                                            Icons.camera_alt_outlined,
+                                            color: Colors.black,
+                                          ),
+                                          onPressed: () {
+                                            // Handle the edit image action here
+                                            _pickImage();
+                                          },
+                                        )),
+                                  ]),
                                 ),
                               ],
                             ),
@@ -214,9 +268,9 @@ class _SellerProfilePersonalDetailsState
                           ]),
                       child: TextFormField(
                         controller: nameController,
-                        onChanged:(value){
+                        onChanged: (value) {
                           setState(() {
-                            isUserNameEdited=true ;
+                            isUserNameEdited = true;
                           });
                         },
                         validator: (value) {
@@ -258,9 +312,9 @@ class _SellerProfilePersonalDetailsState
                                 borderRadius: BorderRadius.circular(30.0)),
                           ),
                           keyboardType: TextInputType.phone,
-                          onChanged:(value){
+                          onChanged: (value) {
                             setState(() {
-                              isMobileNoEdited=true ;
+                              isMobileNoEdited = true;
                             });
                           },
                           validator: (value) {
@@ -272,19 +326,41 @@ class _SellerProfilePersonalDetailsState
                             return null;
                           }),
                     ),
-                    const SizedBox(height: 40),
-                    if(isImageEdited || isUserNameEdited || isMobileNoEdited)
-                    Container(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: postPersonalDetails,
-                        style: ElevatedButton.styleFrom(
-                          // primary: isImageEdited ? Colors.greenAccent : null,
-                          backgroundColor: Colors.blue.shade900,
-                        ),
-                        child: const Text('Save Profile',style:TextStyle(color: Colors.white),),
+                    if (additionalMobileNumbers.length > 0)
+                      Column(
+                        children: [
+                          const SizedBox(height: 20),
+                          showMoreNumbers
+                              ? Column(
+                                  children:
+                                      buildAdditionalMobileNumberWidgets(),
+                                )
+                              : ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      showMoreNumbers = true;
+                                    });
+                                  },
+                                  child: const Text('View all Mobile Numbers'),
+                                ),
+                        ],
                       ),
-                    ),
+                    const SizedBox(height: 40),
+                    if (isImageEdited || isUserNameEdited || isMobileNoEdited)
+                      Container(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: postPersonalDetails,
+                          style: ElevatedButton.styleFrom(
+                            // primary: isImageEdited ? Colors.greenAccent : null,
+                            backgroundColor: Colors.blue.shade900,
+                          ),
+                          child: const Text(
+                            'Save Profile',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -299,15 +375,20 @@ class HeroImageDetail extends StatelessWidget {
   final String? imageUrl;
   final String heroTag;
 
-  HeroImageDetail({required this.imageFile, required this.imageUrl, required this.heroTag});
+  HeroImageDetail(
+      {required this.imageFile, required this.imageUrl, required this.heroTag});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions:[
+        actions: [
           IconButton(
-            icon: Icon(Icons.close,size: 30,color: Colors.black,),
+            icon: Icon(
+              Icons.close,
+              size: 30,
+              color: Colors.black,
+            ),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -316,7 +397,7 @@ class HeroImageDetail extends StatelessWidget {
 
         automaticallyImplyLeading: false, // Remove the back arrow
       ),
-      body:  Center(
+      body: Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -325,15 +406,14 @@ class HeroImageDetail extends StatelessWidget {
                 tag: heroTag,
                 child: PhotoView(
                   imageProvider: imageFile != null
-                ? FileImage(imageFile!) as ImageProvider
-                : NetworkImage(imageUrl!) as ImageProvider,
+                      ? FileImage(imageFile!) as ImageProvider
+                      : NetworkImage(imageUrl!) as ImageProvider,
                   minScale: PhotoViewComputedScale.contained,
                   maxScale: PhotoViewComputedScale.covered * 2,
                   backgroundDecoration: BoxDecoration(color: Colors.white),
                 ),
               ),
             ),
-
           ],
         ),
       ),

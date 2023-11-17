@@ -73,6 +73,13 @@ class _BankAccountDetailsState extends State<BankAccountDetails> {
   File? imageFile;
   XFile? imageFile1;
 
+
+  String? PANimageUrl =
+      'https://media.istockphoto.com/id/1486626509/photo/woman-use-ai-to-help-work-or-use-ai-everyday-life-at-home-ai-learning-and-artificial.jpg?s=2048x2048&w=is&k=20&c=I9i1MwJ29M2yQBC8BBLOfWyHJ3hlBpYoSmqSXAKFlZM=';
+  String PANheroTag = "sellerBankDetails";
+  File? PANimageFile;
+  XFile? PANimageFile1;
+
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -86,14 +93,33 @@ class _BankAccountDetailsState extends State<BankAccountDetails> {
     }
   }
 
+  Future<void> _pickPANImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        PANimageFile = File(pickedFile.path);
+        PANimageFile1 = pickedFile;
+        PANimageUrl = null; // Store the selected image
+        isPANImageEdited = true;
+      });
+    }
+  }
+
   bool isImageEdited = false;
+  bool isPANImageEdited = false;
   bool isBankAccountHolderName = false;
   bool isBankAccountNo = false;
   bool isIFSCCode = false;
   bool isPANCardNo = false;
 
   Future<bool> _onWillPop() async {
-    if (isImageEdited || isBankAccountNo || isIFSCCode || isPANCardNo || isBankAccountHolderName) {
+    if (isImageEdited ||
+        isBankAccountNo ||
+        isIFSCCode ||
+        isPANCardNo ||
+        isBankAccountHolderName ||
+        isPANImageEdited) {
       return await showDialog(
         context: context,
         builder: (context) {
@@ -141,40 +167,49 @@ class _BankAccountDetailsState extends State<BankAccountDetails> {
                   // mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 20),
-                    Column(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => cancelchequeImageExpand(imageFile: imageFile, imageUrl: imageUrl, heroTag: heroTag),
-                              ),
-                            );
-                          },
-                          child:Hero(
-                            tag: heroTag,
-                            child: Stack(
-                              children: [
-                                Container(
-                                  width: 80, // Adjust the width as needed
-                                  height: 80, // Adjust the height as needed
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(5), // Adjust the border radius as needed
-                                    child: Image(
-                                        image: imageFile != null
-                                                      ? FileImage(imageFile!)
-                                                      : imageUrl != null
-                                                      ? NetworkImage(imageUrl!)
-                                                      : AssetImage('assets/placeholder.png') as ImageProvider,
-                                                  fit: BoxFit.cover,
-                                    ),
+                        Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        cancelchequeImageExpand(
+                                            imageFile: imageFile,
+                                            imageUrl: imageUrl,
+                                            heroTag: heroTag),
                                   ),
-                                ),
-                                Positioned(
-                                  top: 55,
-                                  left: 55,
-                                  child: Stack(
-                                      children:[
+                                );
+                              },
+                              child: Hero(
+                                tag: heroTag,
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      width: 80, // Adjust the width as needed
+                                      height: 80, // Adjust the height as needed
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(
+                                            5), // Adjust the border radius as needed
+                                        child: Image(
+                                          image: imageFile != null
+                                              ? FileImage(imageFile!)
+                                              : imageUrl != null
+                                                  ? NetworkImage(imageUrl!)
+                                                  : AssetImage(
+                                                          'assets/placeholder.png')
+                                                      as ImageProvider,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 55,
+                                      left: 55,
+                                      child: Stack(children: [
                                         Container(
                                           height: 25,
                                           width: 25,
@@ -183,7 +218,7 @@ class _BankAccountDetailsState extends State<BankAccountDetails> {
                                         Positioned(
                                             top: -10,
                                             left: -11,
-                                            child:IconButton(
+                                            child: IconButton(
                                               icon: Icon(
                                                 Icons.camera_alt_outlined,
                                                 color: Colors.black,
@@ -195,16 +230,85 @@ class _BankAccountDetailsState extends State<BankAccountDetails> {
                                             )),
                                       ]
 
-                                  ),
+                                      ),
+                                    ),
+
+                                  ],
+
                                 ),
 
-                              ],
-
+                              ),
                             ),
-
-                          ),
+                            Text('Cancelled Cheque Image')
+                          ],
                         ),
-                        Text('Cancelled Cheque Image')
+                        Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        cancelchequeImageExpand(
+                                            imageFile: PANimageFile,
+                                            imageUrl: PANimageUrl,
+                                            heroTag: PANheroTag),
+                                  ),
+                                );
+                              },
+                              child: Hero(
+                                tag: heroTag,
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      width: 80, // Adjust the width as needed
+                                      height: 80, // Adjust the height as needed
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(
+                                            5), // Adjust the border radius as needed
+                                        child: Image(
+                                          image: PANimageFile != null
+                                              ? FileImage(PANimageFile!)
+                                              : PANimageUrl != null
+                                                  ? NetworkImage(PANimageUrl!)
+                                                  : AssetImage(
+                                                          'assets/placeholder.png')
+                                                      as ImageProvider,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 55,
+                                      left: 55,
+                                      child: Stack(children: [
+                                        Container(
+                                          height: 25,
+                                          width: 25,
+                                          color: Colors.white,
+                                        ),
+                                        Positioned(
+                                            top: -10,
+                                            left: -11,
+                                            child: IconButton(
+                                              icon: Icon(
+                                                Icons.camera_alt_outlined,
+                                                color: Colors.black,
+                                              ),
+                                              onPressed: () {
+                                                // Handle the edit image action here
+                                                _pickPANImage();
+                                              },
+                                            )),
+                                      ]),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Text('PAN card Image')
+                          ],
+                        ),
                       ],
                     ), // Adjus
 
@@ -359,7 +463,7 @@ class _BankAccountDetailsState extends State<BankAccountDetails> {
                     // ),
 
                     SizedBox(height: 60),
-                    if(isImageEdited || isBankAccountNo || isIFSCCode || isPANCardNo || isBankAccountHolderName)
+                    if(isImageEdited || isBankAccountNo || isIFSCCode || isPANCardNo || isBankAccountHolderName || isPANImageEdited)
                     Container(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -423,6 +527,58 @@ class cancelchequeImageExpand extends StatelessWidget {
               ),
             ),
 
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+class PANImageExpand extends StatelessWidget {
+  final File? imageFile;
+  final String? imageUrl;
+  final String heroTag;
+
+  PANImageExpand(
+      {required this.imageFile, required this.imageUrl, required this.heroTag});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.close,
+              size: 30,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+
+        automaticallyImplyLeading: false, // Remove the back arrow
+      ),
+      body: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: Hero(
+                tag: heroTag,
+                child: PhotoView(
+                  imageProvider: imageFile != null
+                      ? FileImage(imageFile!) as ImageProvider
+                      : NetworkImage(imageUrl!) as ImageProvider,
+                  minScale: PhotoViewComputedScale.contained,
+                  maxScale: PhotoViewComputedScale.covered * 2,
+                  backgroundDecoration: BoxDecoration(color: Colors.white),
+                ),
+              ),
+            ),
           ],
         ),
       ),
