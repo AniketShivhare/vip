@@ -51,15 +51,18 @@ class _BankDetailsFormState extends State<BankDetailsForm> {
 
   Future<void> postPersonalDetails() async {
     print("printing cc no");
+    print(selectedDate);
+    print(selectedDate1);
     Map<String, dynamic> updatedFields = {
+      "accountHolderName":bankAccountHolderNameController.text,
       "accountNo": bankAccountController.text,
       "ifscCode":ifscController.text,
       "panNo":panController.text,
       "gstNumber":gstController.text,
       "fssaiLicenseNumber":fssaiController.text,
       "shopActLicenseNumber":shopActController.text,
-      "shopActLicenseExpiryDate":shopActExpiryController.text,
-
+      "shopActLicenseExpiryDate":selectedDate1,
+      "fssaiLicenseExpiryDate":selectedDate
 
     };
     // await UserApi.updateSeller(widget.token, widget.id, updatedFields);

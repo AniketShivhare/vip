@@ -26,9 +26,13 @@ class SellerProfileData {
   String shopName;
   String photo;
   String fssaiImageUrl;
-  // List<ShopTimings> shopTimings;
+  String profilePhoto;
   double marginCharged;
   String shopCategory;
+  String panImage;
+  String passbookImage;
+  String shopPhoto;
+  String gstinImage;
 
   SellerProfileData({
     required this.gstin,
@@ -41,6 +45,11 @@ class SellerProfileData {
     required this.ownerName,
     required this.phone,
     required this.fssaiImageUrl,
+    required this.passbookImage,
+    required this.panImage,
+    required this.shopPhoto,
+    required this.gstinImage,
+    required this.profilePhoto,
     required this.businessType,
     required this.shopName,
     required this.photo,
@@ -62,6 +71,12 @@ class SellerProfileData {
       ownerName: json['ownerName'],
       phone: json['phone'],
       fssaiImageUrl: json['fssaiImageUrl'] ?? '',
+      passbookImage: json['passbookImage'] ?? '',
+      panImage: json['panImage'] ?? '',
+      shopPhoto: json['shopPhoto'] ?? '',
+      gstinImage: json['gstinImage'] ?? '',
+
+      profilePhoto: json['profilePhoto'] ?? '',
       landlineNumber: json['landlineNumber'] ?? '',
       businessType: json['businessType'] ?? '',
       shopName: json['shopName'] ?? '',
@@ -69,7 +84,7 @@ class SellerProfileData {
       // shopTimings: List<ShopTimings>.from(
       //     json['shopTimings'].map((x) => ShopTimings.fromJson(x))),
       marginCharged: json['marginCharged'].toDouble(),
-      shopCategory: json['shopCategory'],
+      shopCategory: json['shopCategory'] ?? '',
     );
   }
 }
@@ -134,6 +149,8 @@ class BankDetails {
   String bankName;
   String branchName;
   String passbookImage;
+  String cancelledCheckImage;
+
 
   BankDetails({
     required this.accountNo,
@@ -141,6 +158,7 @@ class BankDetails {
     required this.bankName,
     required this.branchName,
     required this.passbookImage,
+    required this.cancelledCheckImage,
   });
 
   factory BankDetails.fromJson(Map<String, dynamic> json) {
@@ -150,37 +168,6 @@ class BankDetails {
       bankName: json['bankName'] ?? '',
       branchName: json['branchName'] ?? '',
       passbookImage: json['passbookImage'] ?? '',
-    );
+      cancelledCheckImage: json['cancelledCheckImage'] ?? '',    );
   }
 }
-
-// class ShopTimings {
-//   String id;
-//   String timing;
-//
-//   ShopTimings({required this.id, required this.timing});
-//
-//   factory ShopTimings.fromJson(Map<String, dynamic> json) {
-//     return ShopTimings(
-//       id: json['_id'],
-//       timing: json['0'] +
-//           json['1'] +
-//           json['2'] +
-//           json['3'] +
-//           json['4'] +
-//           json['5'] +
-//           json['6'] +
-//           json['7'] +
-//           json['8'] +
-//           json['9'] +
-//           json['10'] +
-//           json['11'] +
-//           json['12'] +
-//           json['13'] +
-//           json['14'] +
-//           json['15'] +
-//           json['16'] +
-//           json['17'],
-//     );
-//   }
-// }

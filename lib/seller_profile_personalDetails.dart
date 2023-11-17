@@ -1,19 +1,13 @@
-import 'dart:convert';
-// import 'dart:html';
 import 'dart:io';
-
+import 'package:e_commerce/services/User_api.dart';
 import 'package:e_commerce/services/sellerApi.dart';
 import 'package:e_commerce/services/sellerTokenId.dart';
+import 'package:e_commerce/uploadmages.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_project/apis/sellerProfile.dart';
-import 'package:e_commerce/services/User_api.dart';
-// import 'package:flutter_project/services/sellerApi.dart';
-// import 'package:flutter_project/services/sellerTokenId.dart';
-import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_view/photo_view.dart';
-import 'apis/Seller.dart';
 import 'apis/sellerProfile.dart';
+
 
 class SellerProfilePersonalDetails extends StatefulWidget {
   const SellerProfilePersonalDetails({super.key});
@@ -40,8 +34,17 @@ class _SellerProfilePersonalDetailsState
 
   Future<void> fetchSeller() async {
     seller = await SellerApi().getSellerProfile(sellerToken, sellerId);
+    if(seller.data.profilePhoto.isNotEmpty) {
+      imageUrl = seller.data.profilePhoto;
+    }
+    print("asfdfds");
+    print(imageUrl);
+    // print(seller.data.profilePhoto);
     nameController.text = seller.data.ownerName;
     phoneController.text = seller.data.phone;
+
+    // print(imageUrl);
+    // print(imageUrl);
     print("phone");
   }
 
@@ -52,23 +55,29 @@ class _SellerProfilePersonalDetailsState
     };
     final response =
     await SellerApi().updateProfile(json, sellerId, sellerToken);
+    if(imageFile1 != null) {
+      await UserApi.uploadImage(imageFile1!, "profilePhoto");
+    }
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text("Profile Updated")));
     Navigator.pop(context);
   }
 
 
-   String? imageUrl = 'https://media.istockphoto.com/id/1644722689/photo/autumn-decoration-with-leafs-on-rustic-background.jpg?s=2048x2048&w=is&k=20&c=dZFmEik-AnmQJum5Ve8GbQj-cjkPsFTJP26lPY5RTJg=';
+   String? imageUrl =  'https://media.istockphoto.com/id/1644722689/photo/autumn-decoration-with-leafs-on-rustic-background.jpg?s=2048x2048&w=is&k=20&c=dZFmEik-AnmQJum5Ve8GbQj-cjkPsFTJP26lPY5RTJg=';
    String heroTag = "sellerProfile";
    File? imageFile;
+   XFile? imageFile1;
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
+
       setState(() {
         imageFile = File(pickedFile.path);
-        imageUrl = null;// Store the selected image
+        imageFile1 = (pickedFile);
+        imageUrl = null;
         isImageEdited = true;
       });
     }
@@ -182,20 +191,15 @@ class _SellerProfilePersonalDetailsState
                                               },
                                             )),
                                       ]
-
                                   ),
                                 ),
-
                               ],
-
                             ),
-
                           ),
                         ),
                         Text('Profile Image')
                       ],
                     ),
-
                     const SizedBox(height: 40),
                     Container(
                       decoration: BoxDecoration(
@@ -268,17 +272,17 @@ class _SellerProfilePersonalDetailsState
                             return null;
                           }),
                     ),
-                    SizedBox(height: 40),
+                    const SizedBox(height: 40),
                     if(isImageEdited || isUserNameEdited || isMobileNoEdited)
                     Container(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: postPersonalDetails,
-                        child: Text('Save Profile',style:TextStyle(color: Colors.white),),
                         style: ElevatedButton.styleFrom(
                           // primary: isImageEdited ? Colors.greenAccent : null,
                           backgroundColor: Colors.blue.shade900,
                         ),
+                        child: const Text('Save Profile',style:TextStyle(color: Colors.white),),
                       ),
                     ),
                   ],

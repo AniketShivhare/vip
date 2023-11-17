@@ -4,11 +4,14 @@ import 'dart:convert';
 import 'package:e_commerce/services/User_api.dart';
 import 'package:e_commerce/services/tokenId.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../apis/orderModel.dart';
 import 'package:http/http.dart' as http;
 
+import 'orderDescriptionPage.dart';
+
 void main() {
-  runApp( sellerFrontPage());
+  runApp( sellerFrontPage(index1:1));
 }
 
 class OrderPage extends StatefulWidget {
@@ -23,7 +26,7 @@ class _BankDetailsAppState extends State<OrderPage> {
     return MaterialApp(
       title: 'Order Details',
       debugShowCheckedModeBanner: false,
-      home: sellerFrontPage(),
+      home: sellerFrontPage(index1:1),
     );
   }
 }
@@ -32,6 +35,12 @@ class _BankDetailsAppState extends State<OrderPage> {
 
 
 class sellerFrontPage extends StatefulWidget {
+  final  index1;
+  const sellerFrontPage(
+      {Key? key,
+        required this.index1,
+        })
+      : super(key: key);
   @override
   _BankDetailsFormState createState() => _BankDetailsFormState();
 }
@@ -45,10 +54,11 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
   bool isNewOrders = true;
 
   StreamController<List<Order>> orderStreamController = StreamController<List<Order>>.broadcast();
-   Future<void> fetchOrderData(filter) async {
+
+   Future<List<Order>> fetchOrderData(filter, {bool ok = true}) async {
      print(filter);
     try {
-      var url = "https://api.pehchankidukan.com/seller/${TokenId.id}/orders?orderStatus=$filter";
+      var url = "https://api.pehchankidukan.com/seller/${TokenId.id}/orders?orderStatus.status=$filter";
       final uri = Uri.parse(url);
       final response = await http.get(
         uri,
@@ -57,17 +67,29 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
           'Authorization': 'Bearer ${TokenId.token}'
         },
       );
-
+        print(response.body);
       if (response.statusCode == 200) {
-        final body = response.body;
-        final productJson = jsonDecode(body);
+        // final body = response.body;
+        // final Map<String,dynamic> productJson = jsonDecode(body);
+        final bodyBytes = response.bodyBytes;
+        final bodyString = utf8.decode(bodyBytes);
+        final Map<String, dynamic> productJson = jsonDecode(bodyString);
+
         List<Order> orders = (productJson['allOrders'] as List<dynamic>?)
             ?.map((e) => Order.fromJson(e as Map<String, dynamic>))
             .toList() ?? [];
-        if(!orderStreamController.isClosed)
-        orderStreamController.sink.add(orders);
+        for (Order order in orders) {
+            order.getProductListString();
+        }
+        print("orders.length21232");
+        print(orders.length);
+        print(ok);
+        if(!orderStreamController.isClosed && ok) {
+          orderStreamController.sink.add(orders);
+        }
 
         print("Order get successful1");
+        return orders;
       } else {
         print('Failed to get orders. Status code: ${response.statusCode}');
         print('Response body: ${response.body}');
@@ -75,12 +97,14 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
     } catch (e) {
       print('Error while fetching orders: $e');
     }
+    return [];
   }
-  // void fetchDataPeriodically() {
-  //   Timer.periodic(Duration(seconds: 2), (timer) {
-  //     fetchOrderData("OrderReceived");
-  //   });
-  // }
+
+  void fetchDataPeriodically() {
+    Timer.periodic(const Duration(seconds: 2), (timer) {
+      fetchOrderData("OrderReceived");
+    });
+  }
   int currentTabIndex=0;
 
   @override
@@ -93,10 +117,12 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
   @override
   void initState() {
     super.initState();
-    _fetchOrderTimer = Timer.periodic(Duration(seconds: 20), (timer) {
+    fetchOrderData("OrderReceived");
+    currentTabIndex = widget.index1;
+    _fetchOrderTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
       fetchOrderData("OrderReceived");
     });
-    fetchOrderData("OrderReceived");
+    // fetchOrderData("OrderReceived");
     // fetchOrderData("OrderReceived");
     // fetchDataPeriodically();
   }
@@ -124,6 +150,7 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
               setState(() {
                 currentTabIndex = index;
               });
+
             },
             tabs: const [
               Tab(text: 'Preparing'),
@@ -153,120 +180,150 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
                 }
               },
             ),
-            buildPage3('Ready'),
-            buildPage4('PickedUp'),
+            FutureBuilder<List<Order>>(
+              future: fetchOrderData("OrderPrepared",ok:false),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  print("re${snapshot.data?.length}");
+                  return buildPage3(snapshot.data,"OrderPrepared");
+                }
+              },
+            ),
+            FutureBuilder<List<Order>>(
+              future: fetchOrderData("OrderDispatched",ok:false),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  print("re${snapshot.data?.length}");
+                  return buildPage3(snapshot.data, "OrderDispatched");
+                }
+              },
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget buildPage1( orders) {
-    final List<String> price = ["₹300", "₹70", "₹200", "₹150"];
+  Widget buildPage1(orders,{bool ok=false}) {
+    print("orders.length");
+    print(orders.length);
     return Scaffold(
         backgroundColor: Colors.white30,
         body: ListView.builder(
-          itemCount: orders?.length,
+          itemCount: (ok)? 2 :orders?.length,
           itemBuilder: (BuildContext context, int index) {
             final order = orders?[index];
             return Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 10.0),
-              child: Card(
-                color: Colors.white,
-                elevation: 5, // Add elevation to make it appear as a card
-                child: ListTile(
-                  tileColor: Colors.white,
-                  title: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text('#${order?.customerID?.substring(order.customerID!.length - 4)}',style: TextStyle(fontSize: 23,fontWeight: FontWeight.bold),),
-                          const SizedBox(width: 10,),
-                          Expanded(
-                            child: Container(
-                              height: 25,
-                              color: Colors.lightGreen.shade400,
-                              child: const Center(
-                                child: Text('Preparing',),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text('${order?.sellerID?.substring(order.sellerID!.length - 4)}s Order',
-                            style: const TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w500,
-                            ),),
-                          const Spacer(),
-                          Text(order!.createdAt.toString()),
-                        ],
-                      ),
-                    ],
-                  ),
-                  subtitle: Column(
-                    // crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 5,),
-                      Row(
-                        children: [
-                          const Text('5kg sugar, 3kg rice,.... ',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),),
-                          const Spacer(),
-                          const Text('Total Bill: ',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w500,
-                            ),),
-                          // Spacer(),
-                          Text(price[index],style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500),)
-                        ],
-                      ),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => OrderDescriptionPage(order: order, status: 'Preparing', )));
+                },
 
-
-                      Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-
-                            },
-                            child: const Center(
-                              child: Text(
-                                'See more Details',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  decoration: TextDecoration.underline,
+                child: Card(
+                  color: Colors.white,
+                  elevation: 5, // Add elevation to make it appear as a card
+                  child: ListTile(
+                    tileColor: Colors.white,
+                    title: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text('#${order?.id?.substring(order.id!.length - 3)}',style: TextStyle(fontSize: 23,fontWeight: FontWeight.bold),),
+                            const SizedBox(width: 20,),
+                            Expanded(
+                              child: Container(
+                                height: 25,
+                                color: Colors.orangeAccent,
+                                child: const Center(
+                                  child: Text('Preparing',),
                                 ),
                               ),
                             ),
-                          ),
-                          const Spacer(),
-                        ],
-                      ),
-                      // const SizedBox(height: 10),
-                      const Row(
-                        children: [
-                          Text("pappu singh is waiting for order  ",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500),),
-                          Spacer()
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Container(
-                        height: 38,
-                        color: const Color(0xFF204969),
-                        width: double.infinity,
-                        child: ElevatedButton(onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF204969),
-                              elevation: 3, // Remove button elevation if not needed
-                            ),
-                            child: const Center(
-                              child: Text('Make Order Ready',style: TextStyle(color: Colors.white),),)
+                          ],
                         ),
-                      )
-                    ],
+                        Row(
+                          children: [
+                            Text('${order?.shippedBy.name}\'s Order',
+                              style: const TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w500,
+                              ),),
+                            const Spacer(),
+                            Text(DateFormat.Hm().format(order!.createdAt)),
+                          ],
+                        ),
+                      ],
+                    ),
+                    subtitle: Column(
+                      // crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 5,),
+                        Row(
+                          children: [
+                             Text(order?.productShowOnOrder,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),),
+                            const Spacer(),
+                            const Text('Total Bill: ',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w500,
+                              ),),
+                            // Spacer(),
+                            Text(order.payment.paymentAmount.toString(),style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500),)
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+
+                              },
+                              child: const Center(
+                                child: Text(
+                                  'See more Details',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const Spacer(),
+                          ],
+                        ),
+                        // const SizedBox(height: 10),
+                        const Row(
+                          children: [
+                            Text("pappu singh is waiting for order  ",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500),),
+                            Spacer()
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          height: 38,
+                          color: const Color(0xFF204969),
+                          width: double.infinity,
+                          child: ElevatedButton(onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF204969),
+                                elevation: 3, // Remove button elevation if not needed
+                              ),
+                              child: const Center(
+                                child: Text('Make Order Ready',style: TextStyle(color: Colors.white),),)
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -275,290 +332,131 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
         )
     );
   }
-
-
-  Widget buildPage3(String s) {
-
-    final List<Map<String, dynamic>> orders = [
-      {
-        'name': 'Abhishek',
-        'amount': '₹50',
-        'id': '123',
-        'order': 'Item 1',
-        'time': '10:00 AM',
-      },
-      {
-        'name': 'Sahil',
-        'amount': '\$30',
-        'id': '124',
-        'order': 'Item 2',
-        'time': '11:30 AM',
-      },
-      {
-        'name': 'Rohan',
-        'amount': '\$70',
-        'id': '125',
-        'order': 'Item 3',
-        'time': '1:45 PM',
-      },
-      {
-        'name': 'Rishi',
-        'amount': '\$40',
-        'id': '126',
-        'order': 'Item 4',
-        'time': '3:15 PM',
-      },
-    ];
-    final List<String> product = ["sugar", "rice", "soap", "flour"];
-    final List<String> amount = ["1 kg", "2 kg", "2 Dozen", "5 kg"];
-    final List<String> price = ["₹50", "₹70", "₹200", "₹150"];
+  Widget buildPage3( orders, orderStatus) {
+    String orderStatus1 = "";
+    if(orderStatus=="OrderPrepared") {
+        orderStatus1 = "ready for pick up ";
+    }
+    print("orders.length");
+    print(orders.length);
+    // final List<String> price = ["₹300", "₹70", "₹200", "₹150","123","1233","3423", "₹150","123","1233", "₹150","123","1233"];
     return Scaffold(
-        backgroundColor: const Color(0xFFFFF7F7),
-        body: Column(
-          children: [
-            const SizedBox(height: 10,),
-            Expanded(
-              child: ListView.builder(
-                itemCount: orders.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final order = orders[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(
-                        left: 8.0, right: 8.0, top: 10.0),
-
-                    child: Card(
-                      elevation: 5, // Add elevation to make it appear as a card
-                      child: ListTile(
-                        title: Column(
+        backgroundColor: Colors.white30,
+        body: ListView.builder(
+          itemCount: orders?.length,
+          itemBuilder: (BuildContext context, int index) {
+            Order order = orders[index];
+            return Padding(
+              padding: const EdgeInsets.only(
+                  left: 15.0, right: 15.0, top: 10.0),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => OrderDescriptionPage(order: order, status: 'Preparing', )));
+                },
+                child: Card(
+                  color: Colors.white,
+                  elevation: 5, // Add elevation to make it appear as a card
+                  child: ListTile(
+                    tileColor: Colors.white,
+                    title: Column(
+                      children: [
+                        Row(
                           children: [
-                            Container(
-                              height: 25,
-                              width: double.infinity,
-                              color: const Color(0xFFDADADA),
-                              child: const Center(
-                                child: Text('Ready Order',),
+                            Text('#${order?.id?.substring(order.id!.length - 3)}',style: TextStyle(fontSize: 23,fontWeight: FontWeight.bold),),
+                            const SizedBox(width: 10,),
+                            Expanded(
+                              child: Container(
+                                height: 25,
+                                color: Colors.lightGreen.shade400,
+                                child:  Center(
+                                  child: Text('$orderStatus',),
+                                ),
                               ),
                             ),
-                            Row(
-                              children: [
-                                Text('Order ID: ${order['id']}'),
-                                const Spacer(),
-                                Text(order['time']!),
-                                PopupMenuButton<String>(
-                                  // onSelected: _selectOption,
-                                  itemBuilder: (BuildContext context) {
-                                    return {'a', 'b'}.map((String choice) {
-                                      return PopupMenuItem<String>(
-                                        value: choice,
-                                        child: Text(choice),
-                                      );
-                                    }).toList();
-                                  },
-                                ),
-                              ],
-                            ),
                           ],
                         ),
-                        subtitle: Column(
-                          // crossAxisAlignment: CrossAxisAlignment.start,
+                        Row(
                           children: [
-                            Row(
-                              children: [
-
-                                Text('  ${order['name']}\'s Order',
-                                  style: const TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w500,
-                                  ),),
-                                const Spacer(),
-                                const Text('Takeaway',
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w500,
-                                  ),)
-                              ],
-                            ),
-                            const SizedBox(height: 10,),
-                            Visibility(
-                                child: Row(
-                                  children: [
-                                    Text('${amount[index]} ${product[index]}',
-                                      style: const TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.w500,
-                                      ),),
-                                    const Spacer(),
-                                    Text(price[index],
-                                      style: const TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.w500,
-                                      ),)
-                                  ],
-                                )
-                            ),
-                            const SizedBox(height: 10),
-                            //
-                            // const SizedBox(height: 10,),
-                            Text('Total Bill: ${price[index]} ',
+                            Text('${order?.customer.name}\'s Order',
                               style: const TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.w500,
-                              ),)
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        )
-
-
-    );
-  }
-  Widget buildPage4(String s) {
-    final List<Map<String, String>> orders = [
-      {
-        'name': 'Abhishek',
-        'amount': '₹50',
-        'id': '123',
-        'order': 'Item 1',
-        'time': '10:00 AM',
-      },
-      {
-        'name': 'Sahil',
-        'amount': '\$30',
-        'id': '124',
-        'order': 'Item 2',
-        'time': '11:30 AM',
-      },
-      {
-        'name': 'Rohan',
-        'amount': '\$70',
-        'id': '125',
-        'order': 'Item 3',
-        'time': '1:45 PM',
-      },
-      {
-        'name': 'Rishi',
-        'amount': '\$40',
-        'id': '126',
-        'order': 'Item 4',
-        'time': '3:15 PM',
-      },
-    ];
-    final List<String> product = ["sugar", "rice", "soap", "flour"];
-    final List<String> amount = ["1 kg", "2 kg", "2 Dozen", "5 kg"];
-    final List<String> price = ["₹50", "₹70", "₹200", "₹150"];
-    return Scaffold(
-        backgroundColor: const Color(0xFFFFF7F7),
-        body: Column(
-          children: [
-            const SizedBox(height: 10,),
-
-            Expanded(
-              child: ListView.builder(
-                itemCount: orders.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final order = orders[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(
-                        left: 8.0, right: 8.0, top: 10.0),
-
-                    child: Card(
-                      elevation: 5, // Add elevation to make it appear as a card
-                      child: ListTile(
-                        title: Column(
-                          children: [
-                            Container(
-                              height: 25,
-                              width: double.infinity,
-                              color: const Color(0xFFDADADA),
-                              child: const Center(
-                                child: Text('Completed',),
                               ),),
-                            Row(
-                              children: [
-                                Text('Order ID: ${order['id']}'),
-                                const Spacer(),
-                                Text(order['time']!),
-                                PopupMenuButton<String>(
-                                  // onSelected: _selectOption,
-                                  itemBuilder: (BuildContext context) {
-                                    return {'a', 'b'}.map((String choice) {
-                                      return PopupMenuItem<String>(
-                                        value: choice,
-                                        child: Text(choice),
-                                      );
-                                    }).toList();
-                                  },
-                                ),
-                              ],
-                            ),
+                            const Spacer(),
+                            Text(DateFormat.Hm().format(order!.createdAt)),
                           ],
                         ),
-                        subtitle: Column(
-                          // crossAxisAlignment: CrossAxisAlignment.start,
+                      ],
+                    ),
+                    subtitle: Column(
+                      // crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 5,),
+                        Row(
                           children: [
-                            Row(
-                              children: [
-
-                                Text('${order['name']}\'s Order',
-                                  style: const TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w500,
-                                  ),),
-                                const Spacer(),
-                                const Text('Takeaway',
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w500,
-                                  ),)
-                              ],
-                            ),
-                            const SizedBox(height: 10,),
-                            Visibility(
-                                child: Row(
-                                  children: [
-                                    Text('${amount[index]} ${product[index]}',
-                                      style: const TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.w500,
-                                      ),),
-                                    const Spacer(),
-                                    Text(price[index],
-                                      style: const TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.w500,
-                                      ),)
-                                  ],
-                                )
-                            ),
-                            const SizedBox(height: 10),
-                            //
-                            // const SizedBox(height: 10,),
-                            Text('Total Amount: ${price[index]} ',
-                              style: const TextStyle(
+                             Text(order.productShowOnOrder,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),),
+                            const Spacer(),
+                            const Text('Total Bill: ',
+                              style: TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.w500,
-                              ),)
+                              ),),
+                            // Spacer(),
+                            Text(order.payment.paymentAmount.toString(),style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500),)
                           ],
                         ),
-                      ),
+
+
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+
+                              },
+                              child: const Center(
+                                child: Text(
+                                  'See more Details',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const Spacer(),
+                          ],
+                        ),
+                        // const SizedBox(height: 10),
+                        (orderStatus1 =='ready for pick up ') ? const Row(
+                          children: [
+                            Text("chintu singh is waiting for order  ",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500),),
+                            Spacer()
+                          ],
+                        ):Container(),
+                        const SizedBox(height: 10),
+                        (orderStatus1 =='ready for pick up ') ?
+                        Container(
+                          height: 38,
+                          color: const Color(0xFF204969),
+                          width: double.infinity,
+                          child: ElevatedButton(onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF204969),
+                                elevation: 3, // Remove button elevation if not needed
+                              ),
+                              child:  Center(
+                                child: Text('$orderStatus1',style: TextStyle(color: Colors.white),),)
+                          ),
+                        ) : Container(),
+                      ],
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
-            ),
-          ],
+            );
+          },
         )
-
-
     );
   }
-
-
-
 }

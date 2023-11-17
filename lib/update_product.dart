@@ -1,19 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:e_commerce/review_listed.dart';
 import 'package:e_commerce/services/User_api.dart';
 import 'package:e_commerce/services/category_api.dart';
 import 'package:e_commerce/services/tokenId.dart';
-import 'package:e_commerce/sucessfully_add.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'add_product.dart';
 import 'apis/ProductModel.dart';
-import 'categoryList.dart';
-import 'main.dart';
 import 'main_dashboard.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:path/path.dart' as path;
 
 class PriceQuantitySpinnerRow extends StatefulWidget {
   final List<ItemOption> options;
@@ -34,10 +32,10 @@ class PriceQuantitySpinnerRow extends StatefulWidget {
 
 class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
   ItemOption newItem = ItemOption(
-    price: 0,
-    quantity: "0",
+    price: "",
+    quantity: "",
     unit: 'kg',
-    offerPrice: 0,
+    offerPrice: "",
   );
   List<String> dropDownItems = [
     "kg",
@@ -56,10 +54,10 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
   void addOption() {
     widget.onOptionAdded(newItem);
     newItem = ItemOption(
-      price: 0,
-      quantity: "0",
+      price: "",
+      quantity: "",
       unit: 'kg',
-      offerPrice: 0,
+      offerPrice: "",
     );
   }
 
@@ -145,7 +143,9 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                           ),
                         ),
                         InkWell(
-                          onTap: () {},
+                          onTap: () {
+
+                          },
                           child: Icon(
                             Icons.delete_outlined,
                           ),
@@ -171,7 +171,7 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                             child: TextFormField(
                               controller:
                                   TextEditingController(text: option.price.toString()),
-                              onChanged: (value) => option.price = value as double,
+                              onChanged: (value) => option.price = value ,
                               decoration: InputDecoration(
                                 hintText: 'Price (In Rs.)',
                                 border: InputBorder.none,
@@ -202,7 +202,7 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                             child: TextFormField(
                               controller: TextEditingController(
                                   text: option.offerPrice.toString()),
-                              onChanged: (value) => option.offerPrice = value as double,
+                              onChanged: (value) => option.offerPrice = value,
                               decoration: InputDecoration(
                                 hintText: 'Offer Price',
                                 border: InputBorder.none,
@@ -250,21 +250,21 @@ class UpdateProducts extends StatefulWidget {
   String description = '';
   final String token, id;
   final String pid;
+  final List<String> imageList;
   UpdateProducts(
       {Key? key,
       required this.pid,
       required this.token,
       required this.id,
       required this.productName,
-      // required this.productImage,
       required this.productCategory,
       required this.productSubCategory1,
       required this.productSubCategory2,
       required this.stockTF,
       required this.stockIO,
-      // required this.productType,
       required this.description,
-      required this.quantityPricing})
+      required this.quantityPricing,
+      required  this.imageList})
       : super(key: key);
 
   @override
@@ -297,7 +297,6 @@ class _UpdateProductsState extends State<UpdateProducts> {
   var items2 = [
     'Veg',
     'Non Veg',
-    'Not required',
   ];
 
   String units = 'kg';
@@ -324,33 +323,6 @@ class _UpdateProductsState extends State<UpdateProducts> {
   String pSCategory2 = '';
   final description = TextEditingController();
 
-  Future<void> stockUpdate() async {
-    final apiUrl =
-        'https://api.pehchankidukan.com/seller/${TokenId.id}/products/$pid';
-
-    // final itemOptions = quantityPricing;
-
-    final Map<String, dynamic> productJson = {"inStock": _switchValue};
-    var uri = Uri.parse(apiUrl);
-    try {
-      final response = await http.put(
-        uri,
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${TokenId.token}'
-        },
-        body: jsonEncode(productJson),
-      );
-
-      if (response.statusCode == 200) {
-        print("product updated succesfully");
-      } else {
-        print('Failed to update product. Status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
-      }
-    } catch (e) {}
-  }
-
   final ImagePicker imagePicker = ImagePicker();
   List<XFile>? imageFileList = [];
 
@@ -363,21 +335,24 @@ class _UpdateProductsState extends State<UpdateProducts> {
     setState(() {});
   }
 
-  final List<String> imgList = [
+  List<String> imgList = [
     'https://media.istockphoto.com/id/1644722689/photo/autumn-decoration-with-leafs-on-rustic-background.jpg?s=2048x2048&w=is&k=20&c=dZFmEik-AnmQJum5Ve8GbQj-cjkPsFTJP26lPY5RTJg=',
     'https://media.istockphoto.com/id/1464561797/photo/artificial-intelligence-processor-unit-powerful-quantum-ai-component-on-pcb-motherboard-with.jpg?s=2048x2048&w=is&k=20&c=_h_lwe5-Xb4AK-w3nUfa0m3ZNPDZSqhQhkitrtdTpFQ=',
     'https://media.istockphoto.com/id/1486626509/photo/woman-use-ai-to-help-work-or-use-ai-everyday-life-at-home-ai-learning-and-artificial.jpg?s=2048x2048&w=is&k=20&c=I9i1MwJ29M2yQBC8BBLOfWyHJ3hlBpYoSmqSXAKFlZM='
   ];
 
-  void removeImage(int index) {
+  Future<void> removeImage(int index) async {
+    //we have to change condition this one later
+    if(imgList.length!=3) {
+      await UserApi.deleteImage(imgList[index], widget.pid);
+    }
     setState(() {
       imgList.removeAt(index);
     });
   }
-
   Future<void> showDeleteConfirmationDialog(int index) async {
     return showDialog(
-      context: context,
+      context: context ,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Delete Image?'),
@@ -401,9 +376,8 @@ class _UpdateProductsState extends State<UpdateProducts> {
       },
     );
   }
-
   void showImageExpansion(int index) {
-    Navigator.of(context).push(
+    Navigator.of(context ).push(
       MaterialPageRoute<void>(
         builder: (BuildContext context) {
           return Scaffold(
@@ -424,17 +398,15 @@ class _UpdateProductsState extends State<UpdateProducts> {
       ),
     );
   }
-
   void removeCameraImage(int index) {
     setState(() {
       imageFileList!.removeAt(index);
     });
   }
-
   Future<void> showCameraDeleteConfirmationDialog(int index) async {
     return showDialog(
-      context: context,
-      builder: (BuildContext context) {
+      context: context ,
+      builder: (context) {
         return AlertDialog(
           title: Text('Delete Image?'),
           content: Text('Are you sure you want to delete this image?'),
@@ -457,9 +429,8 @@ class _UpdateProductsState extends State<UpdateProducts> {
       },
     );
   }
-
   void showCameraImageExpansion(int index) {
-    Navigator.of(context).push(
+    Navigator.of(context ).push(
       MaterialPageRoute<void>(
         builder: (BuildContext context) {
           return Scaffold(
@@ -479,181 +450,204 @@ class _UpdateProductsState extends State<UpdateProducts> {
       ),
     );
   }
-
   Widget categoryDialog() {
-    return FutureBuilder(
-      future: getCategory(TokenId.token),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text("Error : ${snapshot.error}"),
-          );
-        } else {
-          return ListView.builder(
-            itemCount: snapshot.data!.data.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                onTap: () {
-                  setState(() {
-                    pCategory = snapshot.data!.data[index].toString();
-                  });
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Row(
-                          children: [
-                            InkWell(
-                                onTap: () => Navigator.pop(context),
-                                child: Icon(Icons.arrow_back_ios)),
-                            SizedBox(width: 5),
-                            Text(
-                              "Sub Category 1",
-                            ),
-                          ],
-                        ),
-                        content: subCategory1Dialog(),
-                      );
-                    },
+    return Container(
+      height: 600,
+      width: 500,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            FutureBuilder(
+              future: getCategory(TokenId.token),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
                   );
-                },
-                leading: CircleAvatar(),
-                trailing: Icon(
-                  Icons.arrow_forward_ios,
-                  size: 20,
-                ),
-                title: Text(
-                  snapshot.data!.data[index].toString(),
-                  style: TextStyle(fontSize: 14),
-                ),
-              );
-            },
-          );
-        }
-      },
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text("Error : ${snapshot.error}"),
+                  );
+                } else {
+                  final items = snapshot.data!.data;
+                  return Column(
+                    children: items.map((item) {
+                      return ListTile(
+                        onTap: () {
+                          setState(() {
+                            pCategory = item.toString();
+                          });
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Row(
+                                  children: [
+                                    InkWell(
+                                      onTap: () => Navigator.pop(context),
+                                      child: const Icon(Icons.arrow_back_ios),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    const Text("Sub Category 1"),
+                                  ],
+                                ),
+                                content: subCategory1Dialog(),
+                              );
+                            },
+                          );
+                        },
+                        leading: CircleAvatar(),
+                        trailing: const Icon(
+                          Icons.arrow_forward_ios,
+                          size: 20,
+                        ),
+                        title: Text(
+                          item.toString(),
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
-
   Widget subCategory1Dialog() {
-    return FutureBuilder(
-      future: getSubCategory(TokenId.token, pCategory),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text("Error : ${snapshot.error}"),
-          );
-        } else {
-          return ListView.builder(
-            itemCount: snapshot.data!.data.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                onTap: () {
-                  setState(() {
-                    pSCategory1 = snapshot.data!.data[index];
-                  });
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Row(
-                          children: [
-                            InkWell(
-                                onTap: () => Navigator.pop(context),
-                                child: Icon(Icons.arrow_back_ios)),
-                            SizedBox(width: 5),
-                            Text(
-                              "Sub Category 2",
-                            ),
-                          ],
-                        ),
-                        content: subCategory2Dialog(),
-                      );
-                    },
+    return Container(
+      height: 600,
+      width: 500,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            FutureBuilder(
+              future: getSubCategory(TokenId.token, pCategory),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
                   );
-                },
-                trailing: Icon(
-                  Icons.arrow_forward_ios,
-                  size: 20,
-                ),
-                title: Text(
-                  snapshot.data!.data[index],
-                  style: TextStyle(fontSize: 14),
-                ),
-              );
-            },
-          );
-        }
-      },
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text("Error : ${snapshot.error}"),
+                  );
+                } else {
+                  print("adfghjkl");
+                  print(snapshot.data!.data.length);
+                  final items = snapshot.data!.data;
+                  return Column(
+                    children: items.map((item) {
+                      return ListTile(
+                        onTap: () {
+                          setState(() {
+                            pSCategory1 = item;
+                          });
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Row(
+                                  children: [
+                                    InkWell(
+                                      onTap: () => Navigator.pop(context),
+                                      child: Icon(Icons.arrow_back_ios),
+                                    ),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      "Sub Category 2",
+                                    ),
+                                  ],
+                                ),
+                                content: subCategory2Dialog(),
+                              );
+                            },
+                          );
+                        },
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                          size: 20,
+                        ),
+                        title: Text(
+                          item,
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
-
   Widget subCategory2Dialog() {
-    return FutureBuilder(
-      future: getSubCategory2(TokenId.token, pCategory, pSCategory1),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text("Error : ${snapshot.error}"),
-          );
-        } else if (snapshot.data!.data.length == 0) {
-          Future.delayed(Duration(milliseconds: 1), () {
-            Navigator.pop(context);
-            Navigator.pop(context);
-            Navigator.pop(context);
-            pSCategory2 = '';
-            setState(() {});
-          });
-          return Center(
-            child:
-                Text("No subcategories available for the selected criteria."),
-          );
-        } else {
-          print(snapshot.data!.data.length);
-          return ListView.builder(
-            itemCount: snapshot.data!.data.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                onTap: () {
-                  setState(() {
-                    pSCategory2 = snapshot.data!.data[index];
+    return Container(
+      height: 600,
+      width: 500,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            FutureBuilder(
+              future: getSubCategory2(TokenId.token, pCategory, pSCategory1),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text("Error : ${snapshot.error}"),
+                  );
+                } else if (snapshot.data!.data.length == 0) {
+                  Future.delayed(Duration(milliseconds: 1), () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                    pSCategory2 = '';
+                    setState(() {});
                   });
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
-                trailing: Icon(
-                  Icons.arrow_forward_ios,
-                  size: 20,
-                ),
-                title: Text(
-                  snapshot.data!.data[index],
-                  style: TextStyle(fontSize: 14),
-                ),
-              );
-            },
-          );
-        }
-      },
+                  return Center(
+                    child: Text("No subcategories available for the selected criteria."),
+                  );
+                } else {
+                  return Column(
+                    children: snapshot.data!.data.map((subCategory) {
+                      return ListTile(
+                        onTap: () {
+                          setState(() {
+                            pSCategory2 = subCategory;
+                          });
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                        title: Text(
+                          subCategory,
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   @override
   void initState() {
     super.initState();
+
     pCategory = widget.productCategory;
 
     pSCategory1 = widget.productSubCategory1;
@@ -663,6 +657,9 @@ class _UpdateProductsState extends State<UpdateProducts> {
 
   @override
   Widget build(BuildContext context) {
+    if(widget.imageList.isNotEmpty) {
+      imgList = widget.imageList;
+    }
     dummyProductList = widget.quantityPricing;
     print("dummyProductList1234");
     print(dummyProductList);
@@ -686,7 +683,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Row(
+        title: const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
@@ -704,7 +701,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
         backgroundColor: Colors.lightBlue.shade900,
         iconTheme: IconThemeData(color: Colors.white),
       ),
-      backgroundColor: Colors.grey.shade200,
+      backgroundColor: Colors.white,
       body: Container(
         child: SingleChildScrollView(
           child: Column(
@@ -728,7 +725,9 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                   s = value == false
                                       ? 'In stock'
                                       : 'Out of stock';
-                                  _switchValue = value;
+                                  setState(() {
+                                    _switchValue = value;
+                                  });
                                   updateStock(value);
                                 },
                               ),
@@ -1133,10 +1132,10 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                               ),
                                             ),
                                           ),
-                                          SizedBox(width: 16),
+                                          const SizedBox(width: 16),
                                           Container(
                                             height: 60,
-                                            padding: EdgeInsets.all(16),
+                                            padding: const EdgeInsets.all(16),
                                             decoration: BoxDecoration(
                                               border: Border.all(
                                                 width: 1,
@@ -1158,7 +1157,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                                   value: value,
                                                   child: Text(
                                                     value,
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                       color: Colors.black,
                                                       fontSize: 16,
                                                       fontFamily: 'Urbanist',
@@ -1186,7 +1185,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                                       .toString()),
                                               onChanged: (value) {
                                                 itemOptions[index].price =
-                                                    value as double;
+                                                    value;
                                               },
                                               decoration: InputDecoration(
                                                 hintText: 'Price (In Rs.)',
@@ -1216,7 +1215,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                                       .toString()),
                                               onChanged: (value) {
                                                 itemOptions[index].offerPrice =
-                                                    value as double;
+                                                    value;
                                               },
                                               decoration: InputDecoration(
                                                 hintText: 'Offer Price',
@@ -1255,9 +1254,10 @@ class _UpdateProductsState extends State<UpdateProducts> {
                         width: double.maxFinite,
                         margin: const EdgeInsets.only(
                             left: 20, right: 20, top: 20, bottom: 30),
+                        color: Colors.lightBlue.shade500,
                         child: ElevatedButton(
                           onPressed: () {
-                            saveProductData(pName, pSCategory2, description,
+                            saveProductData(imageFileList!, pName, pSCategory2, description,
                                 token, id, widget.pid, dummyProductList, true);
                           },
                           style: ElevatedButton.styleFrom(
@@ -1269,7 +1269,6 @@ class _UpdateProductsState extends State<UpdateProducts> {
                             style: TextStyle(color: Colors.white, fontSize: 15),
                           ),
                         ),
-                        color: Colors.lightBlue.shade500,
                       )
                     ],
                   ),
@@ -1319,6 +1318,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
   }
 
   Future<void> saveProductData(
+  List<XFile> imageFileList,
       TextEditingController pName,
       String pSCategory2,
       TextEditingController description,
@@ -1330,9 +1330,9 @@ class _UpdateProductsState extends State<UpdateProducts> {
     print("dummyProductList");
     itemOptions.forEach((itemOption) {
       dummyProductList.add(QuantityPricing(
-          offerPrice: (itemOption.offerPrice),
+          offerPrice: double.parse(itemOption.offerPrice),
           quantity: itemOption.quantity,
-          mrpPrice: (itemOption.price),
+          mrpPrice: double.parse(itemOption.price),
           unit: itemOption.unit));
     });
     itemOptions = [];
@@ -1341,7 +1341,34 @@ class _UpdateProductsState extends State<UpdateProducts> {
       print("updatinggggg");
       await UserApi.updateProduct(pName.text, pCategory, pSCategory2,
           pSCategory2, description.text, token, id, pid, dummyProductList);
+      if (imageFileList.length >0) {
+        final url1 = 'https://api.pehchankidukan.com/seller/${TokenId.id}/products/$pid';
+        var request = http.MultipartRequest('PUT', (Uri.parse(url1)));
 
+        request.headers['Authorization'] = 'Bearer ${TokenId.token}';
+        print("length");
+        print(imageFileList.length);
+        for (var imageFile in imageFileList) {
+          int length = await imageFile.length();
+          String fileName = path.basename(imageFile.path);
+          request.files.add(http.MultipartFile(
+            'images', // Field name in the form
+            imageFile.readAsBytes().asStream(),
+            length,
+            filename: fileName,
+            contentType: MediaType(
+                'image[]', 'jpeg'), // Adjust content type accordingly
+          ));
+        }
+        final response = await request.send();
+        if (response.statusCode == 200) {
+          print('PUT images request successful');
+          print('Response: ${await response.stream.bytesToString()}');
+        } else {
+          print('Failed to make PUT request: ${response.statusCode}');
+          print('Response: ${await response.stream.bytesToString()}');
+        }
+      }
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(

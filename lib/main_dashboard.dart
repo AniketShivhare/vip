@@ -73,9 +73,9 @@ class _MainDashboardState extends State<MainDashboard> with TickerProviderStateM
         productName: '',
         productDescription: '', productDetails: [], itemOptions: [],
       ),
-      SellerDashboard(token: '', id: ''),
-      sellerFrontPage(),
-      profileOptions(),
+      const SellerDashboard(token: '', id: ''),
+      const sellerFrontPage(index1:1),
+      const profileOptions(),
     ];
     return Scaffold(
       backgroundColor: const Color(0xfffcf5f4),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 // import 'package:flutter_project/apis/sellerProfile.dart';
+import 'package:e_commerce/services/tokenId.dart';
 import 'package:http/http.dart' as http;
 
 import '../apis/sellerProfile.dart';
@@ -9,9 +10,9 @@ class SellerApi {
 // TO get the seller profile information
   Future<SellerProfile> getSellerProfile(token, id) async {
     final response = await http
-        .get(Uri.parse('https://api.pehchankidukan.com/seller/$id'), headers: {
+        .get(Uri.parse('https://api.pehchankidukan.com/seller/${TokenId.id}'), headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
+      'Authorization': 'Bearer ${TokenId.token}',
     });
     Map<String, dynamic> data = jsonDecode(response.body);
   print("data123123");

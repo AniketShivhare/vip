@@ -780,7 +780,7 @@
 //                             token: widget.token,
 //                             id: widget.id,
 //                             pageIndex: 0,
-//                             sortt: "created_at"),
+//                             sortt: "createdAt"),
 //                       ),
 //                       (route) => false, // This line clears the navigator stack
 //                     );
@@ -1005,6 +1005,7 @@ import 'add_product.dart';
 
 import './services/User_api.dart';
 import './apis/ProductModel.dart';
+import 'orders.dart';
 
 
 class SellerDashboard extends StatefulWidget {
@@ -1213,11 +1214,19 @@ class _SellerDashboardState extends State<SellerDashboard> {
             RecentOrder(),
             Center(
               child: ViewMoreButton( onPressed: () {
-                // Navigate to the desired route when the button is pressed
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => AllStoresScreen()));
-              },),
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MainDashboard(
+                        token: widget.token,
+                        id: widget.id,
+                        pageIndex: 3,
+                        sortt: "-createdAt"),
+                  ),
+                      (route) => false, // This line clears the navigator stack
+                );
+                 },),
             ),
-
             Container(
               margin:
               const EdgeInsets.only(right: 10, left: 10, top: 25, bottom: 5),
@@ -1246,7 +1255,7 @@ class _SellerDashboardState extends State<SellerDashboard> {
                           token: widget.token,
                           id: widget.id,
                           pageIndex: 0,
-                          sortt: "created_at"),
+                          sortt: "-createdAt"),
                     ),
                     (route) => false, // This line clears the navigator stack
                   );
@@ -1283,16 +1292,17 @@ class _SellerDashboardState extends State<SellerDashboard> {
                   Expanded(
                     child: InkWell(
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AddProduct(
-                                token: token,
-                                id: id,
-                                productName: '',
-                                productDescription: '', productDetails: [], itemOptions: [],
-                              ),
-                            ));
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MainDashboard(
+                                token: widget.token,
+                                id: widget.id,
+                                pageIndex: 1,
+                                sortt: "-createdAt"),
+                          ),
+                              (route) => false, // This line clears the navigator stack
+                        );
                       },
                       child: Card(
                         shadowColor: Colors.black,
@@ -1344,13 +1354,17 @@ class _SellerDashboardState extends State<SellerDashboard> {
                   Expanded(
                     child: InkWell(
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  MainDashboard(token: token, id: id, pageIndex: 0, sortt: "created_at"),
-                              // ManageProducts(token: token, id: id, selectedcategories: [], selectedsubcategories: {}, selectedminPrice: 0, selectedmaxPrice: 0, sortt: "created_at",),
-                            ));
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MainDashboard(
+                                token: widget.token,
+                                id: widget.id,
+                                pageIndex: 0,
+                                sortt: "-createdAt"),
+                          ),
+                              (route) => false, // This line clears the navigator stack
+                        );
                       },
                       child: Card(
                         shadowColor: Colors.black,
@@ -1402,8 +1416,6 @@ class _SellerDashboardState extends State<SellerDashboard> {
                 ],
               ),
             ),
-
-
           ],
         ),
       ),

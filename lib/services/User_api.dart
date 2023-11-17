@@ -5,10 +5,13 @@ import 'dart:core';
 
 import 'package:e_commerce/services/filterData.dart';
 import 'package:e_commerce/services/tokenId.dart';
+import 'package:image_picker/image_picker.dart';
 import '../apis/ProductModel.dart';
 import '../apis/orderModel.dart';
 import 'package:http/http.dart' as http;
 import 'Categories.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:path/path.dart';
 
 class UserApi {
 
@@ -21,6 +24,7 @@ class UserApi {
     int count=0;
     if(FilterOptions.categories[0].isNotEmpty) {
       url+='?';
+      FilterOptions.categories[0]=FilterOptions.categories[0].replaceAll('&', '%26');
       url += 'category=${FilterOptions.categories[0]}';
       count++;
     }
@@ -44,16 +48,19 @@ class UserApi {
         'Authorization': 'Bearer ${TokenId.token}'
       },
     );
-    final body = response.body;
-    final productJson = jsonDecode(body);
-    print(response.statusCode);
-    print(productJson);
-    List<Product> products = (productJson['data'] as List<dynamic>?)
-        ?.map((e) => Product.fromJson(e as Map<String, dynamic>))
-        .toList() ?? [];
-    print(products);
-    print("product");
-    return products;
+    if(response.statusCode==200) {
+      final body = response.body;
+      final productJson = jsonDecode(body);
+      print(response.statusCode);
+      print(productJson);
+      List<Product> products = (productJson['data'] as List<dynamic>?)
+          ?.map((e) => Product.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [];
+      print(products);
+      print("product");
+      return products;
+    }
+    return[];
   }
 
 
@@ -82,8 +89,7 @@ class UserApi {
 
 
   static Future<void> getAllCategory() async {
-    // if(Categories.categories.length>0)
-    return;
+    if(Categories.categories.length>0) return;
     print("getallcategoryforfilter called");
     final apiUrl = "https://api.pehchankidukan.com/seller/category";
     final response = await http.get(
@@ -97,7 +103,20 @@ class UserApi {
     final jsonData = jsonDecode(response.body);
     print(jsonData);
     final data = (jsonData["data"]);
-    Categories.categories = (List<String>.from(data));
+    // Assuming data is the JSON object you provided
+    List<String> categoryList = [];
+    List<String> imageURLList = [];
+
+    for (var item in data) {
+      categoryList.add(item['category']);
+      // Assuming there's always at least one URL in the list
+      imageURLList.add(item['categoryImageURL'][0]);
+    }
+
+// Now, you have two separate lists: categoryList and imageURLList
+
+    Categories.categories = categoryList;
+    Categories.images = imageURLList;
     // Categories.categories = jsonData["data"][0]["category"] as List<String>;
 
   }
@@ -134,12 +153,12 @@ print(keyword);
   }
 
   //sort and filter
-  static Future<List<Product>> getSellerProducts( sort, token, id
+  static Future<List<Product>> getSellerProducts( sort, token, id, currentPage
   ) async {
     // print(token);
   print("called recentlyadded $sort");
-    final baseUrl = 'https://api.pehchankidukan.com/seller/${TokenId.id}/products?sort=$sort';
-
+    final baseUrl = 'https://api.pehchankidukan.com/seller/${TokenId.id}/products?sort=$sort&page=$currentPage';
+print(baseUrl);
       final url = Uri.parse(baseUrl);
       // print(url);
     final response = await http.get(
@@ -265,24 +284,8 @@ print(keyword);
   }
 
 
-
-  //get seller data
-  // static Future getSeller(id, token) async {
-  //   final apiUrl = "https://api.pehchankidukan.com/seller/$id";
-  //   final uri = Uri.parse(apiUrl);
-  //   final response = await http.get(uri,
-  //     headers: <String, String>{
-  //       'Content-Type': 'application/json',
-  //       'Authentication': 'Bearer $token'
-  //     },
-  //   );
-  //   final body = jsonDecode(response.body);
-  //   final json = body['data'];
-  //   Seller seller = Seller.fromJson(json);
-  //   return seller;
-  // }
   // get all orders API
-  static Future<void> fetchOrderData(filter) async {
+  static Future<List<Order>> fetchOrderData(filter) async {
     // final orderStreamController = StreamController<List<Order>>();
     try {
       var url = "https://api.pehchankidukan.com/seller/${TokenId.id}/orders?orderStatus=$filter";
@@ -301,8 +304,9 @@ print(keyword);
         List<Order> orders = (productJson['allOrders'] as List<dynamic>?)
             ?.map((e) => Order.fromJson(e as Map<String, dynamic>))
             .toList() ?? [];
-        // orderStreamController.add(orders); // Emit the new orders to the stream
+        // orderStreamController.add(orders);
         print("Order get successfulll");
+        return orders;
       } else {
         print('Failed to get orders. Status code: ${response.statusCode}');
         print('Response body: ${response.body}');
@@ -310,6 +314,7 @@ print(keyword);
     } catch (e) {
       print('Error while fetching orders: $e');
     }
+    return [];
   }
 
 
@@ -425,21 +430,61 @@ print(keyword);
     final productJson = jsonDecode(body);
     print(response.statusCode);
     print(productJson);
-    // print(productJson['length']);
-    // print(productJson['data']['images']);
-    // print('productJson[]');
-
-    // print(productJson['data'].length);
-    // List<Product> product = productJson['data'].map((e) => Product.fromJson(e)).toList();
-    // List<Product> products = List<Product>.from(productJson['data'].map((e) => Product.fromJson(e)));
     List<Product> products = (productJson['data'] as List<dynamic>?)
         ?.map((e) => Product.fromJson(e as Map<String, dynamic>))
         .toList() ?? [];
-    // print(products[products.length-2].images[0]);
 
-    print("products[0]");
-    print(products.length);
-    print(products);
     return products;
   }
+
+  static Future<void> uploadImage(XFile imageFile, String imageName) async {
+    print(imageFile);
+    print(imageName);
+    final url1 = 'https://api.pehchankidukan.com/seller/${TokenId.id}';
+    var request = http.MultipartRequest('PUT', Uri.parse(url1));
+    request.headers['Authorization'] = 'Bearer ${TokenId.token}';
+    int length = await imageFile.length();
+    String fileName = basename(imageFile.path);
+    request.files.add(http.MultipartFile(
+      imageName,
+      imageFile.readAsBytes().asStream(),
+      length,
+      filename: fileName,
+      contentType: MediaType(
+          'image', 'jpeg'), // Adjust content type accordingly
+    ));
+    final response = await request.send();
+    if (response.statusCode == 200) {
+      print('PUT images for $imageName request successful');
+      print('Response: ${await response.stream.bytesToString()}');
+    } else {
+      print('Failed to make $imageName PUT request: ${response.statusCode}');
+      print('Response: ${await response.stream.bytesToString()}');
+    }
+  }
+  static Future<void> deleteImage(String url, String pid) async {
+    print(url);
+    print(pid);
+    print(TokenId.id);
+    Map<String,dynamic> body = {
+      url:url
+    };
+    final uri = Uri.parse('https://api.pehchankidukan.com/seller/${TokenId.id}/product/$pid');
+    final response = await http.delete(uri,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${TokenId.token}'
+      },
+      body: body,
+    );
+    if (response.statusCode == 200) {
+      print('delete request successful');
+      print('Response: ');
+    } else {
+      print('Failed to make delete request: ${response.statusCode}');
+      print('Response: $response');
+    }
+
+  }
+
 }

@@ -41,6 +41,11 @@ class _BankAccountDetailsState extends State<BankAccountDetails> {
 
   Future<void> fetchSeller() async {
     seller = await SellerApi().getSellerProfile(sellerToken, sellerId);
+    // if(seller.data.bankDetails.cancelledCheckImage.isNotEmpty) {
+    //   imageUrl = seller.data.bankDetails.cancelledCheckImage;
+    // }
+    // print(imageUrl);
+    // print(imageUrl);
     Bank_Account_Controller.text = seller.data.bankDetails.accountNo;
     Bank_IFSC_Controller.text = seller.data.bankDetails.ifscCode;
     Pan_Card_Controller.text = seller.data.panCard.panNo;
@@ -54,15 +59,19 @@ class _BankAccountDetailsState extends State<BankAccountDetails> {
     };
     final response =
     await SellerApi().updateBankDetails(json, sellerId, sellerToken);
+    if(imageFile1!=null) {
+      await UserApi.uploadImage(imageFile1!, "cancelledCheckImage");
+    }
     ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text("Bank Account Details Updated")));
+        .showSnackBar(const SnackBar(content: Text("Bank Account Details Updated")));
     Navigator.pop(context);
   }
 
 
-  String? imageUrl =     'https://media.istockphoto.com/id/1464561797/photo/artificial-intelligence-processor-unit-powerful-quantum-ai-component-on-pcb-motherboard-with.jpg?s=2048x2048&w=is&k=20&c=_h_lwe5-Xb4AK-w3nUfa0m3ZNPDZSqhQhkitrtdTpFQ=';
-  String heroTag = "sellerBankDetails";
+  String? imageUrl = 'https://media.istockphoto.com/id/1464561797/photo/artificial-intelligence-processor-unit-powerful-quantum-ai-component-on-pcb-motherboard-with.jpg?s=2048x2048&w=is&k=20&c=_h_lwe5-Xb4AK-w3nUfa0m3ZNPDZSqhQhkitrtdTpFQ=';
+  String heroTag =  "sellerBankDetails";
   File? imageFile;
+  XFile? imageFile1;
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
@@ -70,6 +79,7 @@ class _BankAccountDetailsState extends State<BankAccountDetails> {
     if (pickedFile != null) {
       setState(() {
         imageFile = File(pickedFile.path);
+        imageFile1 = pickedFile;
         imageUrl = null;// Store the selected image
         isImageEdited = true;
       });

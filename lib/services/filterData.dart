@@ -16,6 +16,7 @@ class FilterOptions {
     selectedSubCat=false;
     priceChanged=false;
     selectedCat=false;
+    categories=[];
   }
 
 }

@@ -65,46 +65,46 @@ class profileOptions extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              height: 50,
-              width: 340,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SellerProfilePersonalDetails()),
-                  );
-                },
-                child: Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.start,
-                  children: <Widget>[
-                    Icon(
-                      Icons.person,
-                      color: Colors.black38,
-                      size: 28.0,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text("Personal Details",
-                        style:
-                            TextStyle(fontSize: 18, color: Color(0xFF204969))),
-                    SizedBox(
-                      width: 40,
-                    ),
-                    Icon(
-                      Icons.arrow_circle_right_sharp,
-                      color: Color(0xFF204969),
-                      size: 28.0,
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            // SizedBox(
+            //   height: 20,
+            // ),
+            // Container(
+            //   height: 50,
+            //   width: 340,
+            //   child: ElevatedButton(
+            //     onPressed: () {
+            //       Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //             builder: (context) => SellerProfilePersonalDetails()),
+            //       );
+            //     },
+            //     child: Wrap(
+            //       crossAxisAlignment: WrapCrossAlignment.start,
+            //       children: <Widget>[
+            //         Icon(
+            //           Icons.person,
+            //           color: Colors.black38,
+            //           size: 28.0,
+            //         ),
+            //         SizedBox(
+            //           width: 10,
+            //         ),
+            //         Text("Personal Details",
+            //             style:
+            //                 TextStyle(fontSize: 18, color: Color(0xFF204969))),
+            //         SizedBox(
+            //           width: 40,
+            //         ),
+            //         Icon(
+            //           Icons.arrow_circle_right_sharp,
+            //           color: Color(0xFF204969),
+            //           size: 28.0,
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
             SizedBox(
               height: 20,
             ),

@@ -49,6 +49,7 @@ class _SubCategory2State1 extends State<SubCategory2> {
         context,
         MaterialPageRoute(
           builder: (context) => UpdateProducts(
+            imageList: [],
             token: token,
             id: id,
             // category: widget.cat,

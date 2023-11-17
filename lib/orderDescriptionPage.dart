@@ -1,17 +1,24 @@
 
 
+import 'package:e_commerce/apis/orderModel.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 
 
 class OrderDescriptionPage extends StatefulWidget {
+  final Order order ;
+  final String status;
+  const OrderDescriptionPage({Key? key, required this.order, required this.status, });
   @override
   State<OrderDescriptionPage> createState() => _OrderDescriptionPageState();
 }
 
 class _OrderDescriptionPageState extends State<OrderDescriptionPage> {
+
   @override
   Widget build(BuildContext context) {
+    final order = widget.order;
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
@@ -21,12 +28,10 @@ class _OrderDescriptionPageState extends State<OrderDescriptionPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Order #12345',style: TextStyle(fontWeight: FontWeight.bold),),
-
                 Container(
                   height: 30,
                   width: 140,
-                  child: Center(child: Text('PREPARING',style: TextStyle(color: Colors.brown.shade600,fontWeight: FontWeight.bold),)),
-
+                  child: Center(child: Text('${widget.status.toUpperCase()}',style: TextStyle(color: Colors.brown.shade600,fontWeight: FontWeight.bold),)),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5.0),
                     color: Colors.orangeAccent.shade200,
@@ -38,8 +43,8 @@ class _OrderDescriptionPageState extends State<OrderDescriptionPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('02:12 PM',style: TextStyle(fontSize: 18),),
-                Text('2 items for ₹150.01',style: TextStyle(fontSize: 18),)
+                Text(DateFormat.Hm().format(order!.createdAt),style: TextStyle(fontSize: 18),),
+                Text('${order.productList.length} items for ₹${order.payment.paymentAmount}',style: TextStyle(fontSize: 18),)
               ],
             )
 
@@ -75,7 +80,7 @@ class _OrderDescriptionPageState extends State<OrderDescriptionPage> {
                             children: [
                               Icon(Icons.person,size: 40,),
                               SizedBox(width: 5,),
-                              Text('Order from Mani',style: TextStyle(fontSize: 20),),
+                              Text('Order from ${order.shippedBy.name}',style: TextStyle(fontSize: 20),),
                             ],
                           ),
                           Icon(Icons.phone,color: Colors.red,),
@@ -128,22 +133,20 @@ class _OrderDescriptionPageState extends State<OrderDescriptionPage> {
               ),
                 child:Column(
                   children: [
-                    OrderItemCard(
-                      itemName: 'Burger',
-                      itemPrice: '\₹10.00',
-                      itemQuantity: 2,
-                    ),
-                    OrderItemCard(
-                      itemName: 'Pizza',
-                      itemPrice: '\₹15.00',
-                      itemQuantity: 1,
-                    ),
-                    OrderItemCard(
-                      itemName: 'Cola',
-                      itemPrice: '\₹5.00',
-                      itemQuantity: 3,
-                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: order.productList.length,
+                      itemBuilder: (context, productIndex) {
+                        Product1 product = order.productList[productIndex];
 
+                        return OrderItemCard(
+                          itemName: product.productName,
+                          itemPrice: '\₹${product.offerPrice.toStringAsFixed(2)}', // Assuming offerPrice is a double
+                          itemQuantity: product.quantity,
+                        );
+                      },
+                    ),
                     Divider(height: 1,),
                     Padding(
                       padding: EdgeInsets.all(12.0),
@@ -158,7 +161,7 @@ class _OrderDescriptionPageState extends State<OrderDescriptionPage> {
                             ),
                           ),
                           Text(
-                            '\₹30.00',
+                            '\₹${order.payment.paymentAmount}',
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,

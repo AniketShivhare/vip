@@ -17,7 +17,7 @@ class _RecentAddedProductState extends State<RecentAddedProduct> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(left: 15.0, right: 15.0),
+      margin: const EdgeInsets.only(left: 5.0, right: 5.0),
       child: FutureBuilder(
         future: UserApi.getProducts(TokenId.token, TokenId.id, 1),
         builder: (context, snapshot) {
@@ -197,6 +197,7 @@ class _RecentAddedProductState extends State<RecentAddedProduct> {
                                                                   MaterialPageRoute(
                                                                       builder: (context) =>
                                                                           UpdateProducts(
+                                                                            imageList: prod.images,
                                                                             pid:
                                                                                 prod.id,
                                                                             token:

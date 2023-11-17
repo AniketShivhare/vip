@@ -54,8 +54,8 @@ class _ReviewListedState extends State<ReviewListed> {
       // Create item options
       final itemOptions = widget.itemOptions;
       itemOptions.forEach((itemOption) {
-        dummyProductList.add(QuantityPricing(offerPrice: (itemOption.offerPrice),
-            quantity: itemOption.quantity, mrpPrice: (itemOption.price), unit: itemOption.unit));
+        dummyProductList.add(QuantityPricing(offerPrice: double.parse(itemOption.offerPrice),
+            quantity: itemOption.quantity, mrpPrice: double.parse(itemOption.price), unit: itemOption.unit));
       });
       print("pidddd1");
         final pid = await UserApi.createProduct(
@@ -77,7 +77,9 @@ class _ReviewListedState extends State<ReviewListed> {
           var request = http.MultipartRequest('PUT', (Uri.parse(url1)));
 
           request.headers['Authorization'] = 'Bearer ${TokenId.token}';
-          for (var imageFile in widget.imageFileList!) {
+          print("length");
+          print(widget.imageFileList.length);
+          for (var imageFile in widget.imageFileList) {
             int length = await imageFile.length();
             String fileName = basename(imageFile.path);
             request.files.add(http.MultipartFile(
@@ -86,8 +88,9 @@ class _ReviewListedState extends State<ReviewListed> {
               length,
               filename: fileName,
               contentType: MediaType(
-                  'image', 'jpeg'), // Adjust content type accordingly
+                  'image[]', 'jpeg'), // Adjust content type accordingly
             ));
+          }
             final response = await request.send();
             if (response.statusCode == 200) {
               print('PUT images request successful');
@@ -96,7 +99,7 @@ class _ReviewListedState extends State<ReviewListed> {
               print('Failed to make PUT request: ${response.statusCode}');
               print('Response: ${await response.stream.bytesToString()}');
             }
-          }
+
         }
         } catch (error) {
           print('Error: $error');

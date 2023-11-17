@@ -5,9 +5,13 @@ class SubCategory2Model {
   SubCategory2Model({required this.msg, required this.data});
 
   factory SubCategory2Model.fromJson(Map<String, dynamic> json) {
+    List<String> categoryList = [];
+    for (var item in json['data']) {
+      categoryList.add(item['subCategory2']);
+    }
     return SubCategory2Model(
       msg: json['msg'],
-      data: List<String>.from(json['data']),
+      data: categoryList,//List<String>.from(json['data']),
     );
   }
 

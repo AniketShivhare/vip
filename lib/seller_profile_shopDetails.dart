@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
 
+import 'package:e_commerce/services/tokenId.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce/apis/sellerProfile.dart';
 import 'package:e_commerce/Regestration.dart';
@@ -13,6 +14,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:photo_view/photo_view.dart';
 import 'apis/Seller.dart';
 import 'dialog_of_registration.dart';
+import 'package:path/path.dart' as path;
+import 'package:http_parser/http_parser.dart';
+
 
 class SellerProfileShopDetails extends StatefulWidget {
   const SellerProfileShopDetails({super.key});
@@ -37,6 +41,30 @@ class _SellerProfileShopDetailsState extends State<SellerProfileShopDetails> {
   String sellerToken = Candidate().token;
   late SellerProfile seller;
 
+
+  Future<void> uploadImage(XFile imageFile, String imageName) async {
+    final url1 = 'https://api.pehchankidukan.com/seller/${TokenId.id}';
+    var request = http.MultipartRequest('PUT', Uri.parse(url1));
+    request.headers['Authorization'] = 'Bearer ${TokenId.token}';
+    int length = await imageFile.length();
+    String fileName = path.basename(imageFile.path);
+    request.files.add(http.MultipartFile(
+      '$imageName',
+      imageFile.readAsBytes().asStream(),
+      length,
+      filename: fileName,
+      contentType: MediaType(
+          'image[]', 'jpeg'), // Adjust content type accordingly
+    ));
+    final response = await request.send();
+    if (response.statusCode == 200) {
+      print('PUT images for $imageName request successful');
+      print('Response: ${await response.stream.bytesToString()}');
+    } else {
+      print('Failed to make $imageName PUT request: ${response.statusCode}');
+      print('Response: ${await response.stream.bytesToString()}');
+    }
+  }
   @override
   initState() {
     fetchSeller();
@@ -44,12 +72,17 @@ class _SellerProfileShopDetailsState extends State<SellerProfileShopDetails> {
  String url ='';
   Future<void> fetchSeller() async {
     seller = await SellerApi().getSellerProfile(sellerToken, sellerId);
-url = seller.data.fssaiImageUrl;
-print("urlaesaserasfasdfadfasfasfasdfasdfasf");
-print(url);
+//     url = seller.data.fssaiImageUrl;
+// print("urlaesaserasfasdfadfasfasfasdfasdfasf");
+// print(url);
+    if(seller.data.gstin.gstinImage.isNotEmpty) {
+      GSTimageUrl = seller.data.gstin.gstinImage;
+    }
+    if(seller.data.fssaiImageUrl.isNotEmpty) {
+      FSSAIimageUrl = seller.data.fssaiImageUrl;
+    }
     shopNameController.text = seller.data.shopName;
     GSTController.text = seller.data.gstin.gstinNo;
-    // GstImage = seller.data.gstin.gstinImage;
     shopAddressController.text = seller.data.address.addressLine;
     LandlineController.text = seller.data.phone;
     // FSSAIController.text = seller.data.;
@@ -76,6 +109,13 @@ print(url);
     print(shopAddressController.text);
     final response =
     await SellerApi().updateBankDetails(json, sellerId, sellerToken);
+    if(FSSAIimageFile1!=null) {
+      await UserApi.uploadImage(FSSAIimageFile1!, "fssaiImageUrl");
+    }if(GSTimageFile1!=null) {
+      await UserApi.uploadImage(GSTimageFile1!, "gstinImage");
+    }if(ShopLogoFile1!=null) {
+      await UserApi.uploadImage(ShopLogoFile1!, "shopPhoto");
+    }
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text("Shop Details Updated")));
     Navigator.pop(context);
@@ -145,12 +185,12 @@ print(url);
   final ImagePicker imagePicker = ImagePicker();
   List<XFile>? imageFileList = [];
   void selectImages() async {
-    final List<XFile>? selectedImages = await imagePicker.pickMultiImage();
-    if (selectedImages!.isNotEmpty) {
+    final List<XFile> selectedImages = await imagePicker.pickMultiImage();
+    if (selectedImages.isNotEmpty) {
       isAddShopImagesEdited = true;
       imageFileList!.addAll(selectedImages);
     }
-    print("Image List Length:" + imageFileList!.length.toString());
+    print("Image List Length:${imageFileList!.length}");
     setState(() {});
   }
 
@@ -220,7 +260,7 @@ print(url);
 
   String? GSTimageUrl =  'https://media.istockphoto.com/id/1464561797/photo/artificial-intelligence-processor-unit-powerful-quantum-ai-component-on-pcb-motherboard-with.jpg?s=2048x2048&w=is&k=20&c=_h_lwe5-Xb4AK-w3nUfa0m3ZNPDZSqhQhkitrtdTpFQ=';
   String? FSSAIimageUrl =    'https://media.istockphoto.com/id/1464561797/photo/artificial-intelligence-processor-unit-powerful-quantum-ai-component-on-pcb-motherboard-with.jpg?s=2048x2048&w=is&k=20&c=_h_lwe5-Xb4AK-w3nUfa0m3ZNPDZSqhQhkitrtdTpFQ=';
-      String? ShopLogoUrl =    'https://media.istockphoto.com/id/1486626509/photo/woman-use-ai-to-help-work-or-use-ai-everyday-life-at-home-ai-learning-and-artificial.jpg?s=2048x2048&w=is&k=20&c=I9i1MwJ29M2yQBC8BBLOfWyHJ3hlBpYoSmqSXAKFlZM=';
+  String? ShopLogoUrl =    'https://media.istockphoto.com/id/1486626509/photo/woman-use-ai-to-help-work-or-use-ai-everyday-life-at-home-ai-learning-and-artificial.jpg?s=2048x2048&w=is&k=20&c=I9i1MwJ29M2yQBC8BBLOfWyHJ3hlBpYoSmqSXAKFlZM=';
 
 
   String GSTheroTag = "sellerGstImage";
@@ -228,8 +268,11 @@ print(url);
   String ShopLogoheroTag = "sellerShopLogo";
 
   File? GSTimageFile;
+  XFile? GSTimageFile1;
   File? FSSAIimageFile;
+  XFile? FSSAIimageFile1;
   File? ShopLogoFile;
+  XFile? ShopLogoFile1;
 
   Future<void> _pickGSTImage() async {
     final picker = ImagePicker();
@@ -237,7 +280,8 @@ print(url);
     if (pickedFile != null) {
       setState(() {
         GSTimageFile = File(pickedFile.path);
-        GSTimageUrl = null;// Store the selected image
+        GSTimageFile1 = (pickedFile);
+        GSTimageUrl = null;
         isGSTImageEdited = true;
       });
     }
@@ -248,6 +292,7 @@ print(url);
     if (pickedFile != null) {
       setState(() {
         FSSAIimageFile = File(pickedFile.path);
+        FSSAIimageFile1 = (pickedFile);
         FSSAIimageUrl = null;// Store the selected image
         isFSSAIImageEdited = true;
       });
@@ -259,6 +304,7 @@ print(url);
     if (pickedFile != null) {
       setState(() {
         ShopLogoFile = File(pickedFile.path);
+        ShopLogoFile1 = (pickedFile);
         ShopLogoUrl = null;// Store the selected image
         isShopLogoEdited = true;
       });

@@ -119,7 +119,7 @@ class _SellerRegistrationPageState extends State<Regest> {
               hintText: ' Enter mobile number',
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           )
         ],

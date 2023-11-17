@@ -43,6 +43,7 @@ class _FilterScreenState extends State<FilterScreen> {
 
 
   List<String> categories = Categories.categories;
+  List<String> images = Categories.images;
   Map<String, List<String>> subcategories = {};
 
   List<String> filters = [
@@ -92,7 +93,7 @@ class _FilterScreenState extends State<FilterScreen> {
       child: ListView.builder(
         itemCount: categories.length,
         itemBuilder: (context, index) {
-          final isSelected = selectedCategories.contains(categories[index]);
+          var isSelected = selectedCategories.contains(categories[index]);
 
           return GestureDetector(
             onTap: () async {
@@ -117,6 +118,8 @@ class _FilterScreenState extends State<FilterScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  // Image
+                  //     .network(images[index]),
                   Expanded(
                     child: Text(
                       categories[index],
@@ -127,7 +130,7 @@ class _FilterScreenState extends State<FilterScreen> {
                   Radio<bool>(
                     value: isSelected,
                     groupValue: true,
-                    onChanged:null
+                    onChanged: null,
                   ),
                 ],
               ),

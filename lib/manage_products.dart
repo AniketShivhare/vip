@@ -48,7 +48,7 @@ class _ManageProductsState extends State<ManageProducts> {
   String response1 = "";
   Future<List<Product>>? _productData;
   int numberOfPages = 8;
-  int currentPage = 1;
+  // int currentPage = 2;
 
   Future<void> showDeleteConfirmationDialog(String id) async {
     print("idddd12");
@@ -75,7 +75,7 @@ class _ManageProductsState extends State<ManageProducts> {
                 UserApi.deleteProduct(id);
                 // Remove the image from the list
                 _productData =
-                    fetchOrders("", TokenId.token, TokenId.id, currentPage);
+                    fetchOrders("", TokenId.token, TokenId.id, Categories.pindex);
 
                 setState(() {
                   Navigator.of(context).pop();
@@ -93,7 +93,7 @@ class _ManageProductsState extends State<ManageProducts> {
     if (query.length == 0) {
       setState(() {
         _productData =
-            fetchOrders("created_at", TokenId.token, TokenId.id, currentPage);
+            fetchOrders("-createdAt", TokenId.token, TokenId.id, Categories.pindex);
       });
       print(_productData);
     } else if (query.length < 3) {
@@ -106,23 +106,32 @@ class _ManageProductsState extends State<ManageProducts> {
     }
   }
 
-  Future<void> pagination() async {
+  // Future<void> pagination(int index) async {
+  //
+  //   // setState(() {
+  //   //
+  //   //
+  //   //   print("pdddataaa");
+  //   //   print(_productData);
+  //   //
+  //   //   // print("${_productData.length}abb");
+  //   //
+  //   // });
+  //   setState(() {
+  //   //   currentPage = index;
+  //     _productData = fetchOrders("", widget.token, widget.id, Categories.pindex);
+  //     // currentPage = Categories.pindex;
+  //   });
+  // }
+  Future<void> pagination(int index) async {
+    setState(() {
+      // Update the current page
+      Categories.pindex = index + 1; // Convert to 1-based index
 
-    // setState(() {
-    //
-    //
-    //   print("pdddataaa");
-    //   print(_productData);
-    //
-    //   // print("${_productData.length}abb");
-    //
-    // });
-    // setState(() {
-    //   currentPage = index;
-      _productData = UserApi.getProducts(widget.token, widget.id, Categories.pindex);
-    // });
+      // Refetch data based on the updated page index
+      _productData = fetchOrders("", widget.token, widget.id, Categories.pindex);
+    });
   }
-
   void removeImage(int index) {
     setState(() {
       product.removeAt(index);
@@ -137,7 +146,7 @@ class _ManageProductsState extends State<ManageProducts> {
       FilterOptions.clear();
     } else {
       sortt = widget.sortt;
-      _productData = fetchOrders(sortt, TokenId.token, TokenId.id, currentPage);
+      _productData = fetchOrders(sortt, TokenId.token, TokenId.id, Categories.pindex);
       print("_productData");
       print(_productData);
     }
@@ -148,7 +157,7 @@ class _ManageProductsState extends State<ManageProducts> {
     String token = widget.token;
     String id = widget.id;
     print("currentPage1234");
-    print(currentPage);
+    // print(currentPage);
     return Scaffold(
         appBar: AppBar(
           title: Container(
@@ -170,7 +179,7 @@ class _ManageProductsState extends State<ManageProducts> {
               ),
               margin: EdgeInsets.only(bottom: 5),
               child: TextField(
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 16, color: Colors.black, fontFamily: 'comfort'),
                 decoration: InputDecoration(
                   hintText: 'search',
@@ -191,289 +200,289 @@ class _ManageProductsState extends State<ManageProducts> {
           iconTheme: IconThemeData(color: Colors.white),
         ),
         backgroundColor: Colors.white,
-        body: FutureBuilder<List<Product>>(
-          future: _productData,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else {
-              final List<Product>? data = snapshot.data;
-
-              return SingleChildScrollView(
-                child: Column(
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                color: Colors.lightBlue.shade300,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      color: Colors.lightBlue.shade100,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: InkWell(
-                              onTap: () async {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => FilterScreen(),
-                                    ));
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 10),
-                                child: Container(
-                                  height: 50,
-                                  margin: EdgeInsets.only(
-                                      left: 5, right: 2, top: 5),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius:
-                                      BorderRadius.all(Radius.circular(30)),
-                                      border: Border.all(
-                                          color: Colors.black, width: 1),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color:
-                                          Colors.black38.withOpacity(0.5),
-                                          blurRadius: 6,
-                                        ),
-                                      ],
-                                    ),
-                                    margin: EdgeInsets.only(bottom: 5),
-                                    child: Center(
-                                      child: Row(
-                                        children: [
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          Image.asset(
-                                            'assets/images/filter.png',
-                                            width: 20,
-                                          ),
-                                          SizedBox(
-                                            width: 6,
-                                          ),
-                                          Text('Filter',
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 14,
-                                                fontFamily: 'comfort',
-                                              )),
-                                        ],
-                                      ),
-                                    ),
+                    Expanded(
+                      flex: 2,
+                      child: InkWell(
+                        onTap: () async {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FilterScreen(),
+                              ));
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: Container(
+                            height: 50,
+                            margin: EdgeInsets.only(
+                                left: 5, right: 2, top: 5),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius:
+                                BorderRadius.all(Radius.circular(30)),
+                                border: Border.all(
+                                    color: Colors.black, width: 1),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color:
+                                    Colors.black38.withOpacity(0.5),
+                                    blurRadius: 4,
                                   ),
+                                ],
+                              ),
+                              margin: EdgeInsets.only(bottom: 5),
+                              child: Center(
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Image.asset(
+                                      'assets/images/filter.png',
+                                      width: 20,
+                                    ),
+                                    SizedBox(
+                                      width: 6,
+                                    ),
+                                    Text('Filter',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 14,
+                                          fontFamily: 'comfort',
+                                        )),
+                                  ],
                                 ),
                               ),
                             ),
                           ),
-                          Expanded(
-                            flex: 2,
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: Container(
-                                height: 50,
-                                margin:
-                                EdgeInsets.only(left: 2, right: 5, top: 5),
-                                child: Align(
-                                  alignment: Alignment.topLeft,
-                                  child: FlutterPopupMenuButton(
-                                    direction: MenuDirection.left,
-                                    decoration: const BoxDecoration(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(20)),
-                                        color: Colors.white),
-                                    popupMenuSize: const Size(220, 300),
-                                    child: FlutterPopupMenuIcon(
-                                      key: GlobalKey(),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(30)),
-                                          border: Border.all(
-                                              color: Colors.black, width: 1),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black38
-                                                  .withOpacity(0.5),
-                                              blurRadius: 5,
-                                            ),
-                                          ],
-                                        ),
-                                        margin: EdgeInsets.only(bottom: 5),
-                                        child: Center(
-                                          child: Row(
-                                            children: [
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Icon(Icons.sort,
-                                                  color: Colors.black),
-                                              SizedBox(
-                                                width: 6,
-                                              ),
-                                              Text('Sort',
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 14,
-                                                    fontFamily: 'comfort',
-                                                  )),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    children: [
-                                      FlutterPopupMenuItem(
-                                          onTap: () async {
-                                            setState(() {
-                                              _productData = fetchOrders(
-                                                  "productDetails.mrpPrice",
-                                                  token,
-                                                  id,
-                                                  currentPage);
-                                              sortt = "productDetails.mrpPrice";
-                                            });
-                                          },
-                                          closeOnItemClick: true,
-                                          child: ListTile(
-                                            title: const Text(
-                                              'Price(Low to High)',
-                                              style: TextStyle(fontSize: 15),
-                                            ),
-                                            leading: Container(
-                                              height: 15,
-                                              width: 15,
-                                              decoration: BoxDecoration(
-                                                  color: Colors.redAccent
-                                                      .withOpacity(0.3),
-                                                  shape: BoxShape.circle),
-                                            ),
-                                          )),
-                                      FlutterPopupMenuItem(
-                                          onTap: () {
-                                            setState(() {
-                                              _productData = fetchOrders(
-                                                  "-productDetails.mrpPrice",
-                                                  token,
-                                                  id,
-                                                  currentPage);
-                                              sortt =
-                                              "-productDetails.mrpPrice";
-                                            });
-                                          },
-                                          closeOnItemClick: true,
-                                          child: ListTile(
-                                            title: const Text(
-                                              'Price(High to Low)',
-                                              style: TextStyle(fontSize: 15),
-                                            ),
-                                            leading: Container(
-                                              height: 15,
-                                              width: 15,
-                                              decoration: BoxDecoration(
-                                                  color: Colors.redAccent
-                                                      .withOpacity(0.3),
-                                                  shape: BoxShape.circle),
-                                            ),
-                                          )),
-                                      FlutterPopupMenuItem(
-                                          onTap: () {
-                                            setState(() {
-                                              _productData = fetchOrders(
-                                                  "-productSoldCount",
-                                                  token,
-                                                  id,
-                                                  currentPage);
-                                              sortt = "-productSoldCount";
-                                            });
-                                          },
-                                          closeOnItemClick: true,
-                                          child: ListTile(
-                                            title: const Text(
-                                              'Most Selling',
-                                              style: TextStyle(fontSize: 15),
-                                            ),
-                                            leading: Container(
-                                              height: 15,
-                                              width: 15,
-                                              decoration: BoxDecoration(
-                                                  color: Colors.redAccent
-                                                      .withOpacity(0.3),
-                                                  shape: BoxShape.circle),
-                                            ),
-                                          )),
-                                      FlutterPopupMenuItem(
-                                          onTap: () {
-                                            setState(() {
-                                              _productData = fetchOrders(
-                                                  "created_at",
-                                                  token,
-                                                  id,
-                                                  currentPage);
-                                            });
-                                          },
-                                          closeOnItemClick: true,
-                                          child: ListTile(
-                                            title: const Text(
-                                              'Rating',
-                                              style: TextStyle(fontSize: 15),
-                                            ),
-                                            leading: Container(
-                                              height: 15,
-                                              width: 15,
-                                              decoration: BoxDecoration(
-                                                  color: Colors.redAccent
-                                                      .withOpacity(0.3),
-                                                  shape: BoxShape.circle),
-                                            ),
-                                          )),
-                                      FlutterPopupMenuItem(
-                                          onTap: () {
-                                            setState(() {
-                                              _productData = fetchOrders(
-                                                  "created_at",
-                                                  token,
-                                                  id,
-                                                  currentPage);
-                                            });
-                                          },
-                                          closeOnItemClick: true,
-                                          child: ListTile(
-                                            title: const Text(
-                                              'Recently Added',
-                                              style: TextStyle(fontSize: 15),
-                                            ),
-                                            leading: Container(
-                                              height: 15,
-                                              width: 15,
-                                              decoration: BoxDecoration(
-                                                  color: Colors.redAccent
-                                                      .withOpacity(0.3),
-                                                  shape: BoxShape.circle),
-                                            ),
-                                          )),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
-                    Column(
+                    Expanded(
+                      flex: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: Container(
+                          height: 50,
+                          margin:
+                          EdgeInsets.only(left: 2, right: 5, top: 5),
+                          child: Align(
+                            alignment: Alignment.topLeft,
+                            child: FlutterPopupMenuButton(
+                              direction: MenuDirection.left,
+                              decoration: const BoxDecoration(
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(20)),
+                                  color: Colors.white),
+                              popupMenuSize: const Size(220, 300),
+                              child: FlutterPopupMenuIcon(
+                                key: GlobalKey(),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(30)),
+                                    border: Border.all(
+                                        color: Colors.black, width: 1),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black38
+                                            .withOpacity(0.5),
+                                        blurRadius: 4,
+                                      ),
+                                    ],
+                                  ),
+                                  margin: EdgeInsets.only(bottom: 5),
+                                  child: Center(
+                                    child: Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Icon(Icons.sort,
+                                            color: Colors.black),
+                                        SizedBox(
+                                          width: 6,
+                                        ),
+                                        Text('Sort',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 14,
+                                              fontFamily: 'comfort',
+                                            )),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              children: [
+                                FlutterPopupMenuItem(
+                                    onTap: () async {
+                                      setState(() {
+                                        _productData = fetchOrders(
+                                            "productDetails.mrpPrice",
+                                            token,
+                                            id,
+                                            Categories.pindex);
+                                        sortt = "productDetails.mrpPrice";
+                                      });
+                                    },
+                                    closeOnItemClick: true,
+                                    child: ListTile(
+                                      title: const Text(
+                                        'Price(Low to High)',
+                                        style: TextStyle(fontSize: 15),
+                                      ),
+                                      leading: Container(
+                                        height: 15,
+                                        width: 15,
+                                        decoration: BoxDecoration(
+                                            color: Colors.redAccent
+                                                .withOpacity(0.3),
+                                            shape: BoxShape.circle),
+                                      ),
+                                    )),
+                                FlutterPopupMenuItem(
+                                    onTap: () {
+                                      setState(() {
+                                        _productData = fetchOrders(
+                                            "-productDetails.mrpPrice",
+                                            token,
+                                            id,
+                                            Categories.pindex);
+                                        sortt =
+                                        "-productDetails.mrpPrice";
+                                      });
+                                    },
+                                    closeOnItemClick: true,
+                                    child: ListTile(
+                                      title: const Text(
+                                        'Price(High to Low)',
+                                        style: TextStyle(fontSize: 15),
+                                      ),
+                                      leading: Container(
+                                        height: 15,
+                                        width: 15,
+                                        decoration: BoxDecoration(
+                                            color: Colors.redAccent
+                                                .withOpacity(0.3),
+                                            shape: BoxShape.circle),
+                                      ),
+                                    )),
+                                FlutterPopupMenuItem(
+                                    onTap: () {
+                                      setState(() {
+                                        _productData = fetchOrders(
+                                            "-productSoldCount",
+                                            token,
+                                            id,
+                                            Categories.pindex);
+                                        sortt = "-productSoldCount";
+                                      });
+                                    },
+                                    closeOnItemClick: true,
+                                    child: ListTile(
+                                      title: const Text(
+                                        'Most Selling',
+                                        style: TextStyle(fontSize: 15),
+                                      ),
+                                      leading: Container(
+                                        height: 15,
+                                        width: 15,
+                                        decoration: BoxDecoration(
+                                            color: Colors.redAccent
+                                                .withOpacity(0.3),
+                                            shape: BoxShape.circle),
+                                      ),
+                                    )),
+                                FlutterPopupMenuItem(
+                                    onTap: () {
+                                      setState(() {
+                                        _productData = fetchOrders(
+                                            "-createdAt",
+                                            token,
+                                            id,
+                                            Categories.pindex);
+                                      });
+                                    },
+                                    closeOnItemClick: true,
+                                    child: ListTile(
+                                      title: const Text(
+                                        'Rating',
+                                        style: TextStyle(fontSize: 15),
+                                      ),
+                                      leading: Container(
+                                        height: 15,
+                                        width: 15,
+                                        decoration: BoxDecoration(
+                                            color: Colors.redAccent
+                                                .withOpacity(0.3),
+                                            shape: BoxShape.circle),
+                                      ),
+                                    )),
+                                FlutterPopupMenuItem(
+                                    onTap: () {
+                                      setState(() {
+                                        _productData = fetchOrders(
+                                            "-createdAt",
+                                            token,
+                                            id,
+                                            Categories.pindex);
+                                      });
+                                    },
+                                    closeOnItemClick: true,
+                                    child: ListTile(
+                                      title: const Text(
+                                        'Recently Added',
+                                        style: TextStyle(fontSize: 15),
+                                      ),
+                                      leading: Container(
+                                        height: 15,
+                                        width: 15,
+                                        decoration: BoxDecoration(
+                                            color: Colors.redAccent
+                                                .withOpacity(0.3),
+                                            shape: BoxShape.circle),
+                                      ),
+                                    )),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              FutureBuilder<List<Product>>(
+                future: _productData,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else {
+                    final List<Product>? data = snapshot.data;
+
+                    return (data!.isNotEmpty)?Column(
                       children: [
                         ListView.builder(
                           shrinkWrap: true,
                           controller: _scrollController,
                           // scrollDirection: Axis.horizontal,
-                          itemCount: data?.length,
+                          itemCount: data.length,
                           itemBuilder: (context, index) {
-                            final prod = data?[index];
-                            String s = prod!.inStock.toString() == 'true'
+                            final prod = data[index];
+                            String s = prod.inStock.toString() == 'true'
                                 ? 'In stock'
                                 : 'Out of stock';
 
@@ -488,358 +497,354 @@ class _ManageProductsState extends State<ManageProducts> {
 
                               starRating = '⭐' * fullStars;
                             }
-                            return Container(
-                              color: Colors.grey.shade300,
-                              child: Column(
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetailsScreen(prod: prod, productId:prod.id)));
+                            return InkWell(
+                              onTap: () {
+                                // print("0000");
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ProductDetailsScreen(
+                                            prod: prod, productId: prod.id)));
+                              },
+                              child: Container(
+                                color: Colors.grey.shade300,
+                                child: Card(
+                                  margin: EdgeInsets.only(
+                                      left: 10, right: 10, top: 6, bottom: 6),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Container(
+                                          // margin: EdgeInsets.only(bottom: 5, top: 5, left: 11,right: 10),
 
-                                    },
-                                    child: Card(
-                                      margin: EdgeInsets.only(
-                                          left: 10, right: 10, top: 6, bottom: 6),
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Container(
-                                              // margin: EdgeInsets.only(bottom: 5, top: 5, left: 11,right: 10),
-                                  
-                                              child: SingleChildScrollView(
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Container(
-                                                        decoration: BoxDecoration(
-                                                            color: Colors.white,
-                                                            borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius
-                                                                    .circular(
-                                                                    10))),
-                                                        height: 170,
-                                                        padding:
-                                                        EdgeInsets.all(10),
-                                                        child: Column(
-                                                          children: [
-                                                            Expanded(
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                                children: [
-                                                                  Transform.scale(
-                                                                    scale: 0.7,
-                                                                    child:
-                                                                    CupertinoSwitch(
-                                                                      activeColor:
-                                                                      Colors
-                                                                          .green,
-                                                                      value: prod
-                                                                          .inStock,
-                                                                      onChanged: (
-                                                                          bool
-                                                                          value) {
-                                                                        s =
-                                                                        value ==
-                                                                            true
-                                                                            ? 'In stock'
-                                                                            : 'Out of stock';
-                                                                        setState(
-                                                                                () {
+                                          child: SingleChildScrollView(
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius
+                                                                .circular(
+                                                                10))),
+                                                    height: 170,
+                                                    padding:
+                                                    EdgeInsets.all(10),
+                                                    child: Column(
+                                                      children: [
+                                                        Expanded(
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                            children: [
+                                                              Transform.scale(
+                                                                scale: 0.7,
+                                                                child:
+                                                                CupertinoSwitch(
+                                                                  activeColor:
+                                                                  Colors
+                                                                      .green,
+                                                                  value: prod
+                                                                      .inStock,
+                                                                  onChanged: (
+                                                                      bool
+                                                                      value) {
+                                                                    s =
+                                                                    value ==
+                                                                        true
+                                                                        ? 'In stock'
+                                                                        : 'Out of stock';
+                                                                    setState(
+                                                                            () {
+                                                                          prod
+                                                                              .inStock =
+                                                                              value;
+                                                                          updateStock(
+                                                                              value,
                                                                               prod
-                                                                                  .inStock =
-                                                                                  value;
-                                                                              updateStock(
-                                                                                  value,
-                                                                                  prod
-                                                                                      .id);
-                                                                            });
-                                                                      },
-                                                                    ),
-                                                                  ),
-                                                                  Expanded(
-                                                                      flex: 2,
-                                                                      child:
-                                                                      Container(
-                                                                        child: Text(
-                                                                            s,
-                                                                            style: TextStyle(
-                                                                                color: Colors
-                                                                                    .green
-                                                                                    .shade900,
-                                                                                fontSize: 11,
-                                                                                fontFamily: 'Poppins',
-                                                                                fontWeight: FontWeight
-                                                                                    .bold)),
-                                                                      )),
-                                                                  IconButton(
-                                                                    icon: Icon(
-                                                                      Icons
-                                                                          .delete,
-                                                                      color: Colors
-                                                                          .red
-                                                                          .shade900,
-                                                                      size: 25,
-                                                                    ),
-                                                                    onPressed:
-                                                                        () {
-                                                                      showDeleteConfirmationDialog(
-                                                                          prod
-                                                                              .id);
-                                                                    },
-                                                                  ),
-                                                                ],
+                                                                                  .id);
+                                                                        });
+                                                                  },
+                                                                ),
                                                               ),
-                                                            ),
-                                                            SizedBox(
-                                                              height: 5,
-                                                            ),
-                                                            Expanded(
-                                                              flex: 3,
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                                children: [
-                                                                  Expanded(
-                                                                      child:
-                                                                      Container(
-                                                                        margin: const EdgeInsets
-                                                                            .only(
-                                                                            right:
-                                                                            15),
-                                                                        child: (prod
-                                                                            .images
-                                                                            .length >
-                                                                            0)
-                                                                            ? Image
-                                                                            .network(
-                                                                          prod
-                                                                              .images[
-                                                                          0],
-                                                                          height:
-                                                                          150,
-                                                                          width:
-                                                                          80,
-                                                                          fit: BoxFit
-                                                                              .fill,
-                                                                        )
-                                                                            : Image
-                                                                            .asset(
-                                                                            'assets/images/a1.jpg',
-                                                                            height:
-                                                                            150,
-                                                                            width:
-                                                                            80),
-                                                                      )),
-                                                                  Expanded(
-                                                                    flex: 2,
-                                                                    child:
-                                                                    Container(
-                                                                      child:
-                                                                      Column(
-                                                                        mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .start,
-                                                                        crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .start,
-                                                                        children: [
-                                                                          Expanded(
-                                                                              child:
-                                                                              Container(
-                                                                                // margin: EdgeInsets.only(left: 20),
-                                                                                child: Text(
-                                                                                    prod
-                                                                                        .productName,
-                                                                                    style: TextStyle(
-                                                                                        color: Colors
-                                                                                            .black,
-                                                                                        fontSize: 19,
-                                                                                        fontFamily: 'comfart',
-                                                                                        fontWeight: FontWeight
-                                                                                            .bold)),
-                                                                              )),
-                                                                          Expanded(
-                                                                            child:
-                                                                            Row(
-                                                                              children: [
-                                                                                Text(
-                                                                                    '₹${prod
-                                                                                        .offerPrice
-                                                                                        .toString()}',
-                                                                                    style: TextStyle(
-                                                                                        color: Colors
-                                                                                            .black,
-                                                                                        fontSize: 16,
-                                                                                        fontFamily: 'comfort',
-                                                                                        fontWeight: FontWeight
-                                                                                            .bold)),
-                                                                                SizedBox(
-                                                                                  width: 10,
-                                                                                ),
-                                                                                Text(
-                                                                                    'MRP '
-                                                                                        '₹${prod
-                                                                                        .mrpPrice
-                                                                                        .toString()}'
-                                                                                        '${860}',
-                                                                                    style: TextStyle(
-                                                                                        color: Colors
-                                                                                            .black,
-                                                                                        fontSize: 14,
-                                                                                        fontFamily: 'comfort',
-                                                                                        decoration: TextDecoration
-                                                                                            .lineThrough)),
-                                                                              ],
-                                                                            ),
-                                                                          ),
-                                                                          Expanded(
-                                                                            child:
-                                                                            Container(
-                                                                              width:
-                                                                              100,
-                                                                              height:
-                                                                              18,
-                                                                              decoration: const BoxDecoration(
-                                                                                //  border: Border.all(color: Colors.black),
-                                                                                  borderRadius: BorderRadius
-                                                                                      .all(
-                                                                                      Radius
-                                                                                          .circular(
-                                                                                          5))),
-                                                                              //   margin: EdgeInsets.only(right: 20),
-                                                                              child:
-                                                                              Text(
-                                                                                  starRating,
-                                                                                  style: const TextStyle(
-                                                                                      color: Colors
-                                                                                          .black,
-                                                                                      fontSize: 13.5,
-                                                                                      fontFamily: 'comfort',
-                                                                                      fontWeight: FontWeight
-                                                                                          .bold)),
-                                                                            ),
-                                                                          ),
-                                                                          Expanded(
-                                                                            child:
-                                                                            Container(
-                                                                              width:
-                                                                              220,
-                                                                              child:
-                                                                              MaterialButton(
-                                                                                color: Colors
-                                                                                    .lightBlue
-                                                                                    .shade400,
-                                                                                onPressed: () {
-                                                                                  Navigator
-                                                                                      .push(
-                                                                                      context,
-                                                                                      MaterialPageRoute(
-                                                                                          builder: (
-                                                                                              context) =>
-                                                                                              UpdateProducts(
-                                                                                                pid: prod
-                                                                                                    .id,
-                                                                                                token: token,
-                                                                                                id: id,
-                                                                                                productName: prod
-                                                                                                    .productName,
-                                                                                                // productImage: prod!
-                                                                                                //     .image
-                                                                                                //     .toString(),
-                                                                                                productCategory: prod
-                                                                                                    .category,
-                                                                                                productSubCategory1: prod
-                                                                                                    .subCategory1,
-                                                                                                productSubCategory2: prod
-                                                                                                    .subCategory2,
-                                  
-                                                                                                quantityPricing: prod
-                                                                                                    .productDetails,
-                                                                                                stockTF: prod
-                                                                                                    .inStock,
-                                                                                                stockIO: s,
-                                                                                                // productType: prod!
-                                                                                                //     .productType,
-                                                                                                description: prod
-                                                                                                    .description,
-                                                                                              )));
-                                                                                },
-                                                                                child: Text(
-                                                                                  'Edit',
-                                                                                  style: TextStyle(
-                                                                                      color: Colors
-                                                                                          .white,
-                                                                                      fontWeight: FontWeight
-                                                                                          .bold,
-                                                                                      fontSize: 16),
-                                                                                ),
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ],
+                                                              Expanded(
+                                                                  flex: 2,
+                                                                  child:
+                                                                  Container(
+                                                                    child: Text(
+                                                                        s,
+                                                                        style: TextStyle(
+                                                                            color: Colors
+                                                                                .green
+                                                                                .shade900,
+                                                                            fontSize: 11,
+                                                                            fontFamily: 'Poppins',
+                                                                            fontWeight: FontWeight
+                                                                                .bold)),
+                                                                  )),
+                                                              IconButton(
+                                                                icon: Icon(
+                                                                  Icons
+                                                                      .delete,
+                                                                  color: Colors
+                                                                      .red
+                                                                      .shade900,
+                                                                  size: 25,
+                                                                ),
+                                                                onPressed:
+                                                                    () {
+                                                                  showDeleteConfirmationDialog(
+                                                                      prod
+                                                                          .id);
+                                                                },
                                                               ),
-                                                            ),
-                                                          ],
+                                                            ],
+                                                          ),
                                                         ),
-                                                      ),
+                                                        SizedBox(
+                                                          height: 5,
+                                                        ),
+                                                        Expanded(
+                                                          flex: 3,
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                            children: [
+                                                              Expanded(
+                                                                  child:
+                                                                  Container(
+                                                                    margin: EdgeInsets
+                                                                        .only(
+                                                                        right:
+                                                                        15),
+                                                                    child: (prod
+                                                                        .images
+                                                                        .length >
+                                                                        0)
+                                                                        ? Image
+                                                                        .network(
+                                                                      prod
+                                                                          .images[
+                                                                      0],
+                                                                      height:
+                                                                      150,
+                                                                      width:
+                                                                      80,
+                                                                      fit: BoxFit
+                                                                          .fill,
+                                                                    )
+                                                                        : Image
+                                                                        .asset(
+                                                                        'assets/images/a1.jpg',
+                                                                        height:
+                                                                        150,
+                                                                        width:
+                                                                        80),
+                                                                  )),
+                                                              Expanded(
+                                                                flex: 2,
+                                                                child:
+                                                                Container(
+                                                                  child:
+                                                                  Column(
+                                                                    mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .start,
+                                                                    crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                    children: [
+                                                                      Expanded(
+                                                                          child:
+                                                                          Container(
+                                                                            // margin: EdgeInsets.only(left: 20),
+                                                                            child: Text(
+                                                                                prod
+                                                                                    .productName,
+                                                                                style: TextStyle(
+                                                                                    color: Colors
+                                                                                        .black,
+                                                                                    fontSize: 19,
+                                                                                    fontFamily: 'comfart',
+                                                                                    fontWeight: FontWeight
+                                                                                        .bold)),
+                                                                          )),
+                                                                      Expanded(
+                                                                        child:
+                                                                        Row(
+                                                                          children: [
+                                                                            Text(
+                                                                                '₹${prod
+                                                                                    .offerPrice
+                                                                                    .toString()}',
+                                                                                style: TextStyle(
+                                                                                    color: Colors
+                                                                                        .black,
+                                                                                    fontSize: 16,
+                                                                                    fontFamily: 'comfort',
+                                                                                    fontWeight: FontWeight
+                                                                                        .bold)),
+                                                                            SizedBox(
+                                                                              width: 10,
+                                                                            ),
+                                                                            Text(
+                                                                                'MRP '
+                                                                                    '₹${prod
+                                                                                    .mrpPrice
+                                                                                    .toString()}'
+                                                                                    '${860}',
+                                                                                style: TextStyle(
+                                                                                    color: Colors
+                                                                                        .black,
+                                                                                    fontSize: 14,
+                                                                                    fontFamily: 'comfort',
+                                                                                    decoration: TextDecoration
+                                                                                        .lineThrough)),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                      Expanded(
+                                                                        child:
+                                                                        Container(
+                                                                          width:
+                                                                          100,
+                                                                          height:
+                                                                          18,
+                                                                          decoration: const BoxDecoration(
+                                                                            //  border: Border.all(color: Colors.black),
+                                                                              borderRadius: BorderRadius
+                                                                                  .all(
+                                                                                  Radius
+                                                                                      .circular(
+                                                                                      5))),
+                                                                          //   margin: EdgeInsets.only(right: 20),
+                                                                          child:
+                                                                          Text(
+                                                                              starRating,
+                                                                              style: const TextStyle(
+                                                                                  color: Colors
+                                                                                      .black,
+                                                                                  fontSize: 13.5,
+                                                                                  fontFamily: 'comfort',
+                                                                                  fontWeight: FontWeight
+                                                                                      .bold)),
+                                                                        ),
+                                                                      ),
+                                                                      Expanded(
+                                                                        child:
+                                                                        Container(
+                                                                          width:
+                                                                          220,
+                                                                          child:
+                                                                          MaterialButton(
+                                                                            color: Colors
+                                                                                .lightBlue
+                                                                                .shade400,
+                                                                            onPressed: () {
+                                                                              Navigator
+                                                                                  .push(
+                                                                                  context,
+                                                                                  MaterialPageRoute(
+                                                                                      builder: (
+                                                                                          context) =>
+                                                                                          UpdateProducts(
+                                                                                            imageList:prod.images,
+                                                                                            pid: prod
+                                                                                                .id,
+                                                                                            token: token,
+                                                                                            id: id,
+                                                                                            productName: prod
+                                                                                                .productName,
+                                                                                            productCategory: prod
+                                                                                                .category,
+                                                                                            productSubCategory1: prod
+                                                                                                .subCategory1,
+                                                                                            productSubCategory2: prod
+                                                                                                .subCategory2,
+
+                                                                                            quantityPricing: prod
+                                                                                                .productDetails,
+                                                                                            stockTF: prod
+                                                                                                .inStock,
+                                                                                            stockIO: s,
+                                                                                            description: prod
+                                                                                                .description,
+                                                                                          )));
+                                                                            },
+                                                                            child: Text(
+                                                                              'Edit',
+                                                                              style: TextStyle(
+                                                                                  color: Colors
+                                                                                      .white,
+                                                                                  fontWeight: FontWeight
+                                                                                      .bold,
+                                                                                  fontSize: 16),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                  ],
+                                                  ),
                                                 ),
-                                              ),
+                                              ],
                                             ),
                                           ),
-                                        ],
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
                             );
                           },
                         ),
                         // NumberPaginator(
                         //   numberPages: numberOfPages,
-                        //   onPageChange: (index) {
-                        //     print("index is $index");
-                        //     index = index + 1;
+                        //   onPageChange: (index)  {
                         //     setState(() {
-                        //       currentPage = index;
                         //       pagination(index);
                         //     });
+                        //     index = index + 1; // Convert to 1-based index
+                        //     print("index is $index");
+                        //     Categories.pindex=index;
+                        //
+                        //     // setState(() {
+                        //     //   // currentPage = index - 1; // Convert back to 0-based index
+                        //     //   // Pass the 1-based index to the function
+                        //     // });
+                        //
                         //     print("Jfdsjadgbjfvbsdg");
                         //   },
                         // ),
-                        NumberPaginator(
-                          numberPages: numberOfPages,
-                          onPageChange: (index)  {
-                            index = index + 1; // Convert to 1-based index
-                            print("index is $index");
-                            Categories.pindex=index;
-                            pagination();
-                            setState(() {
-                              currentPage = index - 1; // Convert back to 0-based index
-                               // Pass the 1-based index to the function
-                            });
 
-                            print("Jfdsjadgbjfvbsdg");
-                          },
-                        ),
-                        const SizedBox(height: 20),
                       ],
-                    ),
-                  ],
-                ),
-              );
-          }
-          },
+                    ) : Center(child: Text('No products Found'),);
+                }
+                },
+              ),
+              NumberPaginator(
+                key: UniqueKey(),
+                numberPages: numberOfPages,
+                onPageChange: (index) {
+                  pagination(index);
+                  print("index is $index");
+                  print("Jfdsjadgbjfvbsdg");
+                },
+              ),
+            ],
+          ),
         ));
   }
 
@@ -849,7 +854,7 @@ class _ManageProductsState extends State<ManageProducts> {
     if (sort == "") {
       data = await UserApi.getProducts(token, id, currentPage);
     } else {
-      data = await UserApi.getSellerProducts(sort, token, id);
+      data = await UserApi.getSellerProducts(sort, token, id,currentPage);
     }
     return data;
   }
@@ -861,7 +866,6 @@ class _ManageProductsState extends State<ManageProducts> {
     // print(ppid);
     final apiUrl =
         'https://api.pehchankidukan.com/seller/${TokenId.id}/products/$ppid';
-
     final Map<String, dynamic> productJson;
     if (value == true)
       productJson = {"inStock": "true"};

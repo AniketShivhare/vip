@@ -1,10 +1,13 @@
-
+import 'package:http_parser/http_parser.dart';
+import 'package:e_commerce/services/tokenId.dart';
 import 'package:e_commerce/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:http/http.dart' as http;
 import 'main_dashboard.dart';
+import 'package:path/path.dart';
+
 
 void main() {
   runApp(BankDetailsApp1());
@@ -23,7 +26,6 @@ class BankDetailsApp1 extends StatelessWidget {
 
 class UploadImages extends StatefulWidget {
   final token;
-
   final id;
 
   UploadImages({Key? key, required  this.token, required this.id}) : super(key: key); // Constructor
@@ -40,11 +42,37 @@ class _UploadImagesState extends State<UploadImages> {
   XFile? shopImage;
   XFile? shopLogo;
 
+   Future<void> uploadImage(XFile imageFile, String imageName) async {
+    final url1 = 'https://api.pehchankidukan.com/seller/${TokenId.id}';
+    var request = http.MultipartRequest('PUT', Uri.parse(url1));
+    request.headers['Authorization'] = 'Bearer ${TokenId.token}';
+      int length = await imageFile.length();
+      String fileName = basename(imageFile.path);
+      request.files.add(http.MultipartFile(
+        imageName,
+        imageFile.readAsBytes().asStream(),
+        length,
+        filename: fileName,
+        contentType: MediaType(
+            'image[]', 'jpeg'), // Adjust content type accordingly
+      ));
+      final response = await request.send();
+      if (response.statusCode == 200) {
+        print('PUT images for $imageName request successful');
+        print('Response: ${await response.stream.bytesToString()}');
+      } else {
+        print('Failed to make $imageName PUT request: ${response.statusCode}');
+        print('Response: ${await response.stream.bytesToString()}');
+      }
+  }
+
   Future<void> _getImage() async {
     final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile = await _picker.pickImage(
+        source: ImageSource.gallery);
 
     if (pickedFile != null) {
+      await uploadImage(pickedFile,"profilePhoto");
       setState(() {
         ownerPhoto = pickedFile;
       });
@@ -55,9 +83,11 @@ class _UploadImagesState extends State<UploadImages> {
 
   Future<void> _getShopImage() async {
     final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile = await _picker.pickImage(
+        source: ImageSource.gallery);
 
     if (pickedFile != null) {
+      await uploadImage(pickedFile,"shopPhoto");
       setState(() {
         shopImage = pickedFile;
       });
@@ -68,9 +98,11 @@ class _UploadImagesState extends State<UploadImages> {
 
   Future<void> _getShopLogo() async {
     final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile = await _picker.pickImage(
+        source: ImageSource.gallery);
 
     if (pickedFile != null) {
+      // await uploadImage(pickedFile,"gstinImage");
       setState(() {
         shopLogo = pickedFile;
       });
@@ -82,9 +114,11 @@ class _UploadImagesState extends State<UploadImages> {
 
   Future<void> _getGSTImage() async {
     final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile = await _picker.pickImage(
+        source: ImageSource.gallery);
 
     if (pickedFile != null) {
+      await uploadImage(pickedFile,"gstinImage");
       setState(() {
         gstImage = pickedFile;
       });
@@ -96,9 +130,11 @@ class _UploadImagesState extends State<UploadImages> {
 
   Future<void> _getFSSAIImage() async {
     final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile = await _picker.pickImage(
+        source: ImageSource.gallery);
 
     if (pickedFile != null) {
+      await uploadImage(pickedFile,"fssaiImageUrl");
       setState(() {
         fssaiImage = pickedFile;
       });
@@ -108,12 +144,13 @@ class _UploadImagesState extends State<UploadImages> {
   }
 
 
-
   Future<void> _getCancelledCheque() async {
     final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile = await _picker.pickImage(
+        source: ImageSource.gallery);
 
     if (pickedFile != null) {
+      await uploadImage(pickedFile,"cancelledCheckImage");
       setState(() {
         cancelledCheckImage = pickedFile;
       });
@@ -229,21 +266,24 @@ class _UploadImagesState extends State<UploadImages> {
                   ],
                 ),
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: 70),
               Center(
                 child: Container(
-
                   width: 200,
                   child: ElevatedButton(
-                    onPressed: () async{
-
+                    onPressed: () async {
                       saveData();
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => MainDashboard(token: widget.token, id: widget.id, pageIndex: 2,sortt:"created_at"),
+                          builder: (context) =>
+                              MainDashboard(token: widget.token,
+                                  id: widget.id,
+                                  pageIndex: 2,
+                                  sortt: "created_at"),
                         ),
-                            (route) => false, // This line clears the navigator stack
+                            (
+                            route) => false, // This line clears the navigator stack
                       );
                       // Process the form data and perform submission
                       // Process the form data and perform submission
@@ -251,11 +291,14 @@ class _UploadImagesState extends State<UploadImages> {
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5), // Set this to 0 for a square button
+                        borderRadius: BorderRadius.circular(
+                            5), // Set this to 0 for a square button
                       ),
-                      backgroundColor: Colors.blue, // Change this to the color you want
+                      backgroundColor: Colors
+                          .blue, // Change this to the color you want
                     ),
-                    child: const Text('Finish',style: TextStyle(color: Colors.white),),
+                    child: const Text(
+                      'Finish', style: TextStyle(color: Colors.white),),
                   ),
                 ),
               ),
@@ -265,11 +308,11 @@ class _UploadImagesState extends State<UploadImages> {
       ),
     );
   }
-  Future<void> saveData() async{
+
+  Future<void> saveData() async {
     var sharedPref = await SharedPreferences.getInstance();
     sharedPref.setBool(SplashScreenState.KEYLOGIN, true);
     sharedPref.setString(SplashScreenState.KEYTOKEN, widget.token);
     sharedPref.setString(SplashScreenState.KEYID, widget.id);
-
   }
 }

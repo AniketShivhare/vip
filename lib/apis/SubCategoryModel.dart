@@ -5,9 +5,13 @@ class SubCategoryModel {
   SubCategoryModel({required this.msg, required this.data});
 
   factory SubCategoryModel.fromJson(Map<String, dynamic> json) {
+    List<String> categoryList = [];
+    for (var item in json['data']) {
+      categoryList.add(item['subCategory1']);
+    }
     return SubCategoryModel(
       msg: json['msg'],
-      data: List<String>.from(json['data']),
+      data: categoryList,//List<String>.from(json['data']),
     );
   }
 

@@ -10,10 +10,10 @@ import 'main.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ItemOption {
-  double price;
+  String price;
   String quantity;
   String unit;
-  double offerPrice;
+  String offerPrice;
 
   ItemOption({
     required this.price,
@@ -51,10 +51,10 @@ class PriceQuantitySpinnerRow extends StatefulWidget {
 
 class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
   ItemOption newItem = ItemOption(
-    price: 0,
-    quantity: "0",
+    price: "",
+    quantity: "",
     unit: 'kg',
-    offerPrice: 0,
+    offerPrice: "",
   );
   List<String> dropDownItems = [
     "kg",
@@ -83,10 +83,10 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
   void addOption() {
     widget.onOptionAdded(newItem);
     newItem = ItemOption(
-      price: 0,
-      quantity: "0",
+      price: "",
+      quantity: "",
       unit: 'kg',
-      offerPrice: 0,
+      offerPrice: "",
     );
   }
 
@@ -172,7 +172,7 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                             keyboardType: TextInputType.number,
                             controller:
                                 TextEditingController(text: option.price.toString()),
-                            onChanged: (value) => option.price = value as double,
+                            onChanged: (value) => option.price = value,
                             decoration: InputDecoration(
                               hintText: 'Price (In Rs.)',
                               label: const Text('Price (In Rs.)'),
@@ -196,7 +196,7 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                             keyboardType: TextInputType.number,
                             controller:
                                 TextEditingController(text: option.offerPrice.toString()),
-                            onChanged: (value) => option.offerPrice = value as double,
+                            onChanged: (value) => option.offerPrice = value,
                             decoration: InputDecoration(
                               hintText: 'Offer Price',
                               label: const Text('Offer Price'),
@@ -370,185 +370,214 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
+
   Widget categoryDialog() {
-    return FutureBuilder(
-      future: getCategory(TokenId.token),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text("Error : ${snapshot.error}"),
-          );
-        } else {
-          return ListView.builder(
-            itemCount: snapshot.data!.data.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                onTap: () {
-                  setState(() {
-                    category = snapshot.data!.data[index].toString();
-                  });
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Row(
-                          children: [
-                            InkWell(
-                                onTap: () => Navigator.pop(context),
-                                child: Icon(Icons.arrow_back_ios)),
-                            SizedBox(width: 5),
-                            Text(
-                              "Sub Category 1",
-                            ),
-                          ],
-                        ),
-                        content: subCategory1Dialog(),
-                      );
-                    },
+    return Container(
+      height: 600,
+      width: 500,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            FutureBuilder(
+              future: getCategory(TokenId.token),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
                   );
-                },
-                leading: CircleAvatar(),
-                trailing: Icon(
-                  Icons.arrow_forward_ios,
-                  size: 20,
-                ),
-                title: Text(
-                  snapshot.data!.data[index].toString(),
-                  style: TextStyle(fontSize: 14),
-                ),
-              );
-            },
-          );
-        }
-      },
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text("Error : ${snapshot.error}"),
+                  );
+                } else {
+                  final items = snapshot.data!.data;
+                  return Column(
+                    children: items.map((item) {
+                      return ListTile(
+                        onTap: () {
+                          setState(() {
+                            category = item.toString();
+                          });
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Row(
+                                  children: [
+                                    InkWell(
+                                      onTap: () => Navigator.pop(context),
+                                      child: const Icon(Icons.arrow_back_ios),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    const Text("Sub Category 1"),
+                                  ],
+                                ),
+                                content: subCategory1Dialog(),
+                              );
+                            },
+                          );
+                        },
+                        leading: CircleAvatar(),
+                        trailing: const Icon(
+                          Icons.arrow_forward_ios,
+                          size: 20,
+                        ),
+                        title: Text(
+                          item.toString(),
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   Widget subCategory1Dialog() {
-    return FutureBuilder(
-      future: getSubCategory(TokenId.token, category),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text("Error : ${snapshot.error}"),
-          );
-        } else {
-          return ListView.builder(
-            itemCount: snapshot.data!.data.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                onTap: () {
-                  setState(() {
-                    subCategory1 = snapshot.data!.data[index];
-                  });
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Row(
-                          children: [
-                            InkWell(
-                                onTap: () => Navigator.pop(context),
-                                child: Icon(Icons.arrow_back_ios)),
-                            SizedBox(width: 5),
-                            Text(
-                              "Sub Category 2",
-                            ),
-                          ],
-                        ),
-                        content: subCategory2Dialog(),
-                      );
-                    },
+    return Container(
+      height: 600,
+      width: 500,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            FutureBuilder(
+              future: getSubCategory(TokenId.token, category),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
                   );
-                },
-                trailing: Icon(
-                  Icons.arrow_forward_ios,
-                  size: 20,
-                ),
-                title: Text(
-                  snapshot.data!.data[index],
-                  style: TextStyle(fontSize: 14),
-                ),
-              );
-            },
-          );
-        }
-      },
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text("Error : ${snapshot.error}"),
+                  );
+                } else {
+                  print("adfghjkl");
+                  print(snapshot.data!.data.length);
+                  final items = snapshot.data!.data;
+                  return Column(
+                    children: items.map((item) {
+                      return ListTile(
+                        onTap: () {
+                          setState(() {
+                            subCategory1 = item;
+                          });
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Row(
+                                  children: [
+                                    InkWell(
+                                      onTap: () => Navigator.pop(context),
+                                      child: Icon(Icons.arrow_back_ios),
+                                    ),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      "Sub Category 2",
+                                    ),
+                                  ],
+                                ),
+                                content: subCategory2Dialog(),
+                              );
+                            },
+                          );
+                        },
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                          size: 20,
+                        ),
+                        title: Text(
+                          item,
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
+
   Widget subCategory2Dialog() {
-    return FutureBuilder(
-      future: getSubCategory2(TokenId.token, category, subCategory1),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text("Error : ${snapshot.error}"),
-          );
-        } else if (snapshot.data!.data.length == 0) {
-          Future.delayed(Duration(milliseconds: 1), () {
-            Navigator.pop(context);
-            Navigator.pop(context);
-            Navigator.pop(context);
-            subCategory2 = '';
-            setState(() {});
-          });
-          return Center(
-            child:
-                Text("No subcategories available for the selected criteria."),
-          );
-        } else {
-          print(snapshot.data!.data.length);
-          return ListView.builder(
-            itemCount: snapshot.data!.data.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                onTap: () {
-                  setState(() {
-                    subCategory2 = snapshot.data!.data[index];
+    return Container(
+      height: 600,
+      width: 500,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            FutureBuilder(
+              future: getSubCategory2(TokenId.token, category, subCategory1),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text("Error : ${snapshot.error}"),
+                  );
+                } else if (snapshot.data!.data.length == 0) {
+                  Future.delayed(Duration(milliseconds: 1), () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                    subCategory2 = '';
+                    setState(() {});
                   });
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
-                trailing: Icon(
-                  Icons.arrow_forward_ios,
-                  size: 20,
-                ),
-                title: Text(
-                  snapshot.data!.data[index],
-                  style: TextStyle(fontSize: 14),
-                ),
-              );
-            },
-          );
-        }
-      },
+                  return Center(
+                    child: Text("No subcategories available for the selected criteria."),
+                  );
+                } else {
+                  return Column(
+                    children: snapshot.data!.data.map((subCategory) {
+                      return ListTile(
+                        onTap: () {
+                          setState(() {
+                            subCategory2 = subCategory;
+                          });
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                        title: Text(
+                          subCategory,
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
+
+
 
   @override
   void initState() {
     valueUpdate(widget.productName, widget.productDescription);
     itemOptions.add(ItemOption(
-      price: 0,
-      quantity: "0",
+      price: "",
+      quantity: "",
       unit: 'kg',
-      offerPrice: 0,
+      offerPrice: "",
     ));
   }
 
