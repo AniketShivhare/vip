@@ -11,23 +11,6 @@ import 'package:intl/intl.dart';
 
 import 'main_dashboard.dart';
 
-void main() {
-  runApp(BankDetailsApp());
-}
-
-class BankDetailsApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Bank Details Form',
-      debugShowCheckedModeBanner: false,
-      home: BankDetailsForm(
-        token: '',
-        id: '',
-      ), //seller: UpdateSeller(),
-    );
-  }
-}
 
 class BankDetailsForm extends StatefulWidget {
   // late UpdateSeller seller;

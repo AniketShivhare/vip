@@ -33,6 +33,14 @@ class _SellerProfilePersonalDetailsState
 
   Future<void> fetchSeller() async {
     seller = await SellerApi().getSellerProfile(sellerToken, sellerId);
+
+    setState(() {
+      if(seller.data.profilePhoto.isNotEmpty) {
+        imageUrl = seller.data.profilePhoto;
+      }
+    });
+    // print("asfdfds");
+    // print(imageUrl);
     if (seller.data.profilePhoto.isNotEmpty) {
       imageUrl = seller.data.profilePhoto;
     }
@@ -45,6 +53,7 @@ class _SellerProfilePersonalDetailsState
     // print(imageUrl);
     // print(imageUrl);
     print("phone");
+
   }
 
   Future<void> postPersonalDetails() async {

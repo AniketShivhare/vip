@@ -3,10 +3,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
 
+import 'package:e_commerce/DataSaveClasses/ProductId.dart';
 import 'package:e_commerce/services/filterData.dart';
 import 'package:e_commerce/services/tokenId.dart';
 import 'package:image_picker/image_picker.dart';
 import '../apis/ProductModel.dart';
+import '../apis/ProductSearchModel.dart';
 import '../apis/orderModel.dart';
 import 'package:http/http.dart' as http;
 import 'Categories.dart';
@@ -16,7 +18,7 @@ import 'package:path/path.dart';
 class UserApi {
 
 
-  static Future<List<Product>> filterProduct(  token, id) async {
+  static Future<List<Product>> filterProduct(token, id) async {
     print("called filterrr function");
     print("id-$id");
     print("token-$token");
@@ -28,9 +30,17 @@ class UserApi {
       url += 'category=${FilterOptions.categories[0]}';
       count++;
     }
+    if(FilterOptions.sortChanged==true) {
+      if(count == 0)
+        url += '?';
+      else url += '&';
+      url += 'sort=${FilterOptions.sortName}';
+      count++;
+    }
     if(FilterOptions.selectedSubCat) {
       if(count==0)
         url+='?';
+
       List<String>? subCategory = FilterOptions.subcategories[FilterOptions.categories[0]];
       if(count>0)
         url += '&';
@@ -56,6 +66,7 @@ class UserApi {
       List<Product> products = (productJson['data'] as List<dynamic>?)
           ?.map((e) => Product.fromJson(e as Map<String, dynamic>))
           .toList() ?? [];
+
       print(products);
       print("product");
       return products;
@@ -118,16 +129,15 @@ class UserApi {
     Categories.categories = categoryList;
     Categories.images = imageURLList;
     // Categories.categories = jsonData["data"][0]["category"] as List<String>;
-
   }
 
 
   //search
   static Future<List<Product>> searchProducts(String keyword, token, id) async {
     final Url = 'https://api.pehchankidukan.com/seller/$id/products/search';
-    final url = Uri.parse('$Url?keyword=$keyword');
-print("query");
-print(keyword);
+    final url = Uri.parse('$Url?query=$keyword');
+    print("query123");
+    print(keyword);
     final response = await http.get(
       url,
       headers: <String, String>{
@@ -138,14 +148,21 @@ print(keyword);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseBody = jsonDecode(response.body);
-      print(responseBody['status']);
-      print(responseBody['length']);
-      print(responseBody['message']);
-      List<Product> products = (responseBody['data'] as List<dynamic>?)
-          ?.map((e) => Product.fromJson(e as Map<String, dynamic>))
-          .toList() ?? [];
+      // print(responseBody['status']);
+      print("responseBody['length']");
+      // print(responseBody['msg']);
+      List<Product> products=[];
+      try{
+         products = (responseBody['data'] as List<dynamic>?)
+            ?.map((e) => Product.fromJson(e as Map<String, dynamic>))
+            .toList() ?? [];
+      } catch(e) {
+        print("Error: $e");
+      }
       // print(products[0].productName);
       // print(products[1].productName);
+      print("products[0].globalProductID.productName");
+      // print(products[0].globalProductID.productName);
       return products;
     } else {
       throw Exception('Failed to search products: ${response.reasonPhrase}');
@@ -153,52 +170,60 @@ print(keyword);
   }
 
   //sort and filter
-  static Future<List<Product>> getSellerProducts( sort, token, id, currentPage
-  ) async {
-    // print(token);
-  print("called recentlyadded $sort");
-    final baseUrl = 'https://api.pehchankidukan.com/seller/${TokenId.id}/products?sort=$sort&page=$currentPage';
-print(baseUrl);
-      final url = Uri.parse(baseUrl);
-      // print(url);
-    final response = await http.get(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${TokenId.token}'
-      },
-    );
+    static Future<List<Product>> getSellerProducts(sort, token, id, currentPage
+    ) async {
+      // print(token);
+    print("called recentlyadded $sort");
+    print(TokenId.id);
+      String baseUrl = 'https://api.pehchankidukan.com/seller/${TokenId.id}/products?sort=$sort&page=$currentPage';
+      final count=1;
+      print(FilterOptions.changed);
+      if(FilterOptions.changed==true)
+    {
+      if (FilterOptions.categories[0].isNotEmpty) {
+        baseUrl += '&';
+        FilterOptions.categories[0] =
+            FilterOptions.categories[0].replaceAll('&', '%26');
+        baseUrl += 'category=${FilterOptions.categories[0]}';
+      }
+      if (FilterOptions.selectedSubCat) {
+        List<String>? subCategory =
+            FilterOptions.subcategories[FilterOptions.categories[0]];
+        if (count > 1) baseUrl += '&';
+        print(subCategory);
+        String? formattedSubCategories =
+            subCategory?.map((category) => '"$category"').join(',');
+        formattedSubCategories = formattedSubCategories?.replaceAll('&', '%26');
+        baseUrl += 'subCategory1=[$formattedSubCategories]';
+      }
+    }
+    print(baseUrl);
+        final url = Uri.parse(baseUrl);
+        final response = await http.get(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${TokenId.token}'
+        },
+      );
 
-    // if (response.statusCode == 201) {
-      final Map<String, dynamic> responseBody = jsonDecode(response.body);
+      final  responseBody = jsonDecode(response.body);
       print("gjfdcchvjb");
       print(responseBody['data']);
       print(responseBody['length']);
-      // print(responseBody['message']);
-  List<Product> products=[];
+      List<Product> products=[];
     try{
       products = (responseBody['data'] as List<dynamic>?)
-          ?.map((e) => Product.fromJson(e as Map<String, dynamic>))
-          .toList() ?? [];
-      print(products.length);
-      print(products[1].productName);
+          ?.map((e) => Product.fromJson(e as Map<String, dynamic>)).toList() ?? [];
+      print("abcdefghijklmnop");
       return products;
     }
     catch (e){
       print("errorrr");
       print(e);
     }
-    // print(products[0].productName);
-    // print(products[0].productName);
-
       return products;
-    //
-    // } else {
-    //   throw Exception('Failed to retrieve seller products: ${response.reasonPhrase}');
-    // }
   }
-
-
 
   //Categories
   static Future<List<String>> getCategories(String? category, {String? subCategory1, String? subCategory2, int page = 1, int limit = 5}) async {
@@ -304,7 +329,6 @@ print(baseUrl);
         List<Order> orders = (productJson['allOrders'] as List<dynamic>?)
             ?.map((e) => Order.fromJson(e as Map<String, dynamic>))
             .toList() ?? [];
-        // orderStreamController.add(orders);
         print("Order get successfulll");
         return orders;
       } else {
@@ -319,7 +343,7 @@ print(baseUrl);
 
 
   //create Product API
-  static Future<String> createProduct(pName, category ,pSCategory1 ,pSCategory2, description, token, id, dummyProductList) async {
+  static Future<String> createProduct(Gpid, pName, category ,pSCategory1 ,pSCategory2, description, token, id, dummyProductList) async {
     final apiUrl = 'https://api.pehchankidukan.com/seller/${TokenId.id}/products';
     List<dynamic> itemOptionsMap = dummyProductList.map((item) {
       return {
@@ -330,12 +354,20 @@ print(baseUrl);
       };
     }).toList();
     final Map<String, dynamic> productJson = {
-      "productName": pName,
-      "category": category,
-      "subCategory1": pSCategory1,
-      "subCategory2": pSCategory2,//pSCategory2,
+
+      (ProductId.categoryCheck==true)?
+      "globalProductID": Gpid:'',
+      (ProductId.categoryCheck==false)?
+      "productName": pName:'',
+      (ProductId.categoryCheck==false)?
+      "category": category:'',
+      (ProductId.categoryCheck==false)?
+      "subCategory1": pSCategory1:'',
+      (ProductId.categoryCheck==false)?
+      "subCategory2": pSCategory2:'',//pSCategory2,
       // "image": product.image,
-      "description": description,
+      (ProductId.categoryCheck==false)?
+      "description": description:'',
       "productDetails": itemOptionsMap,
     };
     var uri = Uri.parse(apiUrl);
@@ -350,12 +382,12 @@ print(baseUrl);
       );
         final body = jsonDecode(response.body);
       if (response.statusCode == 201) {
+        print(body);
         print("product created succesfully");
         print(body);
-        print("body['id']");
-        print(body['data']['_id']);
-        return body['data']['_id'];
-
+        // print("body['id']");
+        // print(body['data']['_id']);
+        return body['message'];
       } else {
         print('Failed to create product. Status code: ${response.statusCode}');
         print('Response body: ${response.body}');
@@ -367,37 +399,31 @@ print(baseUrl);
   }
 
   //update Product API
-  static Future<void> updateProduct(pName, category ,pSCategory1 ,pSCategory2, description, token, id, pid, dummyProductList) async {
+  static Future<void> updateProduct( pid, dummyProductList) async {
     print("called update product");
-    print(pName);
     print("pid-$pid");
-    final apiUrl = 'https://api.pehchankidukan.com/seller/$id/products/$pid';
+    final apiUrl = 'https://api.pehchankidukan.com/seller/${TokenId.id}/products/$pid';
 
-    // final itemOptions = quantityPricing;
-    List<dynamic> itemOptionsMap = dummyProductList.map((item) {
+    List itemOptionsMap = dummyProductList.map((item) {
       return {
-        'mrpPrice': item.mrpPrice,
-        'quantity': item.quantity,
+        'quantity': (item.quantity),
+        'mrpPrice': (item.mrpPrice),
+        'offerPrice': (item.offerPrice),
         'unit': item.unit,
-        'offerPrice': item.offerPrice,
       };
     }).toList();
     final Map<String, dynamic> productJson = {
-      "productName": pName,
-      "category": category,
-      "subCategory1": pSCategory1,
-      "subCategory2": pSCategory2,//pSCategory2,
-      // "image": product.image,
-      "description": description,
       "productDetails": itemOptionsMap,
+      "inStock":"true",
     };
+    print(itemOptionsMap);
     var uri = Uri.parse(apiUrl);
     try {
       final response = await http.put(
         uri,
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
+          'Authorization': 'Bearer ${TokenId.token}'
         },
         body: jsonEncode(productJson),
       );
@@ -417,8 +443,8 @@ print(baseUrl);
 
   static Future<List<Product>> getProducts(token, id,currentPage) async {
     print("called getProducts12 function");
-    print("id-$id");
-    print("token-$token");
+    print("id-> $id");
+    print("token-> $token");
     final uri = Uri.parse('https://api.pehchankidukan.com/seller/${TokenId.id}/products?page=$currentPage');
     final response = await http.get(uri,
       headers: <String, String>{
@@ -430,11 +456,18 @@ print(baseUrl);
     final productJson = jsonDecode(body);
     print(response.statusCode);
     print(productJson);
-    List<Product> products = (productJson['data'] as List<dynamic>?)
-        ?.map((e) => Product.fromJson(e as Map<String, dynamic>))
-        .toList() ?? [];
+    try {
+      print("bjbjbjbjbjbj");
+      List<Product> products = (productJson['data'] as List<dynamic>?)?.map((e) =>
+          Product.fromJson(e as Map<String, dynamic>)).toList() ?? [];
+      print( "products.lengthnnjj");
+      print( products.length);
+      return products;
+    } catch (e){
+      print("Error $e");
+    }
+    return [];
 
-    return products;
   }
 
   static Future<void> uploadImage(XFile imageFile, String imageName) async {
@@ -466,16 +499,13 @@ print(baseUrl);
     print(url);
     print(pid);
     print(TokenId.id);
-    Map<String,dynamic> body = {
-      url:url
-    };
-    final uri = Uri.parse('https://api.pehchankidukan.com/seller/${TokenId.id}/product/$pid');
+
+    final uri = Uri.parse('https://api.pehchankidukan.com/seller/${TokenId.id}/products/$pid?url=$url');
     final response = await http.delete(uri,
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${TokenId.token}'
       },
-      body: body,
     );
     if (response.statusCode == 200) {
       print('delete request successful');
@@ -484,7 +514,63 @@ print(baseUrl);
       print('Failed to make delete request: ${response.statusCode}');
       print('Response: $response');
     }
+  }
 
+  static Future<List<Product2>> fetchGlobalProduct(String query) async {
+    if(query=="")return [];
+    final Url = 'https://api.pehchankidukan.com/seller/${TokenId.id}/globalProductSearch';
+    final url = Uri.parse('$Url?query=$query');
+    print(url);
+    print(query);
+    final response = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${TokenId.token}',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseBody = jsonDecode(response.body);
+      // print(responseBody['status']);
+      // print(responseBody['length']);
+      // print(responseBody['message']);
+      List<Product2> products = (responseBody['data'] as List<dynamic>?)
+          ?.map((e) => Product2.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [];
+      // print(products[0].productName);
+      // print(products[1].productName);
+      print(products);
+      return products;
+    } else {
+      return [];
+      throw Exception('Failed to search products: ${response.reasonPhrase}');
+    }
+  }
+
+
+ static Future<void> changeOrderStatus(String newStatus, String orderId) async {
+    const Url = 'https://api.pehchankidukan.com/seller/changeOrderStatus';
+    final url = Uri.parse(Url);
+    print(url);
+    final productJson = {
+      "orderId": orderId,
+      "newOrderStatus": newStatus
+    };
+    final response = await http.patch(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${TokenId.token}',
+      },
+      body: jsonEncode(productJson),
+    );
+
+    if (response.statusCode == 201) {
+      print("successfully changed status");
+    } else {
+      throw Exception('Failed to change status: ${response.reasonPhrase}');
+    }
   }
 
 }

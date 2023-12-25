@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:e_commerce/DataSaveClasses/ProductId.dart';
 import 'package:e_commerce/services/User_api.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart';
@@ -18,12 +19,13 @@ class ReviewListed extends StatefulWidget {
   List<ItemOption> itemOptions = [];
   String productName = '';
   String productType = '';
-  String description = '', token='', id='';
+  String description = '';
   String category = '';
   String subCategory1 = '';
   String subCategory2 = '';
+  String Gpid = '';
 
-  ReviewListed({Key? key,required this.token,required this .id ,
+  ReviewListed({Key? key,
     required this.imageFileList,
     required this.itemOptions,
     required this.productName,
@@ -31,7 +33,9 @@ class ReviewListed extends StatefulWidget {
     required this.description,
     required this.category,
     required this.subCategory1,
-    required this.subCategory2}) : super(key: key);
+    required this.subCategory2,
+    required this.Gpid
+  }) : super(key: key);
 
   @override
   _ReviewListedState createState() => _ReviewListedState();
@@ -44,21 +48,22 @@ class _ReviewListedState extends State<ReviewListed> {
     String pName = widget.productName;
     String pType  = widget.productType;
     String pDescription  = widget.description;
-    String token = widget.token;
-    String id = widget.id;
+    String token = TokenId.token;
+    String id = TokenId.id;
     List dummyProductList =[];
     Future<void> postProductData() async {
-      final url = Uri.parse(
-          'https://api.pehchankidukan.com/seller/$id/products');
-
+      final url = Uri.parse('https://api.pehchankidukan.com/seller/$id/products');
       // Create item options
       final itemOptions = widget.itemOptions;
       itemOptions.forEach((itemOption) {
         dummyProductList.add(QuantityPricing(offerPrice: double.parse(itemOption.offerPrice),
-            quantity: itemOption.quantity, mrpPrice: double.parse(itemOption.price), unit: itemOption.unit));
+            quantity: (itemOption.quantity), mrpPrice: double.parse(itemOption.price), unit: itemOption.unit, inStock: false));
       });
       print("pidddd1");
+      if(ProductId.categoryCheck==true)
+      {
         final pid = await UserApi.createProduct(
+            widget.Gpid,
             pName,
             widget.category,
             widget.subCategory1,
@@ -67,36 +72,40 @@ class _ReviewListedState extends State<ReviewListed> {
             token,
             id,
             dummyProductList);
-        print("pidddd2");
-        print(pid);
-
+      }
       try {
         // Add each image file to the request
-        if (widget.imageFileList.length >0) {
-          final url1 = 'https://api.pehchankidukan.com/seller/${TokenId.id}/products/$pid';
-          var request = http.MultipartRequest('PUT', (Uri.parse(url1)));
-
+        if (ProductId.categoryCheck==false) {
+          final url1 = 'https://api.pehchankidukan.com/seller/${TokenId.id}/products';
+          var request = http.MultipartRequest('POST', (Uri.parse(url1)));
           request.headers['Authorization'] = 'Bearer ${TokenId.token}';
+          request.fields['productName'] = pName;
+          request.fields['category'] = widget.category;
+          request.fields['subCategory1'] = widget.subCategory1;
+          request.fields['subCategory2'] = widget.subCategory2;
           print("length");
           print(widget.imageFileList.length);
-          for (var imageFile in widget.imageFileList) {
-            int length = await imageFile.length();
-            String fileName = basename(imageFile.path);
-            request.files.add(http.MultipartFile(
-              'images', // Field name in the form
-              imageFile.readAsBytes().asStream(),
-              length,
-              filename: fileName,
-              contentType: MediaType(
-                  'image[]', 'jpeg'), // Adjust content type accordingly
-            ));
+          if (widget.imageFileList.length >0)
+          {
+            for (var imageFile in widget.imageFileList) {
+              int length = await imageFile.length();
+              String fileName = basename(imageFile.path);
+              request.files.add(http.MultipartFile(
+                'images', // Field name in the form
+                imageFile.readAsBytes().asStream(),
+                length,
+                filename: fileName,
+                contentType: MediaType(
+                    'image[]', 'jpeg'), // Adjust content type accordingly
+              ));
+            }
           }
-            final response = await request.send();
+          final response = await request.send();
             if (response.statusCode == 200) {
-              print('PUT images request successful');
+              print('POST images request successful');
               print('Response: ${await response.stream.bytesToString()}');
             } else {
-              print('Failed to make PUT request: ${response.statusCode}');
+              print('Failed to make POST request: ${response.statusCode}');
               print('Response: ${await response.stream.bytesToString()}');
             }
 
@@ -109,7 +118,7 @@ class _ReviewListedState extends State<ReviewListed> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Row(
+        title: const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
@@ -121,9 +130,8 @@ class _ReviewListedState extends State<ReviewListed> {
                 ),
               ),
             ),
-
+            Spacer(),
             Expanded(child: Icon(Icons.notifications,color: Colors.white,)),
-            CircleAvatar(backgroundColor: Colors.red.shade100,backgroundImage: AssetImage('assets/images/avatar.png'),radius: 18,),
           ],
         ),
         centerTitle: true,
@@ -192,7 +200,7 @@ class _ReviewListedState extends State<ReviewListed> {
                       child: Text(
                         'Review',
                         style: TextStyle(
-                            fontSize: 30,
+                            fontSize: 25,
                             fontFamily: 'Poppins',
                             color: Colors.black87,
                             fontWeight: FontWeight.bold
@@ -245,7 +253,7 @@ class _ReviewListedState extends State<ReviewListed> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text("Product Category:",textScaleFactor: 1.0,style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text(widget.category,textScaleFactor: 1.5),
+                              Text(widget.category,textScaleFactor: 1.2),
                             ],
                           )),
                       Container(
@@ -254,7 +262,7 @@ class _ReviewListedState extends State<ReviewListed> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text("Product SubCategory1:",textScaleFactor: 1.0,style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text(widget.subCategory1,textScaleFactor: 1.5),
+                              Text(widget.subCategory1,textScaleFactor: 1.2),
                             ],
                           )),
                       Container(
@@ -263,7 +271,7 @@ class _ReviewListedState extends State<ReviewListed> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text("Product SubCategory2:",textScaleFactor: 1.0,style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text(widget.subCategory2,textScaleFactor: 1.5),
+                              Text(widget.subCategory2,textScaleFactor: 1.2),
                             ],
                           )),
                       Container(
@@ -272,7 +280,7 @@ class _ReviewListedState extends State<ReviewListed> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text("Product Name:",textScaleFactor: 1,style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text(pName,textScaleFactor: 1.5),
+                              Text(pName,textScaleFactor: 1.2),
                             ],
                           )),
 
@@ -282,7 +290,7 @@ class _ReviewListedState extends State<ReviewListed> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text("Product Type:",textScaleFactor: 1,style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text(pType,textScaleFactor: 1.5),
+                              Text(pType,textScaleFactor: 1.2),
                             ],
                           )),
                       Container(
@@ -291,7 +299,7 @@ class _ReviewListedState extends State<ReviewListed> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text("Product Description:",textScaleFactor: 1,style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text(pDescription,textScaleFactor: 1.5),
+                              Text(pDescription,textScaleFactor: 1.2),
                             ],
                           )),
                       Container(
@@ -304,7 +312,7 @@ class _ReviewListedState extends State<ReviewListed> {
                           )),
                       Container(
                         margin: EdgeInsets.only(left: 20,right: 20),
-                        child: ListTile(
+                        child: const ListTile(
                           title: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -315,7 +323,6 @@ class _ReviewListedState extends State<ReviewListed> {
                               Text('Unit'),
                             ],
                           ),
-
                         ),
                       ),
                       Container(
@@ -364,8 +371,9 @@ class _ReviewListedState extends State<ReviewListed> {
                 width: double.maxFinite,
                 margin: EdgeInsets.only(left: 20,right: 20,top: 30,bottom: 30),
                 child: MaterialButton(onPressed: (){
+                  ProductId.categoryCheck=false;
                   postProductData();
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SuccessfulAdd(token: widget.token, id: widget.id,),));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SuccessfulAdd(token: TokenId.token, id: TokenId.id,),));
                 }, child: Text('Review And Post',style: TextStyle(color: Colors.white,fontSize: 18),)
                   ,color: Colors.lightBlue.shade700,
                   height: 40,

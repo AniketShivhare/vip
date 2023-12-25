@@ -28,13 +28,15 @@ class _OrderDescriptionPageState extends State<OrderDescriptionPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Order #12345',style: TextStyle(fontWeight: FontWeight.bold),),
-                Container(
-                  height: 30,
-                  width: 140,
-                  child: Center(child: Text('${widget.status.toUpperCase()}',style: TextStyle(color: Colors.brown.shade600,fontWeight: FontWeight.bold),)),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5.0),
-                    color: Colors.orangeAccent.shade200,
+                Expanded(
+                  child: Container(
+                    height: 30,
+                    // width: 140,
+                    child: Center(child: Text('${widget.status.toUpperCase()}',style: TextStyle(color: Colors.brown.shade600,fontWeight: FontWeight.bold),)),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5.0),
+                      color: Colors.orangeAccent.shade200,
+                    ),
                   ),
                 )
               ],

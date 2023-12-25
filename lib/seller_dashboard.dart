@@ -1000,7 +1000,9 @@
 import 'package:e_commerce/HomeWidget/recent_Order.dart';
 import 'package:e_commerce/HomeWidget/recent_added_product.dart';
 import 'package:e_commerce/main_dashboard.dart';
+import 'package:e_commerce/services/Categories.dart';
 import 'package:flutter/material.dart';
+import 'DataSaveClasses/ProductId.dart';
 import 'add_product.dart';
 
 import './services/User_api.dart';
@@ -1034,9 +1036,7 @@ class _SellerDashboardState extends State<SellerDashboard> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-
-            Image.asset('assets/images/logo.png',width: 100,height: 30,)
-            ,
+            Image.asset('assets/images/logo.png',width: 100,height: 30,),
             const Spacer(),
             const Expanded(child: Icon(Icons.notifications, color: Colors.white)),
           ],
@@ -1053,7 +1053,7 @@ class _SellerDashboardState extends State<SellerDashboard> {
           children: [
             Container(
               margin:
-              const EdgeInsets.only(right: 10, left: 10, top: 20, bottom: 10),
+              const EdgeInsets.only(right: 10, left: 10, top: 20, bottom: 5),
               child: const Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1070,9 +1070,9 @@ class _SellerDashboardState extends State<SellerDashboard> {
                 ],
               ),
             ),
-
+            (ProductId.SalesReport)?
             Container(
-              margin: EdgeInsets.only(right: 10, left: 10, top: 15,bottom: 5),
+              margin: EdgeInsets.only(right: 10, left: 10, top: 5,bottom: 5),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -1089,10 +1089,12 @@ class _SellerDashboardState extends State<SellerDashboard> {
                   Icon(Icons.arrow_drop_down_outlined, color: Colors.black)
                 ],
               ),
-            ),
+            ):Container(),
+            (ProductId.SalesReport)?
             SizedBox(
               height: 10,
-            ),
+            ):Container(),
+            (ProductId.SalesReport)?
             Container(
               margin: EdgeInsets.only(left: 10, right: 10),
               child: Row(
@@ -1189,7 +1191,7 @@ class _SellerDashboardState extends State<SellerDashboard> {
                   ),
                 ],
               ),
-            ),
+            ):Container(),
 
             Container(
               margin:
@@ -1212,7 +1214,7 @@ class _SellerDashboardState extends State<SellerDashboard> {
               ),
             ),
             RecentOrder(),
-            Center(
+            (Categories.viewmore)? Center(
               child: ViewMoreButton( onPressed: () {
                 Navigator.pushAndRemoveUntil(
                   context,
@@ -1225,11 +1227,11 @@ class _SellerDashboardState extends State<SellerDashboard> {
                   ),
                       (route) => false, // This line clears the navigator stack
                 );
-                 },),
-            ),
+              },),
+            ):Container(),
             Container(
               margin:
-              const EdgeInsets.only(right: 10, left: 10, top: 25, bottom: 5),
+              const EdgeInsets.only(right: 10, left: 10, top: 5, bottom: 5),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -1246,7 +1248,7 @@ class _SellerDashboardState extends State<SellerDashboard> {
               ),
             ),
             const RecentAddedProduct(),
-            Center(
+            (Categories.viewmore1) ? Center(
               child: ViewMoreButton( onPressed: () {
                 Navigator.pushAndRemoveUntil(
                     context,
@@ -1262,11 +1264,11 @@ class _SellerDashboardState extends State<SellerDashboard> {
                 // Navigate to the desired route when the button is pressed
                 // Navigator.push(context, MaterialPageRoute(builder: (context) => AllStoresScreen()));
               },),
-            ),
+            ) : Container(),
 
             Container(
               margin:
-              const EdgeInsets.only(right: 10, left: 10, top: 20, bottom: 15),
+              const EdgeInsets.only(right: 10, left: 10, top: 5, bottom: 15),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

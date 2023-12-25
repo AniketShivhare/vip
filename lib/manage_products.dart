@@ -9,11 +9,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_popup_menu_button/custom_popup_menu_button.dart';
 import 'package:number_paginator/number_paginator.dart';
-
 import './services/User_api.dart';
 import './apis/orderModel.dart';
 import './apis/ProductModel.dart';
 import 'package:http/http.dart' as http;
+import 'customWidgets/update_stock_dialog.dart';
 
 class ManageProducts extends StatefulWidget {
   final String token, id;
@@ -37,6 +37,10 @@ class ManageProducts extends StatefulWidget {
 }
 
 class _ManageProductsState extends State<ManageProducts> {
+  void callSetState() {
+    setState(() {});
+  }
+
   String stockIn = 'In Stock';
   String stockOut = 'Out of stock';
   String sortt = "";
@@ -50,103 +54,19 @@ class _ManageProductsState extends State<ManageProducts> {
   int numberOfPages = 8;
   // int currentPage = 2;
 
-  Future<void> showDeleteConfirmationDialog(String id) async {
-    print("idddd12");
-    print(id);
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Delete Product?'),
-          content: const Text('Are you sure you want to delete this product?'),
-          actions: [
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-            TextButton(
-              child: Text('Delete'),
-              onPressed: () {
-                // removeImage(0);
-                print("iddd");
-                print(id);
-                UserApi.deleteProduct(id);
-                // Remove the image from the list
-                _productData =
-                    fetchOrders("", TokenId.token, TokenId.id, Categories.pindex);
-
-                setState(() {
-                  Navigator.of(context).pop();
-                });
-                // Close the dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
+  @override
+  void dispose() {
+    FilterOptions.clear();
   }
-
-  Future<void> updateOnSearch(query) async {
-    if (query.length == 0) {
-      setState(() {
-        _productData =
-            fetchOrders("-createdAt", TokenId.token, TokenId.id, Categories.pindex);
-      });
-      print(_productData);
-    } else if (query.length < 3) {
-      return;
-    } else {
-      setState(() {
-        _productData = UserApi.searchProducts(query, TokenId.token, TokenId.id);
-      });
-      print(_productData);
-    }
-  }
-
-  // Future<void> pagination(int index) async {
-  //
-  //   // setState(() {
-  //   //
-  //   //
-  //   //   print("pdddataaa");
-  //   //   print(_productData);
-  //   //
-  //   //   // print("${_productData.length}abb");
-  //   //
-  //   // });
-  //   setState(() {
-  //   //   currentPage = index;
-  //     _productData = fetchOrders("", widget.token, widget.id, Categories.pindex);
-  //     // currentPage = Categories.pindex;
-  //   });
-  // }
-  Future<void> pagination(int index) async {
-    setState(() {
-      // Update the current page
-      Categories.pindex = index + 1; // Convert to 1-based index
-
-      // Refetch data based on the updated page index
-      _productData = fetchOrders("", widget.token, widget.id, Categories.pindex);
-    });
-  }
-  void removeImage(int index) {
-    setState(() {
-      product.removeAt(index);
-    });
-  }
-
   @override
   initState() {
     super.initState();
     if (FilterOptions.changed == true) {
+      // _productData = fetchOrders(sortt, TokenId.token, TokenId.id, Categories.pindex);
       _productData = UserApi.filterProduct(widget.token, widget.id);
-      FilterOptions.clear();
     } else {
       sortt = widget.sortt;
-      _productData = fetchOrders(sortt, TokenId.token, TokenId.id, Categories.pindex);
+      _productData = fetchProducts(sortt, TokenId.token, TokenId.id, Categories.pindex);
       print("_productData");
       print(_productData);
     }
@@ -156,7 +76,8 @@ class _ManageProductsState extends State<ManageProducts> {
   Widget build(BuildContext context) {
     String token = widget.token;
     String id = widget.id;
-    print("currentPage1234");
+    print("token = " +token);
+    // print("currentPage1234");
     // print(currentPage);
     return Scaffold(
         appBar: AppBar(
@@ -177,11 +98,11 @@ class _ManageProductsState extends State<ManageProducts> {
                   //you can set more BoxShadow() here
                 ],
               ),
-              margin: EdgeInsets.only(bottom: 5),
+              margin: const EdgeInsets.only(bottom: 5),
               child: TextField(
                 style: const TextStyle(
                     fontSize: 16, color: Colors.black, fontFamily: 'comfort'),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'search',
                   hintStyle: TextStyle(color: Colors.black),
                   prefixIcon: Icon(
@@ -197,7 +118,7 @@ class _ManageProductsState extends State<ManageProducts> {
             ),
           ),
           backgroundColor: Colors.lightBlue.shade300,
-          iconTheme: IconThemeData(color: Colors.white),
+          iconTheme: const IconThemeData(color: Colors.white),
         ),
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
@@ -222,7 +143,7 @@ class _ManageProductsState extends State<ManageProducts> {
                           padding: const EdgeInsets.only(left: 10),
                           child: Container(
                             height: 50,
-                            margin: EdgeInsets.only(
+                            margin: const EdgeInsets.only(
                                 left: 5, right: 2, top: 5),
                             child: Container(
                               decoration: BoxDecoration(
@@ -243,7 +164,7 @@ class _ManageProductsState extends State<ManageProducts> {
                               child: Center(
                                 child: Row(
                                   children: [
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 10,
                                     ),
                                     Image.asset(
@@ -273,8 +194,7 @@ class _ManageProductsState extends State<ManageProducts> {
                         padding: const EdgeInsets.only(right: 10),
                         child: Container(
                           height: 50,
-                          margin:
-                          EdgeInsets.only(left: 2, right: 5, top: 5),
+                          margin: EdgeInsets.only(left: 2, right: 5, top: 5),
                           child: Align(
                             alignment: Alignment.topLeft,
                             child: FlutterPopupMenuButton(
@@ -302,7 +222,7 @@ class _ManageProductsState extends State<ManageProducts> {
                                     ],
                                   ),
                                   margin: EdgeInsets.only(bottom: 5),
-                                  child: Center(
+                                  child: const Center(
                                     child: Row(
                                       children: [
                                         SizedBox(
@@ -327,130 +247,110 @@ class _ManageProductsState extends State<ManageProducts> {
                               children: [
                                 FlutterPopupMenuItem(
                                     onTap: () async {
+                                      FilterOptions.sortChanged = true;
+                                      FilterOptions.sortName = "minMrpPrice:asc";
                                       setState(() {
-                                        _productData = fetchOrders(
-                                            "productDetails.mrpPrice",
-                                            token,
-                                            id,
+                                        _productData = fetchProducts(
+                                            "minMrpPrice:asc", token, id,
                                             Categories.pindex);
                                         sortt = "productDetails.mrpPrice";
                                       });
                                     },
                                     closeOnItemClick: true,
                                     child: ListTile(
-                                      title: const Text(
-                                        'Price(Low to High)',
+                                      title: const Text('Price(Low to High)',
                                         style: TextStyle(fontSize: 15),
                                       ),
                                       leading: Container(
-                                        height: 15,
-                                        width: 15,
+                                        height: 15, width: 15,
                                         decoration: BoxDecoration(
-                                            color: Colors.redAccent
-                                                .withOpacity(0.3),
+                                            color: Colors.redAccent.withOpacity(0.3),
                                             shape: BoxShape.circle),
                                       ),
                                     )),
                                 FlutterPopupMenuItem(
                                     onTap: () {
+                                      FilterOptions.sortChanged = true;
+                                      FilterOptions.sortName = "minMrpPrice:desc";
                                       setState(() {
-                                        _productData = fetchOrders(
-                                            "-productDetails.mrpPrice",
-                                            token,
-                                            id,
+                                        _productData = fetchProducts(
+                                            "minMrpPrice:desc", token, id,
                                             Categories.pindex);
-                                        sortt =
-                                        "-productDetails.mrpPrice";
+                                        sortt = "-productDetails.mrpPrice";
                                       });
                                     },
                                     closeOnItemClick: true,
                                     child: ListTile(
-                                      title: const Text(
-                                        'Price(High to Low)',
+                                      title: const Text('Price(High to Low)',
                                         style: TextStyle(fontSize: 15),
                                       ),
                                       leading: Container(
-                                        height: 15,
-                                        width: 15,
+                                        height: 15, width: 15,
                                         decoration: BoxDecoration(
-                                            color: Colors.redAccent
-                                                .withOpacity(0.3),
+                                            color: Colors.redAccent.withOpacity(0.3),
                                             shape: BoxShape.circle),
                                       ),
                                     )),
                                 FlutterPopupMenuItem(
                                     onTap: () {
+                                      FilterOptions.sortChanged = true;
                                       setState(() {
-                                        _productData = fetchOrders(
-                                            "-productSoldCount",
-                                            token,
-                                            id,
+                                        _productData = fetchProducts(
+                                            "-productSoldCount", token, id,
                                             Categories.pindex);
                                         sortt = "-productSoldCount";
                                       });
                                     },
                                     closeOnItemClick: true,
                                     child: ListTile(
-                                      title: const Text(
-                                        'Most Selling',
+                                      title: const Text('Most Selling',
                                         style: TextStyle(fontSize: 15),
                                       ),
                                       leading: Container(
-                                        height: 15,
-                                        width: 15,
+                                        height: 15, width: 15,
                                         decoration: BoxDecoration(
-                                            color: Colors.redAccent
-                                                .withOpacity(0.3),
+                                            color: Colors.redAccent.withOpacity(0.3),
                                             shape: BoxShape.circle),
                                       ),
                                     )),
                                 FlutterPopupMenuItem(
                                     onTap: () {
+                                      FilterOptions.sortChanged = true;
                                       setState(() {
-                                        _productData = fetchOrders(
-                                            "-createdAt",
-                                            token,
-                                            id,
+                                        _productData = fetchProducts("-createdAt", token, id,
                                             Categories.pindex);
                                       });
                                     },
                                     closeOnItemClick: true,
                                     child: ListTile(
-                                      title: const Text(
-                                        'Rating',
+                                      title: const Text('Rating',
                                         style: TextStyle(fontSize: 15),
                                       ),
                                       leading: Container(
-                                        height: 15,
-                                        width: 15,
+                                        height: 15, width: 15,
                                         decoration: BoxDecoration(
-                                            color: Colors.redAccent
-                                                .withOpacity(0.3),
+                                            color: Colors.redAccent.withOpacity(0.3),
                                             shape: BoxShape.circle),
                                       ),
                                     )),
                                 FlutterPopupMenuItem(
                                     onTap: () {
+                                      FilterOptions.sortChanged = true;
                                       setState(() {
-                                        _productData = fetchOrders(
-                                            "-createdAt",
-                                            token,
-                                            id,
+                                        _productData = fetchProducts(
+                                            "-createdAt", token, id,
                                             Categories.pindex);
                                       });
                                     },
                                     closeOnItemClick: true,
                                     child: ListTile(
-                                      title: const Text(
-                                        'Recently Added',
+                                      title: const Text('Recently Added',
                                         style: TextStyle(fontSize: 15),
                                       ),
                                       leading: Container(
-                                        height: 15,
-                                        width: 15,
+                                        height: 15, width: 15,
                                         decoration: BoxDecoration(
-                                            color: Colors.redAccent
-                                                .withOpacity(0.3),
+                                            color: Colors.redAccent.withOpacity(0.3),
                                             shape: BoxShape.circle),
                                       ),
                                     )),
@@ -469,7 +369,10 @@ class _ManageProductsState extends State<ManageProducts> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(child: Text('No Products Found')),
+                    );
                   } else {
                     final List<Product>? data = snapshot.data;
 
@@ -487,7 +390,7 @@ class _ManageProductsState extends State<ManageProducts> {
                                 : 'Out of stock';
 
                             String starRating = '';
-                            double prating = prod.productName.length % 6;
+                            double prating = prod.globalProductID.productName.length % 6;
                             if (prating == 0) {
                               starRating = '⭐';
                             } else {
@@ -544,29 +447,23 @@ class _ManageProductsState extends State<ManageProducts> {
                                                                 scale: 0.7,
                                                                 child:
                                                                 CupertinoSwitch(
-                                                                  activeColor:
-                                                                  Colors
-                                                                      .green,
-                                                                  value: prod
-                                                                      .inStock,
-                                                                  onChanged: (
-                                                                      bool
-                                                                      value) {
-                                                                    s =
-                                                                    value ==
-                                                                        true
-                                                                        ? 'In stock'
-                                                                        : 'Out of stock';
-                                                                    setState(
-                                                                            () {
-                                                                          prod
-                                                                              .inStock =
-                                                                              value;
-                                                                          updateStock(
-                                                                              value,
-                                                                              prod
-                                                                                  .id);
-                                                                        });
+                                                                  activeColor: Colors.green,
+                                                                  value: prod.inStock,
+                                                                  onChanged: (bool value) {
+                                                                    // s = value == true ? 'In stock' : 'Out of stock';
+                                                                    showDialog(
+                                                                      context: context,
+                                                                      builder: (BuildContext context) {
+                                                                        return AlertDialog(
+                                                                          title: const Text('Update Product Stock'),
+                                                                          content: StockUpdateDialog(prod: prod, callSetState: callSetState),
+                                                                        );
+                                                                      },
+                                                                    );
+                                                                    // setState(() {
+                                                                    //       prod.inStock = value;
+                                                                    //       updateStock(value, prod.id);
+                                                                    //     });
                                                                   },
                                                                 ),
                                                               ),
@@ -574,31 +471,21 @@ class _ManageProductsState extends State<ManageProducts> {
                                                                   flex: 2,
                                                                   child:
                                                                   Container(
-                                                                    child: Text(
-                                                                        s,
+                                                                    child: Text(s,
                                                                         style: TextStyle(
-                                                                            color: Colors
-                                                                                .green
-                                                                                .shade900,
+                                                                            color: Colors.green.shade900,
                                                                             fontSize: 11,
                                                                             fontFamily: 'Poppins',
-                                                                            fontWeight: FontWeight
-                                                                                .bold)),
+                                                                            fontWeight: FontWeight.bold)),
                                                                   )),
                                                               IconButton(
                                                                 icon: Icon(
-                                                                  Icons
-                                                                      .delete,
-                                                                  color: Colors
-                                                                      .red
-                                                                      .shade900,
+                                                                  Icons.delete,
+                                                                  color: Colors.red.shade900,
                                                                   size: 25,
                                                                 ),
-                                                                onPressed:
-                                                                    () {
-                                                                  showDeleteConfirmationDialog(
-                                                                      prod
-                                                                          .id);
+                                                                onPressed: () {
+                                                                  showDeleteConfirmationDialog(prod.id);
                                                                 },
                                                               ),
                                                             ],
@@ -611,8 +498,7 @@ class _ManageProductsState extends State<ManageProducts> {
                                                           flex: 3,
                                                           child: Row(
                                                             mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
+                                                            MainAxisAlignment.spaceBetween,
                                                             children: [
                                                               Expanded(
                                                                   child:
@@ -621,29 +507,13 @@ class _ManageProductsState extends State<ManageProducts> {
                                                                         .only(
                                                                         right:
                                                                         15),
-                                                                    child: (prod
-                                                                        .images
-                                                                        .length >
-                                                                        0)
-                                                                        ? Image
-                                                                        .network(
-                                                                      prod
-                                                                          .images[
-                                                                      0],
-                                                                      height:
-                                                                      150,
-                                                                      width:
-                                                                      80,
-                                                                      fit: BoxFit
-                                                                          .fill,
-                                                                    )
-                                                                        : Image
-                                                                        .asset(
-                                                                        'assets/images/a1.jpg',
-                                                                        height:
-                                                                        150,
-                                                                        width:
-                                                                        80),
+                                                                    child: (prod.globalProductID.images.length > 0)
+                                                                        ? Image.network(
+                                                                      prod.globalProductID.images[0],
+                                                                      height: 150, width: 80,
+                                                                      fit: BoxFit.fill,
+                                                                    ) : Image.asset('assets/images/a1.jpg',
+                                                                        height: 150, width: 80),
                                                                   )),
                                                               Expanded(
                                                                 flex: 2,
@@ -651,59 +521,40 @@ class _ManageProductsState extends State<ManageProducts> {
                                                                 Container(
                                                                   child:
                                                                   Column(
-                                                                    mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .start,
-                                                                    crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
+                                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                                    crossAxisAlignment: CrossAxisAlignment.start,
                                                                     children: [
                                                                       Expanded(
                                                                           child:
                                                                           Container(
                                                                             // margin: EdgeInsets.only(left: 20),
-                                                                            child: Text(
-                                                                                prod
-                                                                                    .productName,
+                                                                            child: Text(prod.globalProductID.productName,
                                                                                 style: TextStyle(
-                                                                                    color: Colors
-                                                                                        .black,
+                                                                                    color: Colors.black,
                                                                                     fontSize: 19,
                                                                                     fontFamily: 'comfart',
-                                                                                    fontWeight: FontWeight
-                                                                                        .bold)),
+                                                                                    fontWeight: FontWeight.bold)),
                                                                           )),
                                                                       Expanded(
                                                                         child:
                                                                         Row(
                                                                           children: [
                                                                             Text(
-                                                                                '₹${prod
-                                                                                    .offerPrice
-                                                                                    .toString()}',
+                                                                                '₹${prod.minMrpPrice.toString()}',
                                                                                 style: TextStyle(
-                                                                                    color: Colors
-                                                                                        .black,
+                                                                                    color: Colors.black,
                                                                                     fontSize: 16,
                                                                                     fontFamily: 'comfort',
-                                                                                    fontWeight: FontWeight
-                                                                                        .bold)),
+                                                                                    fontWeight: FontWeight.bold)),
                                                                             SizedBox(
                                                                               width: 10,
                                                                             ),
-                                                                            Text(
-                                                                                'MRP '
-                                                                                    '₹${prod
-                                                                                    .mrpPrice
-                                                                                    .toString()}'
-                                                                                    '${860}',
+                                                                            Text('MRP ''₹${prod.minMrpPrice.toString()}''${860}',
                                                                                 style: TextStyle(
-                                                                                    color: Colors
-                                                                                        .black,
+                                                                                    color: Colors.black,
                                                                                     fontSize: 14,
                                                                                     fontFamily: 'comfort',
-                                                                                    decoration: TextDecoration
-                                                                                        .lineThrough)),
+                                                                                    decoration: TextDecoration.lineThrough)),
                                                                           ],
                                                                         ),
                                                                       ),
@@ -716,22 +567,16 @@ class _ManageProductsState extends State<ManageProducts> {
                                                                           18,
                                                                           decoration: const BoxDecoration(
                                                                             //  border: Border.all(color: Colors.black),
-                                                                              borderRadius: BorderRadius
-                                                                                  .all(
-                                                                                  Radius
-                                                                                      .circular(
-                                                                                      5))),
+                                                                              borderRadius: BorderRadius.all(
+                                                                                  Radius.circular(5))),
                                                                           //   margin: EdgeInsets.only(right: 20),
                                                                           child:
-                                                                          Text(
-                                                                              starRating,
+                                                                          Text(starRating,
                                                                               style: const TextStyle(
-                                                                                  color: Colors
-                                                                                      .black,
+                                                                                  color: Colors.black,
                                                                                   fontSize: 13.5,
                                                                                   fontFamily: 'comfort',
-                                                                                  fontWeight: FontWeight
-                                                                                      .bold)),
+                                                                                  fontWeight: FontWeight.bold)),
                                                                         ),
                                                                       ),
                                                                       Expanded(
@@ -741,47 +586,32 @@ class _ManageProductsState extends State<ManageProducts> {
                                                                           220,
                                                                           child:
                                                                           MaterialButton(
-                                                                            color: Colors
-                                                                                .lightBlue
-                                                                                .shade400,
+                                                                            color: Colors.lightBlue.shade400,
                                                                             onPressed: () {
-                                                                              Navigator
-                                                                                  .push(
-                                                                                  context,
+                                                                              Navigator.push(context,
                                                                                   MaterialPageRoute(
-                                                                                      builder: (
-                                                                                          context) =>
+                                                                                      builder: (context) =>
                                                                                           UpdateProducts(
-                                                                                            imageList:prod.images,
-                                                                                            pid: prod
-                                                                                                .id,
+                                                                                            prod:prod,
+                                                                                            imageList:prod.globalProductID.images,
+                                                                                            pid: prod.id,
                                                                                             token: token,
                                                                                             id: id,
-                                                                                            productName: prod
-                                                                                                .productName,
-                                                                                            productCategory: prod
-                                                                                                .category,
-                                                                                            productSubCategory1: prod
-                                                                                                .subCategory1,
-                                                                                            productSubCategory2: prod
-                                                                                                .subCategory2,
-
-                                                                                            quantityPricing: prod
-                                                                                                .productDetails,
-                                                                                            stockTF: prod
-                                                                                                .inStock,
+                                                                                            productName: prod.globalProductID.productName,
+                                                                                            productCategory: prod.globalProductID.category,
+                                                                                            productSubCategory1: prod.globalProductID.subCategory1,
+                                                                                            productSubCategory2: prod.globalProductID.subCategory2,
+                                                                                            quantityPricing: prod.productDetails,
+                                                                                            stockTF: prod.inStock,
                                                                                             stockIO: s,
-                                                                                            description: prod
-                                                                                                .description,
+                                                                                            description: prod.globalProductID.description,
                                                                                           )));
                                                                             },
                                                                             child: Text(
                                                                               'Edit',
                                                                               style: TextStyle(
-                                                                                  color: Colors
-                                                                                      .white,
-                                                                                  fontWeight: FontWeight
-                                                                                      .bold,
+                                                                                  color: Colors.white,
+                                                                                  fontWeight: FontWeight.bold,
                                                                                   fontSize: 16),
                                                                             ),
                                                                           ),
@@ -810,46 +640,105 @@ class _ManageProductsState extends State<ManageProducts> {
                             );
                           },
                         ),
-                        // NumberPaginator(
-                        //   numberPages: numberOfPages,
-                        //   onPageChange: (index)  {
-                        //     setState(() {
-                        //       pagination(index);
-                        //     });
-                        //     index = index + 1; // Convert to 1-based index
-                        //     print("index is $index");
-                        //     Categories.pindex=index;
-                        //
-                        //     // setState(() {
-                        //     //   // currentPage = index - 1; // Convert back to 0-based index
-                        //     //   // Pass the 1-based index to the function
-                        //     // });
-                        //
-                        //     print("Jfdsjadgbjfvbsdg");
-                        //   },
-                        // ),
-
                       ],
                     ) : Center(child: Text('No products Found'),);
                 }
                 },
               ),
-              NumberPaginator(
-                key: UniqueKey(),
-                numberPages: numberOfPages,
-                onPageChange: (index) {
-                  pagination(index);
-                  print("index is $index");
-                  print("Jfdsjadgbjfvbsdg");
-                },
+              Container(
+                height: 20,
+                color: Colors.grey.shade300,
               ),
+              Container(
+                color: Colors.grey.shade300, // Set the background color here
+                child: NumberPaginator(
+                  numberPages: numberOfPages,
+                  onPageChange: (index) {
+                    pagination1(index);
+                  },
+                ),
+              ),
+              SizedBox(height: 10,)
             ],
           ),
         ));
   }
 
+  Future<void> showDeleteConfirmationDialog(String id) async {
+    print("idddd12");
+    print(id);
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Product?'),
+          content: const Text('Are you sure you want to delete this product?'),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: Text('Delete'),
+              onPressed: () {
+                // removeImage(0);
+                print("iddd");
+                print(id);
+                UserApi.deleteProduct(id);
+                // Remove the image from the list
+                _productData =
+                    fetchProducts("", TokenId.token, TokenId.id, Categories.pindex);
+                setState(() {
+                  Navigator.of(context).pop();
+                });
+                // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> updateOnSearch(query) async {
+    if (query.length == 0) {
+      setState(() {
+        _productData =
+            fetchProducts("-createdAt", TokenId.token, TokenId.id, Categories.pindex);
+      });
+      print(_productData);
+    } else if (query.length < 3) {
+      return;
+    } else {
+      setState(() {
+        _productData = UserApi.searchProducts(query, TokenId.token, TokenId.id);
+      });
+      print(_productData);
+    }
+  }
+
+  void pagination1(int index) {
+    pagination(index);
+  }
+
+  Future<void> pagination(int index) async {
+    setState(() {
+      Categories.pindex = index + 1;
+      _productData = fetchProducts("", widget.token, widget.id, Categories.pindex);
+
+    });
+  }
+
+  void removeImage(int index) {
+    setState(() {
+      product.removeAt(index);
+    });
+  }
+
   //fetch product all
-  Future<List<Product>> fetchOrders(sort, token, id, currentPage) async {
+  Future<List<Product>> fetchProducts(sort, token, id, currentPage) async {
     final List<Product> data;
     if (sort == "") {
       data = await UserApi.getProducts(token, id, currentPage);
@@ -863,7 +752,8 @@ class _ManageProductsState extends State<ManageProducts> {
   Future<void> updateStock(bool value, ppid) async {
     // print(value);
     // print("value");
-    // print(ppid);
+    print(TokenId.id);
+    print(ppid);
     final apiUrl =
         'https://api.pehchankidukan.com/seller/${TokenId.id}/products/$ppid';
     final Map<String, dynamic> productJson;
@@ -893,3 +783,4 @@ class _ManageProductsState extends State<ManageProducts> {
     }
   }
 }
+

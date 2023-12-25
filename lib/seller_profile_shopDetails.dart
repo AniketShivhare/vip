@@ -80,6 +80,8 @@ class _SellerProfileShopDetailsState extends State<SellerProfileShopDetails> {
     }
     if(seller.data.fssaiImageUrl.isNotEmpty) {
       FSSAIimageUrl = seller.data.fssaiImageUrl;
+      print("FSSAIimageUrlFSSAIimageUrlFSSAIimageUrl");
+      print(FSSAIimageUrl);
     }
     shopNameController.text = seller.data.shopName;
     GSTController.text = seller.data.gstin.gstinNo;

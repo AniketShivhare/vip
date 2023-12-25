@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:e_commerce/apis/ProductModel.dart';
 import 'package:e_commerce/services/User_api.dart';
 import 'package:e_commerce/services/tokenId.dart';
@@ -5,6 +7,7 @@ import 'package:e_commerce/update_product.dart';
 import 'package:flutter/material.dart';
 
 import '../productDetailScreen.dart';
+import '../services/Categories.dart';
 
 class RecentAddedProduct extends StatefulWidget {
   const RecentAddedProduct({super.key});
@@ -19,7 +22,7 @@ class _RecentAddedProductState extends State<RecentAddedProduct> {
     return Container(
       margin: const EdgeInsets.only(left: 5.0, right: 5.0),
       child: FutureBuilder(
-        future: UserApi.getProducts(TokenId.token, TokenId.id, 1),
+        future: UserApi.getSellerProducts("-createdAt",TokenId.token, TokenId.id, 1),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -27,23 +30,29 @@ class _RecentAddedProductState extends State<RecentAddedProduct> {
             );
           } else if (snapshot.hasError) {
             return Center(
-              child: Text("Error : ${snapshot.error}"),
+              child: Text("No Products Found",style: TextStyle(fontWeight: FontWeight.w400,fontSize: 18),),
             );
           } else {
             final List<Product>? data = snapshot.data;
-
+            if(!snapshot.hasData) {
+              Categories.viewmore1=false;
+              return Center(
+                child: Text('Currently There Is No Products',style: TextStyle(fontWeight: FontWeight.w400,fontSize: 18),),
+              );
+            }
+            Categories.viewmore1=true;
             return ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: 2,
+              itemCount: min(2,data!.length),
               itemBuilder: (BuildContext context, int index) {
-                final prod = data?[index];
-                String s = prod!.inStock.toString() == 'true'
+                final prod = data[index];
+                String s = prod.inStock.toString() == 'true'
                     ? 'In stock'
                     : 'Out of stock';
 
                 String starRating = '';
-                double prating = prod.productName.length % 6;
+                double prating = prod.globalProductID.productName.length % 6;
                 if (prating == 0) {
                   starRating = '⭐';
                 } else {
@@ -90,9 +99,9 @@ class _RecentAddedProductState extends State<RecentAddedProduct> {
                                                   child: Container(
                                                 margin: const EdgeInsets.only(
                                                     right: 15),
-                                                child: (prod.images.isNotEmpty)
+                                                child: (prod.globalProductID.images.isNotEmpty)
                                                     ? Image.network(
-                                                        prod.images[0],
+                                                        prod.globalProductID.images[0],
                                                         height: 150,
                                                         width: 80,
                                                         fit: BoxFit.fill,
@@ -114,7 +123,7 @@ class _RecentAddedProductState extends State<RecentAddedProduct> {
                                                     children: [
                                                       Expanded(
                                                           child: Text(
-                                                              prod.productName,
+                                                              prod.globalProductID.productName,
                                                               style: TextStyle(
                                                                   color: Colors
                                                                       .black,
@@ -128,7 +137,7 @@ class _RecentAddedProductState extends State<RecentAddedProduct> {
                                                         child: Row(
                                                           children: [
                                                             Text(
-                                                                '₹${prod.offerPrice.toString()}',
+                                                                '₹${prod.minMrpPrice.toString()}',
                                                                 style: TextStyle(
                                                                     color: Colors
                                                                         .black,
@@ -144,7 +153,7 @@ class _RecentAddedProductState extends State<RecentAddedProduct> {
                                                             ),
                                                             Text(
                                                                 'MRP '
-                                                                '₹${prod.mrpPrice.toString()}'
+                                                                '₹${prod.minMrpPrice.toString()}'
                                                                 '${860}',
                                                                 style: TextStyle(
                                                                     color: Colors
@@ -197,23 +206,24 @@ class _RecentAddedProductState extends State<RecentAddedProduct> {
                                                                   MaterialPageRoute(
                                                                       builder: (context) =>
                                                                           UpdateProducts(
-                                                                            imageList: prod.images,
+                                                                            prod:prod,
+                                                                            imageList: prod.globalProductID.images,
                                                                             pid:
                                                                                 prod.id,
                                                                             token:
                                                                                 TokenId.token,
                                                                             id: TokenId.id,
                                                                             productName:
-                                                                                prod.productName,
+                                                                                prod.globalProductID.productName,
                                                                             // productImage: prod!
                                                                             //     .image
                                                                             //     .toString(),
                                                                             productCategory:
-                                                                                prod.category,
+                                                                                prod.globalProductID.category,
                                                                             productSubCategory1:
-                                                                                prod.subCategory1,
+                                                                                prod.globalProductID.subCategory1,
                                                                             productSubCategory2:
-                                                                                prod.subCategory2,
+                                                                                prod.globalProductID.subCategory2,
 
                                                                             quantityPricing:
                                                                                 prod.productDetails,
@@ -224,7 +234,7 @@ class _RecentAddedProductState extends State<RecentAddedProduct> {
                                                                             // productType: prod!
                                                                             //     .productType,
                                                                             description:
-                                                                                prod.description,
+                                                                                prod.globalProductID.description,
                                                                           )));
                                                             },
                                                             child: Text(
@@ -267,3 +277,4 @@ class _RecentAddedProductState extends State<RecentAddedProduct> {
     );
   }
 }
+

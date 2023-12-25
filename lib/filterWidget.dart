@@ -35,6 +35,15 @@ class FilterScreen extends StatefulWidget {
 }
 
 class _FilterScreenState extends State<FilterScreen> {
+  @override
+  void initState() {
+    if(FilterOptions.categories.length>0) {
+      selectedCategories=FilterOptions.categories;
+       Categories.getSubCategories(categories[0]) ;
+
+    }
+  }
+
   int selectedCategoryIndex = -1;
   int selectedButtonIndex = 0;
   List<String> selectedCategories = [];
@@ -108,7 +117,7 @@ class _FilterScreenState extends State<FilterScreen> {
                   ok=true;
                 }
               });
-              await Categories.getSubCategories(categories[index]) ;
+              await Categories.getSubCategories(categories[0]) ;
               List<String> subCat = Categories.subCategories;
               subcategories[selectedCategories[0]] = subCat;
             },
@@ -142,7 +151,7 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
   Widget buildSubcategoryScreen() {
-    if(selectedCategories.length==0) {
+    if(FilterOptions.categories.length==0) {
       return const Center(
         child: Text('Select Category First'),
       );
@@ -157,7 +166,7 @@ class _FilterScreenState extends State<FilterScreen> {
               child: ListView.builder(
                 itemCount: 1,
                 itemBuilder: (context, categoryIndex) {
-                  final category = selectedCategories[categoryIndex];
+                  final category = selectedCategories[0];
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -232,6 +241,7 @@ class _FilterScreenState extends State<FilterScreen> {
               ListView.builder(
                 shrinkWrap: true,
                 itemCount: subcategories[category]!.length,
+
                 itemBuilder: (context, subcategoryIndex) {
                   final subcategory = subcategories[category]![subcategoryIndex];
                   final isSelected = selectedSubcategories[category]?.contains(subcategory) ?? false;

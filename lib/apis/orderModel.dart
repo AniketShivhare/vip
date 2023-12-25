@@ -4,7 +4,7 @@ class Order {
   String sellerID;
   List<Product1> productList;
   String productShowOnOrder = 'No products';
-  String orderStatus;
+  List<OrderStatus> orderStatus;
   DateTime createdAt;
   DateTime updatedAt;
   ShippedBy shippedBy;
@@ -47,7 +47,9 @@ class Order {
       productList: (json['productList'] as List? ?? [])
           .map((productJson) => Product1.fromJson(productJson ?? {}))
           .toList(),
-      orderStatus: json['orderStatus'] ?? '',
+      orderStatus:(json['orderStatus'] as List? ?? [])
+          .map((productJson) => OrderStatus.fromJson(productJson ?? {}))
+          .toList(),
       createdAt: DateTime.parse(json['createdAt'] ?? ''),
       updatedAt: DateTime.parse(json['updatedAt'] ?? ''),
       shippedBy: ShippedBy.fromJson(json['shippedBy'] ?? {}),
@@ -55,6 +57,35 @@ class Order {
     );
   }
 }
+
+class OrderStatus {
+  String id;
+  String status;
+  DateTime date;
+
+  OrderStatus({
+    required this.id,
+    required this.status,
+    required this.date,
+  });
+
+  factory OrderStatus.fromJson(Map<String, dynamic> json) {
+    return OrderStatus(
+      id: json['_id'] ?? "",
+      status: json['status'] ?? "",
+      date: DateTime.parse(json['date'] ?? ""),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'status': status,
+      'date': date.toIso8601String(),
+    };
+  }
+}
+
 
 class Customer {
   String id;

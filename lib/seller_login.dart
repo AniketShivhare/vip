@@ -25,13 +25,14 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isLogIn = false;
   bool isOtp = false;
 
-  var phone_controller = TextEditingController();
+  TextEditingController phone_controller = TextEditingController();
   var otp_controller = TextEditingController();
   Future<void> postSeller() async {
     isLogIn = true;
-    Map<String, dynamic> jsonData = {"phone": "9111766052", "otp": "1234"};
+    Map<String, dynamic> jsonData = {"phone": phone_controller.text, "otp": otp_controller.text};
+    print(jsonData);
 
-    var apiurl = "https://api.pehchankidukan.com/seller/verify-otp";
+    var apiurl = "https://api.pehchankidukan.com/seller/verifyOtp";
     var uri = Uri.parse(apiurl);
     var token = '';
     var id = '';
@@ -43,9 +44,12 @@ class _LoginScreenState extends State<LoginScreen> {
         },
         body: jsonEncode(jsonData),
       );
-
+      print("response.statusCode");
+      print(response.statusCode);
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
+        print("responseData");
+        print(responseData);
 
         token = responseData['token'];
         id = responseData['id'];
@@ -63,27 +67,62 @@ class _LoginScreenState extends State<LoginScreen> {
     print(id);
     TokenId.token = token;
     TokenId.id = id;
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => Regest(token: token, id: id)));
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => Regest(token: token, id: id)),
+          (route) => false,
+    );
+
   }
 
   Future<void> registerUser() async {
-    // Map<String, dynamic> jsonData = {
-    //   "phone": phone_controller.text,
-    // };
+    Map<String, dynamic> jsonData = {
+      "phone": phone_controller.text,
+    };
+    print(jsonData);
 
-    // var apiurl = "https://api.pehchankidukan.com/buyer/register";
-    // try {
-    //   final response = await http.post(
-    //     Uri.parse(apiurl),
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: jsonEncode(jsonData),
-    //   );
-    // } catch (e) {
-    //   print("User not register");
-    // }
+    var apiurl = "https://api.pehchankidukan.com/seller/login";
+    try {
+      final response = await http.post(
+        Uri.parse(apiurl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(jsonData),
+      );
+      final body= jsonDecode(response.body);
+      print(body['message']);
+    } catch (e) {
+      print("User not register");
+    }
+    _secondsRemaining = 60;
+    startTimer();
+    setState(() {
+      isOtpTrue = true;
+    });
+  }
+
+
+  Future<void> ResendOtp() async {
+    Map<String, dynamic> jsonData = {
+      "phone": phone_controller.text,
+    };
+    print(jsonData);
+
+    var apiurl = "https://api.pehchankidukan.com/seller/resendOtp";
+    try {
+      // final response = await http.post(
+      //   Uri.parse(apiurl),
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: jsonEncode(jsonData),
+      // );
+      // final body= jsonDecode(response.body);
+      // print(body['message']);
+    } catch (e) {
+      print("User not register");
+    }
     _secondsRemaining = 60;
     startTimer();
     setState(() {
@@ -98,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
   //   });
   // }
 
-  Widget customTextField({String? title, String? hint, controller}) {
+  Widget customTextField({String? title, String? hint, controller1}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -112,6 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         const SizedBox(height: 5),
         TextFormField(
+          controller: controller1,
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(
@@ -201,103 +241,106 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 40),
-                Container(
-                  width: _mediaQuery.size.width - 70,
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.grey,
-                        blurRadius: 5.0,
-                      ),
-                    ],
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.white,
-                  ),
-                  child: Column(
-                    children: [
-                      customTextField(
-                          hint: 'Phone Number',
-                          title: 'Phone Number',
-                          controller: phone_controller),
-                      isOtpTrue
-                          ? customTextField(
-                              hint: 'Enter OTP',
-                              title: 'Enter OTP',
-                              controller: otp_controller)
-                          : Container(),
-                      isOtpTrue
-                          ? Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                onPressed: () {
-                                  if (_secondsRemaining == 0) {
-                                    _secondsRemaining = 60; 
-                                    startTimer();
-                                  } else {
-                                    print(_secondsRemaining);
-                                  }
-                                },
-                                child: _secondsRemaining == 0
-                                    ? Text(
-                                        'Resend OTP',
-                                        style: TextStyle(
-                                            color: Colors.blue.shade900),
-                                      )
-                                    : Column(
-crossAxisAlignment: CrossAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            'Try again in $_secondsRemaining seconds',
-                                            style: TextStyle(
-                                                color: Colors.grey,
-                                                fontWeight: FontWeight.w400),
-                                          ),
-                                          Text(
-                                            'Resend OTP',
-                                            style:
-                                                TextStyle(color: Colors.grey,fontWeight: FontWeight.w500),
-                                          ),
-                                        ],
-                                      ),
-                              ),
-                            )
-                          : Container(),
-                      SizedBox(height: 10),
-                      SizedBox(
-                        width: _mediaQuery.size.width - 50,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.blue.shade900,
-                            padding: const EdgeInsets.all(12),
-                          ),
-                          onPressed: isOtpTrue ? postSeller : registerUser,
-                          child: isLogIn
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
-                              : isOtpTrue
-                                  ? Text(
-                                      'Login / SignUp',
-                                      style: TextStyle(
-                                        fontFamily:
-                                            GoogleFonts.comfortaa().fontFamily,
-                                        color: Colors.white,
-                                      ),
-                                    )
-                                  : Text(
-                                      'Send OTP',
-                                      style: TextStyle(
-                                        fontFamily:
-                                            GoogleFonts.comfortaa().fontFamily,
-                                        color: Colors.white,
-                                      ),
-                                    ),
+                SingleChildScrollView(
+                  child: Container(
+                    width: _mediaQuery.size.width - 70,
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.grey,
+                          blurRadius: 5.0,
                         ),
-                        // child
-                      ),
-                      const SizedBox(height: 5),
-                    ],
+                      ],
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.white,
+                    ),
+                    child: Column(
+                      children: [
+                        customTextField(
+                            hint: 'Phone Number',
+                            title: 'Phone Number',
+                            controller1: phone_controller),
+                        isOtpTrue
+                            ? customTextField(
+                                hint: 'Enter OTP',
+                                title: 'Enter OTP',
+                                controller1: otp_controller)
+                            : Container(),
+                        isOtpTrue
+                            ? Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: () {
+                                    if (_secondsRemaining == 0) {
+                                      ResendOtp();
+                                      _secondsRemaining = 60; 
+                                      startTimer();
+                                    } else {
+                                      print(_secondsRemaining);
+                                    }
+                                  },
+                                  child: _secondsRemaining == 0
+                                      ? Text(
+                                          'Resend OTP',
+                                          style: TextStyle(
+                                              color: Colors.blue.shade900),
+                                        )
+                                      : Column(
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              'Try again in $_secondsRemaining seconds',
+                                              style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontWeight: FontWeight.w400),
+                                            ),
+                                            Text(
+                                              'Resend OTP',
+                                              style:
+                                                  TextStyle(color: Colors.grey,fontWeight: FontWeight.w500),
+                                            ),
+                                          ],
+                                        ),
+                                ),
+                              )
+                            : Container(),
+                        SizedBox(height: 10),
+                        SizedBox(
+                          width: _mediaQuery.size.width - 50,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.blue.shade900,
+                              padding: const EdgeInsets.all(12),
+                            ),
+                            onPressed: isOtpTrue ? postSeller : registerUser,
+                            child: isLogIn
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : isOtpTrue
+                                    ? Text(
+                                        'Login / SignUp',
+                                        style: TextStyle(
+                                          fontFamily:
+                                              GoogleFonts.comfortaa().fontFamily,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : Text(
+                                        'Send OTP',
+                                        style: TextStyle(
+                                          fontFamily:
+                                              GoogleFonts.comfortaa().fontFamily,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                          ),
+                          // child
+                        ),
+                        const SizedBox(height: 5),
+                      ],
+                    ),
                   ),
                 ),
               ],

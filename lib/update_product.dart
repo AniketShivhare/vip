@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'add_product.dart';
 import 'apis/ProductModel.dart';
+import 'customWidgets/update_stock_dialog.dart';
 import 'main_dashboard.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -31,6 +32,8 @@ class PriceQuantitySpinnerRow extends StatefulWidget {
 }
 
 class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
+
+
   ItemOption newItem = ItemOption(
     price: "",
     quantity: "",
@@ -79,32 +82,23 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                     Row(
                       children: [
                         Expanded(
-                          child: Container(
-                            height: 60,
-                            padding: EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                width: 1,
-                                color: Colors.black,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
+                          child: TextFormField(
+                            controller:
+                                TextEditingController(text: option.quantity.toString()),
+                            onChanged: (value) => option.quantity = value ,
+                            decoration: InputDecoration(
+                              hintText: 'Quantity',
+                              label: const Text('Quantity'),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),                              errorText:
+                                  _validate4 ? 'Value Can\'t Be Empty' : null,
                             ),
-                            child: TextFormField(
-                              controller:
-                                  TextEditingController(text: option.quantity.toString()),
-                              onChanged: (value) => option.quantity = value ,
-                              decoration: InputDecoration(
-                                hintText: 'Quantity',
-                                border: InputBorder.none,
-                                errorText:
-                                    _validate4 ? 'Value Can\'t Be Empty' : null,
-                              ),
-                              style: TextStyle(
-                                color: Colors.black.withOpacity(1.0),
-                                fontSize: 16,
-                                fontFamily: 'Urbanist',
-                                fontWeight: FontWeight.w400,
-                              ),
+                            style: TextStyle(
+                              color: Colors.black.withOpacity(1.0),
+                              fontSize: 16,
+                              fontFamily: 'Urbanist',
+                              fontWeight: FontWeight.w400,
                             ),
                           ),
                         ),
@@ -158,63 +152,47 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                     Row(
                       children: [
                         Expanded(
-                          child: Container(
-                            height: 60,
-                            padding: EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                width: 1,
-                                color: Colors.black,
+                          child: TextFormField(
+                            controller:
+                                TextEditingController(text: option.price.toString()),
+                            onChanged: (value) => option.price = value ,
+                            decoration: InputDecoration(
+                              hintText: 'Price (In Rs.)',
+                              label: const Text('Price (In Rs.)'),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
                               ),
-                              borderRadius: BorderRadius.circular(12),
+                              errorText:
+                                  _validate5 ? 'Value Can\'t Be Empty' : null,
                             ),
-                            child: TextFormField(
-                              controller:
-                                  TextEditingController(text: option.price.toString()),
-                              onChanged: (value) => option.price = value ,
-                              decoration: InputDecoration(
-                                hintText: 'Price (In Rs.)',
-                                border: InputBorder.none,
-                                errorText:
-                                    _validate5 ? 'Value Can\'t Be Empty' : null,
-                              ),
-                              style: TextStyle(
-                                color: Colors.black.withOpacity(1.0),
-                                fontSize: 16,
-                                fontFamily: 'Urbanist',
-                                fontWeight: FontWeight.w400,
-                              ),
+                            style: TextStyle(
+                              color: Colors.black.withOpacity(1.0),
+                              fontSize: 16,
+                              fontFamily: 'Urbanist',
+                              fontWeight: FontWeight.w400,
                             ),
                           ),
                         ),
                         SizedBox(width: 16),
                         Expanded(
-                          child: Container(
-                            height: 60,
-                            padding: EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                width: 1,
-                                color: Colors.black,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
+                          child: TextFormField(
+                            controller: TextEditingController(
+                                text: option.offerPrice.toString()),
+                            onChanged: (value) => option.offerPrice = value,
+                            decoration: InputDecoration(
+                              hintText: 'Offer Price',
+                              labelText: 'Offer Price',
+                              border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                            child: TextFormField(
-                              controller: TextEditingController(
-                                  text: option.offerPrice.toString()),
-                              onChanged: (value) => option.offerPrice = value,
-                              decoration: InputDecoration(
-                                hintText: 'Offer Price',
-                                border: InputBorder.none,
-                                errorText:
-                                    _validate6 ? 'Value Can\'t Be Empty' : null,
-                              ),
-                              style: TextStyle(
-                                color: Colors.black.withOpacity(1.0),
-                                fontSize: 16,
-                                fontFamily: 'Urbanist',
-                                fontWeight: FontWeight.w400,
-                              ),
+                              errorText:
+                                  _validate6 ? 'Value Can\'t Be Empty' : null,
+                            ),
+                            style: TextStyle(
+                              color: Colors.black.withOpacity(1.0),
+                              fontSize: 16,
+                              fontFamily: 'Urbanist',
+                              fontWeight: FontWeight.w400,
                             ),
                           ),
                         ),
@@ -226,8 +204,8 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
             );
           }).toList(),
         ),
-        Container(
-            margin: EdgeInsets.only(left: 20),
+        Center(
+            // margin: EdgeInsets.only(left: 20),
             child: ElevatedButton(
               onPressed: addOption,
               child: Text("Add items"),
@@ -251,6 +229,7 @@ class UpdateProducts extends StatefulWidget {
   final String token, id;
   final String pid;
   final List<String> imageList;
+  final Product prod;
   UpdateProducts(
       {Key? key,
       required this.pid,
@@ -264,6 +243,7 @@ class UpdateProducts extends StatefulWidget {
       required this.stockIO,
       required this.description,
       required this.quantityPricing,
+      required this.prod,
       required  this.imageList})
       : super(key: key);
 
@@ -272,6 +252,11 @@ class UpdateProducts extends StatefulWidget {
 }
 
 class _UpdateProductsState extends State<UpdateProducts> {
+  void callSetState() {
+    setState(() {
+
+    });
+  }
   List<ItemOption> itemOptions = [];
   late List dummyProductList;
 
@@ -335,24 +320,24 @@ class _UpdateProductsState extends State<UpdateProducts> {
     setState(() {});
   }
 
-  List<String> imgList = [
-    'https://media.istockphoto.com/id/1644722689/photo/autumn-decoration-with-leafs-on-rustic-background.jpg?s=2048x2048&w=is&k=20&c=dZFmEik-AnmQJum5Ve8GbQj-cjkPsFTJP26lPY5RTJg=',
-    'https://media.istockphoto.com/id/1464561797/photo/artificial-intelligence-processor-unit-powerful-quantum-ai-component-on-pcb-motherboard-with.jpg?s=2048x2048&w=is&k=20&c=_h_lwe5-Xb4AK-w3nUfa0m3ZNPDZSqhQhkitrtdTpFQ=',
-    'https://media.istockphoto.com/id/1486626509/photo/woman-use-ai-to-help-work-or-use-ai-everyday-life-at-home-ai-learning-and-artificial.jpg?s=2048x2048&w=is&k=20&c=I9i1MwJ29M2yQBC8BBLOfWyHJ3hlBpYoSmqSXAKFlZM='
-  ];
+  List<String> imgList = [];
 
   Future<void> removeImage(int index) async {
     //we have to change condition this one later
-    if(imgList.length!=3) {
-      await UserApi.deleteImage(imgList[index], widget.pid);
-    }
+    print("lengthhh");
+    print(widget.prod.globalProductID.images.length);
+      await UserApi.deleteImage(widget.prod.globalProductID.images[index], widget.pid);
     setState(() {
       imgList.removeAt(index);
+      widget.prod.globalProductID.images.removeAt(index);
+      print("lengthhh");
+      print(widget.prod.globalProductID.images.length);
+      // widget.prod.s3Url.removeAt(index);
     });
   }
   Future<void> showDeleteConfirmationDialog(int index) async {
     return showDialog(
-      context: context ,
+      context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Delete Image?'),
@@ -647,19 +632,15 @@ class _UpdateProductsState extends State<UpdateProducts> {
   @override
   void initState() {
     super.initState();
-
     pCategory = widget.productCategory;
-
     pSCategory1 = widget.productSubCategory1;
-
     pSCategory2 = widget.productSubCategory2;
   }
 
   @override
   Widget build(BuildContext context) {
-    if(widget.imageList.isNotEmpty) {
-      imgList = widget.imageList;
-    }
+    if(widget.prod.globalProductID.images.length>0)
+      imgList = widget.prod.globalProductID.images;
     dummyProductList = widget.quantityPricing;
     print("dummyProductList1234");
     print(dummyProductList);
@@ -725,10 +706,19 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                   s = value == false
                                       ? 'In stock'
                                       : 'Out of stock';
-                                  setState(() {
-                                    _switchValue = value;
-                                  });
-                                  updateStock(value);
+                                  // setState(() {
+                                  //   _switchValue = value;
+                                  // });
+                                  // updateStock(value);
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text('Update Product Stock'),
+                                        content: StockUpdateDialog(prod: widget.prod, callSetState: callSetState),
+                                      );
+                                    },
+                                  );
                                 },
                               ),
                               Container(
@@ -747,32 +737,15 @@ class _UpdateProductsState extends State<UpdateProducts> {
                         ),
                       ),
                       Container(
-                        margin: EdgeInsets.only(right: 10, left: 15, top: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              child: Text(
-                                'Update',
-                                style: TextStyle(
-                                    fontSize: 28,
-                                    fontFamily: 'Poppins',
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
                           margin: EdgeInsets.only(left: 20, right: 20, top: 10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Product Image:",
+                              Text("Product Images:",
                                   textScaleFactor: 1.2,
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
+                              (imgList.length>0) ?
                               Container(
                                 height: 120,
                                 child: Padding(
@@ -781,9 +754,9 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                       scrollDirection: Axis.horizontal,
                                       itemCount: imgList.length,
                                       gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 1,
-                                              mainAxisSpacing: 5),
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 1,
+                                          mainAxisSpacing: 5),
                                       itemBuilder:
                                           (BuildContext context, int index) {
                                         return Stack(
@@ -805,192 +778,169 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                                 ),
                                               ),
                                             ),
-                                            Positioned(
-                                              top: -10,
-                                              right: -5,
-                                              child: IconButton(
-                                                icon: Icon(
-                                                  Icons.cancel_outlined,
-                                                  color: Colors.cyanAccent,
-                                                ),
-                                                onPressed: () {
-                                                  showDeleteConfirmationDialog(
-                                                      index);
-                                                  // removeImage(index);
-                                                },
-                                              ),
-                                            ),
+                                            // Positioned(
+                                            //   top: -10,
+                                            //   right: -5,
+                                            //   child: IconButton(
+                                            //     icon: Icon(
+                                            //       Icons.cancel_outlined,
+                                            //       color: Colors.cyanAccent,
+                                            //     ),
+                                            //     onPressed: () {
+                                            //       showDeleteConfirmationDialog(
+                                            //           index);
+                                            //       // removeImage(index);
+                                            //     },
+                                            //   ),
+                                            // ),
                                           ],
                                         );
                                       }),
                                 ),
+                              ) :
+                              Center(
+                                child: Container(
+                                    height:20,
+                                    child: Text('No Images Available',style: TextStyle(fontSize: 17),)),
                               ),
-                              Container(
-                                margin: EdgeInsets.only(
-                                    right: 20, top: 20, left: 20),
-                                child: Text(
-                                  'Add Images',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontFamily: 'Poppins',
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: InkWell(
-                                      onTap: () {
-                                        selectImages();
-                                      },
-                                      child: Container(
-                                          height: 100,
-                                          width: 100,
-                                          margin: EdgeInsets.only(
-                                              left: 20,
-                                              right: 20,
-                                              top: 10,
-                                              bottom: 5),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(13)),
-                                          ),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(Icons.camera_alt),
-                                              Icon(Icons.add_circle_outline),
-                                            ],
-                                          )),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Container(
-                                      height: 120,
-                                      width: 100,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: GridView.builder(
-                                            scrollDirection: Axis.horizontal,
-                                            itemCount: imageFileList!.length,
-                                            gridDelegate:
-                                                SliverGridDelegateWithFixedCrossAxisCount(
-                                                    crossAxisCount: 1,
-                                                    mainAxisSpacing: 5),
-                                            itemBuilder: (BuildContext context,
-                                                int index) {
-                                              return Stack(
-                                                children: [
-                                                  Container(
-                                                    height:100,
-                                                    width: 100,
-                                                    child: Hero(
-                                                      tag: 'image_$index',
-                                                      child: GestureDetector(
-                                                          onTap: () {
-                                                            showCameraImageExpansion(
-                                                                index);
-                                                          },
-                                                          child: Image.file(
-                                                            File(imageFileList![
-                                                                    index]
-                                                                .path),
-                                                            fit: BoxFit.cover,
-                                                          )),
-                                                    ),
-                                                  ),
-                                                  Positioned(
-                                                    top: -10,
-                                                    right: -5,
-                                                    child: IconButton(
-                                                      icon: Icon(
-                                                        Icons.cancel_outlined,
-                                                        color:
-                                                            Colors.cyanAccent,
-                                                      ),
-                                                      onPressed: () {
-                                                        showCameraDeleteConfirmationDialog(
-                                                            index);
-                                                        // removeImage(index);
-                                                      },
-                                                    ),
-                                                  ),
-                                                ],
-                                              );
-                                            }),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              // Container(
+                              //   margin: EdgeInsets.only(
+                              //       right: 20, top: 20, left: 20),
+                              //   child: Text(
+                              //     'Add Images',
+                              //     style: TextStyle(
+                              //       fontSize: 18,
+                              //       fontFamily: 'Poppins',
+                              //       color: Colors.black87,
+                              //     ),
+                              //   ),
+                              // ),
+                              // Row(
+                              //   children: [
+                              //     Expanded(
+                              //       child: InkWell(
+                              //         onTap: () {
+                              //           selectImages();
+                              //         },
+                              //         child: Container(
+                              //             height: 100,
+                              //             width: 100,
+                              //             margin: EdgeInsets.only(
+                              //                 left: 20,
+                              //                 right: 20,
+                              //                 top: 10,
+                              //                 bottom: 5),
+                              //             decoration: BoxDecoration(
+                              //               color: Colors.grey.shade100,
+                              //               borderRadius: BorderRadius.all(
+                              //                   Radius.circular(13)),
+                              //             ),
+                              //             child: Column(
+                              //               mainAxisAlignment:
+                              //                   MainAxisAlignment.center,
+                              //               children: [
+                              //                 Icon(Icons.camera_alt),
+                              //                 Icon(Icons.add_circle_outline),
+                              //               ],
+                              //             )),
+                              //       ),
+                              //     ),
+                              //     Expanded(
+                              //       flex: 2,
+                              //       child: Container(
+                              //         height: 120,
+                              //         width: 100,
+                              //         child: Padding(
+                              //           padding: const EdgeInsets.all(8.0),
+                              //           child: GridView.builder(
+                              //               scrollDirection: Axis.horizontal,
+                              //               itemCount: imageFileList!.length,
+                              //               gridDelegate:
+                              //                   SliverGridDelegateWithFixedCrossAxisCount(
+                              //                       crossAxisCount: 1,
+                              //                       mainAxisSpacing: 5),
+                              //               itemBuilder: (BuildContext context,
+                              //                   int index) {
+                              //                 return Stack(
+                              //                   children: [
+                              //                     Container(
+                              //                       height:100,
+                              //                       width: 100,
+                              //                       child: Hero(
+                              //                         tag: 'image_$index',
+                              //                         child: GestureDetector(
+                              //                             onTap: () {
+                              //                               showCameraImageExpansion(
+                              //                                   index);
+                              //                             },
+                              //                             child: Image.file(
+                              //                               File(imageFileList![
+                              //                                       index]
+                              //                                   .path),
+                              //                               fit: BoxFit.cover,
+                              //                             )),
+                              //                       ),
+                              //                     ),
+                              //                     Positioned(
+                              //                       top: -10,
+                              //                       right: -5,
+                              //                       child: IconButton(
+                              //                         icon: Icon(
+                              //                           Icons.cancel_outlined,
+                              //                           color:
+                              //                               Colors.cyanAccent,
+                              //                         ),
+                              //                         onPressed: () {
+                              //                           showCameraDeleteConfirmationDialog(
+                              //                               index);
+                              //                           // removeImage(index);
+                              //                         },
+                              //                       ),
+                              //                     ),
+                              //                   ],
+                              //                 );
+                              //               }),
+                              //         ),
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
                             ],
                           )),
-                      Container(
-                        margin: EdgeInsets.only(left: 20, right: 20, top: 20),
-                        child: Text(
-                          'Choose Category >',
-                          style: TextStyle(
-                              fontSize: 25,
-                              fontFamily: 'Poppins',
-                              color: Colors.black87,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
                       pCategory.isNotEmpty && pSCategory1.isNotEmpty ||
                               pSCategory2.isNotEmpty
-                          ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(
-                                      left: 20, right: 20, top: 20),
-                                  child: Text(
-                                    'Category',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontFamily: 'Poppins',
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 5),
-                                Container(
-                                  margin: EdgeInsets.only(left: 20, right: 20),
-                                  child: Text(AllpCategory.toString()),
-                                ),
-                              ],
-                            )
+                          ?Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(
+                                left: 20, right: 20, top: 20),
+                            child: const Text(
+                              'Category :',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontFamily: 'Poppins',
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Container(
+                            margin: EdgeInsets.only(left: 20, right: 20),
+                            child: Text(AllpCategory.toString()),
+                          ),
+                        ],
+                      )
                           : Container(),
-                      SizedBox(height: 15),
-                      Container(
-                        margin: const EdgeInsets.only(left: 20, right: 20),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Choose Category'),
-                                  content: categoryDialog(),
-                                );
-                              },
-                            );
-                          },
-                          child: const Text('Choose Category'),
-                        ),
-                      ),
+                      // SizedBox(height: 15),
                       Container(
                         margin: EdgeInsets.only(left: 20, right: 20, top: 20),
                         child: Text(
                           'Product Name',
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 17,
                             fontFamily: 'Poppins',
-                            color: Colors.black87,
+                            color: Colors.black,
                           ),
                         ),
                       ),
@@ -998,7 +948,10 @@ class _UpdateProductsState extends State<UpdateProducts> {
                         margin: EdgeInsets.only(left: 20, right: 20),
                         child: TextField(
                           controller: pName,
-                          style: TextStyle(fontFamily: 'Poppins', fontSize: 18),
+                          enabled: false,
+                          style: TextStyle(
+                              color: Colors.black87,
+                              fontFamily: 'Poppins', fontSize: 15),
                           decoration: InputDecoration(
                             focusedBorder: OutlineInputBorder(
                                 borderSide:
@@ -1043,13 +996,13 @@ class _UpdateProductsState extends State<UpdateProducts> {
                         ],
                       ):Container(),
                       Container(
-                        margin: EdgeInsets.only(left: 20, right: 20, top: 25),
+                        margin: EdgeInsets.only(left: 20, right: 20,top: 10),
                         child: Text(
                           'Product Description',
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 17,
                             fontFamily: 'Poppins',
-                            color: Colors.black87,
+                            color: Colors.black,
                           ),
                         ),
                       ),
@@ -1058,22 +1011,26 @@ class _UpdateProductsState extends State<UpdateProducts> {
                             EdgeInsets.only(left: 20, right: 20, bottom: 10),
                         child: TextField(
                           controller: description,
-                          style: TextStyle(fontFamily: 'Poppins', fontSize: 18),
+                          enabled: false,
+                          style: TextStyle(
+                              color: Colors.black87,
+                              fontFamily: 'Poppins', fontSize: 15),
                           decoration: InputDecoration(
                             focusedBorder: OutlineInputBorder(
                                 borderSide:
                                     BorderSide(color: Colors.teal.shade900)),
                           ),
+
                         ),
                       ),
                       Container(
-                        margin: EdgeInsets.only(left: 20, right: 20, top: 25),
+                        margin: EdgeInsets.only(left: 20, right: 20, top: 10),
                         child: Text(
                           'Product Quantity/Price',
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 17,
                             fontFamily: 'Poppins',
-                            color: Colors.black87,
+                            color: Colors.black,
                           ),
                         ),
                       ),
@@ -1254,7 +1211,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
                         width: double.maxFinite,
                         margin: const EdgeInsets.only(
                             left: 20, right: 20, top: 20, bottom: 30),
-                        color: Colors.lightBlue.shade500,
+                        // color: Colors.lightBlue.shade500,
                         child: ElevatedButton(
                           onPressed: () {
                             saveProductData(imageFileList!, pName, pSCategory2, description,
@@ -1265,8 +1222,8 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                 .lightBlue, // Set the background color to white
                           ),
                           child: const Text(
-                            'Save And Update',
-                            style: TextStyle(color: Colors.white, fontSize: 15),
+                            'Update Product',
+                            style: TextStyle(color: Colors.white, fontSize: 17),
                           ),
                         ),
                       )
@@ -1288,7 +1245,6 @@ class _UpdateProductsState extends State<UpdateProducts> {
     print(widget.pid);
     final apiUrl =
         'https://api.pehchankidukan.com/seller/${TokenId.id}/products/${widget.pid}';
-
     final Map<String, dynamic> productJson;
     if (value == true)
       productJson = {"inStock": "true"};
@@ -1331,44 +1287,15 @@ class _UpdateProductsState extends State<UpdateProducts> {
     itemOptions.forEach((itemOption) {
       dummyProductList.add(QuantityPricing(
           offerPrice: double.parse(itemOption.offerPrice),
-          quantity: itemOption.quantity,
+          quantity: (itemOption.quantity),
           mrpPrice: double.parse(itemOption.price),
-          unit: itemOption.unit));
+          unit: itemOption.unit, inStock: false));
     });
     itemOptions = [];
     print(dummyProductList.length);
     if (toSave) {
       print("updatinggggg");
-      await UserApi.updateProduct(pName.text, pCategory, pSCategory2,
-          pSCategory2, description.text, token, id, pid, dummyProductList);
-      if (imageFileList.length >0) {
-        final url1 = 'https://api.pehchankidukan.com/seller/${TokenId.id}/products/$pid';
-        var request = http.MultipartRequest('PUT', (Uri.parse(url1)));
-
-        request.headers['Authorization'] = 'Bearer ${TokenId.token}';
-        print("length");
-        print(imageFileList.length);
-        for (var imageFile in imageFileList) {
-          int length = await imageFile.length();
-          String fileName = path.basename(imageFile.path);
-          request.files.add(http.MultipartFile(
-            'images', // Field name in the form
-            imageFile.readAsBytes().asStream(),
-            length,
-            filename: fileName,
-            contentType: MediaType(
-                'image[]', 'jpeg'), // Adjust content type accordingly
-          ));
-        }
-        final response = await request.send();
-        if (response.statusCode == 200) {
-          print('PUT images request successful');
-          print('Response: ${await response.stream.bytesToString()}');
-        } else {
-          print('Failed to make PUT request: ${response.statusCode}');
-          print('Response: ${await response.stream.bytesToString()}');
-        }
-      }
+      await UserApi.updateProduct(pid, dummyProductList);
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(

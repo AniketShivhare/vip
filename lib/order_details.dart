@@ -91,7 +91,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                           // textDirection: TextDirection.rtl,
                           // defaultVerticalAlignment: TableCellVerticalAlignment.bottom,
                           // border:TableBorder.all(width: 2.0,color: Colors.red),
-                          children: [
+                          children: const [
                             TableRow(
                                 children: [
                                   Text("Customer Name:",textScaleFactor: 1.1,style: TextStyle(fontWeight: FontWeight.bold),),
@@ -135,7 +135,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                           // textDirection: TextDirection.rtl,
                           // defaultVerticalAlignment: TableCellVerticalAlignment.bottom,
                           // border:TableBorder.all(width: 2.0,color: Colors.red),
-                          children: [
+                          children: const [
                             TableRow(
                                 children: [
                                   Text("S.No.",textScaleFactor: 1.3,style: TextStyle(fontWeight: FontWeight.bold),),

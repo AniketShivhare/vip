@@ -19,7 +19,6 @@ List<RatingReview> parseReviews(String responseBody) {
 }
 
 
-
 class ProductDetailsScreen extends StatefulWidget {
   final Product prod;
   final String productId;
@@ -83,7 +82,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   void initState() {
     super.initState();
      prod = widget.prod;
-     imgList = widget.prod.images;
+     imgList = widget.prod.globalProductID.images;
 
 
     // _response = fetchReviews(Candidate.token) as List<RatingReview>;
@@ -187,12 +186,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Product Name: ${prod!.productName}',
+                      'Product Name: ${prod.globalProductID.productName}',
                       style: headingSmallStyle,
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'Product Description: ${prod!.description}',
+                      'Product Description: ${prod.globalProductID.description}',
                       style: captionStyle,
                     ),
                     SizedBox(height: 16),
@@ -200,8 +199,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Price: \$${prod!.offerPrice
-                              ?.toStringAsFixed(2)}',
+                          'Price: \$${prod.minMrpPrice
+                              .toStringAsFixed(2)}',
                           style: headingMediumStyle,
                         ),
                         Row(

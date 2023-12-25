@@ -2,6 +2,7 @@ import 'package:e_commerce/seller_dashboard.dart';
 import 'package:e_commerce/seller_profile_option.dart';
 import 'package:e_commerce/services/User_api.dart';
 import 'package:flutter/material.dart';
+import 'addFromExistingProduct.dart';
 import 'add_product.dart';
 import 'manage_products.dart';
 import 'orders.dart';
@@ -67,12 +68,13 @@ class _MainDashboardState extends State<MainDashboard> with TickerProviderStateM
 
     final pages = [
       ManageProducts(token: token, id:id, selectedcategories: [], selectedsubcategories: {}, selectedminPrice: 0, selectedmaxPrice: 0, sortt: widget.sortt,),
-      AddProduct(
-        token: token,
-        id: id,
-        productName: '',
-        productDescription: '', productDetails: [], itemOptions: [],
-      ),
+      // AddProduct(
+      //   token: token,
+      //   id: id,
+      //   productName: '',
+      //   productDescription: '', productDetails: [], itemOptions: [],
+      // ),
+      ProductSelectionPage(),
       const SellerDashboard(token: '', id: ''),
       const sellerFrontPage(index1:1),
       const profileOptions(),

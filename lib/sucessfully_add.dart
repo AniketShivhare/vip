@@ -160,8 +160,6 @@ class _SuccessfulAddState extends State<SuccessfulAdd> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => AddProduct(
-                            token: token,
-                            id: id,
                             productName: '',
                             productDescription: '',
                             productDetails: [],

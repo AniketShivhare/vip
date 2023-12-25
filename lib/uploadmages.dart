@@ -9,23 +9,7 @@ import 'main_dashboard.dart';
 import 'package:path/path.dart';
 
 
-void main() {
-  runApp(BankDetailsApp1());
-}
 
-class BankDetailsApp1 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Bank Details Form',
-      debugShowCheckedModeBanner: false,
-      home: UploadImages(
-        token: '',
-        id: '',
-      ),
-    );
-  }
-}
 
 class UploadImages extends StatefulWidget {
   final token;
@@ -418,9 +402,11 @@ class _UploadImagesState extends State<UploadImages> {
   }
 
   Future<void> saveData() async {
+     print("(widget.token");
+     print(widget.token);
     var sharedPref = await SharedPreferences.getInstance();
-    sharedPref.setBool(SplashScreenState.KEYLOGIN, true);
-    sharedPref.setString(SplashScreenState.KEYTOKEN, widget.token);
-    sharedPref.setString(SplashScreenState.KEYID, widget.id);
+    await sharedPref.setBool(SplashScreenState.KEYLOGIN, true);
+    await sharedPref.setString(SplashScreenState.KEYTOKEN, widget.token);
+    await sharedPref.setString(SplashScreenState.KEYID, widget.id);
   }
 }

@@ -28,13 +28,6 @@ class SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Future.delayed(const Duration(seconds: 2), () {
-    //   Navigator.pushReplacement(
-    //       context,
-    //       MaterialPageRoute(
-    //         builder: (context) => const LoginScreen(),
-    //       ));
-    // });
     whereToGo();
   }
 
@@ -81,8 +74,8 @@ class SplashScreenState extends State<SplashScreen> {
       ),
     );
   }
-  void whereToGo() async {
 
+  void whereToGo() async {
     // String keyTo="";
     // String keyI="";
     var sharedPref = await SharedPreferences.getInstance();
@@ -100,15 +93,14 @@ class SplashScreenState extends State<SplashScreen> {
 
 
     Future.delayed(const Duration(seconds: 2), () {
-
       print(KEYTOKEN);
       print(KEYID);
       if(isLoggedIn!=null) {
-        if(isLoggedIn) {
+        if(isLoggedIn==true) {
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) =>  MainDashboard(token: keyToken!, id: keyId!, pageIndex: 2,sortt:""),
+                builder: (context) =>  MainDashboard(token: keyToken, id: keyId, pageIndex: 2,sortt:""),
               ));
         } else{
           Navigator.pushReplacement(

@@ -26,13 +26,15 @@ class SellerProfileData {
   String shopName;
   String photo;
   String fssaiImageUrl;
+  String fssaiImages3Url;
   String profilePhoto;
   double marginCharged;
   String shopCategory;
   String panImage;
   String passbookImage;
   String shopPhoto;
-  String gstinImage;
+  String shopPhotoUrl;
+  String profilePhotoUrl;
 
   SellerProfileData({
     required this.gstin,
@@ -48,7 +50,7 @@ class SellerProfileData {
     required this.passbookImage,
     required this.panImage,
     required this.shopPhoto,
-    required this.gstinImage,
+    required this.shopPhotoUrl,
     required this.profilePhoto,
     required this.businessType,
     required this.shopName,
@@ -57,6 +59,8 @@ class SellerProfileData {
     required this.marginCharged,
     required this.shopCategory,
     required landlineNumber,
+    required this.fssaiImages3Url,
+    required this.profilePhotoUrl,
   });
 
   factory SellerProfileData.fromJson(Map<String, dynamic> json) {
@@ -65,18 +69,20 @@ class SellerProfileData {
       address: Address.fromJson(json['address']),
       panCard: PanCard.fromJson(json['panCard']),
       bankDetails: BankDetails.fromJson(json['bankDetails']),
-      offDays: List<String>.from(json['offDays']),
-      isOnline: json['isOnline'],
+      offDays: List<String>.from(json['offDays'])??[],
+      isOnline: json['isOnline']??false,
       id: json['_id'],
       ownerName: json['ownerName'],
       phone: json['phone'],
-      fssaiImageUrl: json['fssaiImageUrl'] ?? '',
+      fssaiImageUrl: json['fssaiImageUrl']["s3url"] ?? '',
+      fssaiImages3Url: json['fssaiImageUrl']["url"] ?? '',
       passbookImage: json['passbookImage'] ?? '',
       panImage: json['panImage'] ?? '',
-      shopPhoto: json['shopPhoto'] ?? '',
-      gstinImage: json['gstinImage'] ?? '',
+      shopPhoto: (json['shopPhoto']!=null) ? json['shopPhoto']["s3url"] ?? '' : '',
+      shopPhotoUrl: (json['shopPhoto']!=null) ? json['shopPhoto']["url"] ?? '' : '',
 
-      profilePhoto: json['profilePhoto'] ?? '',
+      profilePhoto: json['profilePhoto']["url"] ?? '',
+      profilePhotoUrl: json['profilePhoto']["s3url"] ?? '',
       landlineNumber: json['landlineNumber'] ?? '',
       businessType: json['businessType'] ?? '',
       shopName: json['shopName'] ?? '',
@@ -91,14 +97,16 @@ class SellerProfileData {
 
 class GSTIN {
   String gstinNo;
+  String gstinImageUrl;
   String gstinImage;
 
-  GSTIN({required this.gstinNo, required this.gstinImage});
+  GSTIN({required this.gstinNo, required this.gstinImage, required this.gstinImageUrl});
 
   factory GSTIN.fromJson(Map<String, dynamic> json) {
     return GSTIN(
       gstinNo: json['gstinNo'] ?? '',
-      gstinImage: json['gstinImage'] ?? 'assets/images/a1.png',
+      gstinImage: json['gstinImage']["s3url"] ?? 'assets/images/a1.png',
+      gstinImageUrl: json['gstinImage']["url"] ?? 'assets/images/a1.png',
     );
   }
 }
@@ -131,14 +139,16 @@ class Address {
 
 class PanCard {
   String panNo;
+  String panImageUrl;
   String panImage;
 
-  PanCard({required this.panNo, required this.panImage});
+  PanCard({required this.panNo, required this.panImage, required this.panImageUrl});
 
   factory PanCard.fromJson(Map<String, dynamic> json) {
     return PanCard(
       panNo: json['panNo'] ?? '',
-      panImage: json['panImage'] ?? '',
+      panImageUrl: json['panImage']["url"] ?? 'assets/images/a1.png',
+      panImage: json['panImage']["s3url"] ?? 'assets/images/a1.png',
     );
   }
 }
@@ -167,7 +177,7 @@ class BankDetails {
       ifscCode: json['ifscCode'] ?? '',
       bankName: json['bankName'] ?? '',
       branchName: json['branchName'] ?? '',
-      passbookImage: json['passbookImage'] ?? '',
-      cancelledCheckImage: json['cancelledCheckImage'] ?? '',    );
+      passbookImage: json['passbookImage'] ?? 'assets/images/a1.png',
+      cancelledCheckImage: json['cancelledCheckImage'] ?? 'assets/images/a1.png',    );
   }
 }

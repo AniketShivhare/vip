@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../apis/orderModel.dart';
 import '../orderDescriptionPage.dart';
+import '../services/Categories.dart';
 import '../services/tokenId.dart';
 import 'package:http/http.dart'as http;
 
@@ -22,7 +23,7 @@ class _RecentOrderState extends State<RecentOrder> {
   Future<List<Order>> fetchOrderData(filter, {bool ok = true}) async {
     print(filter);
     try {
-      var url = "https://api.pehchankidukan.com/seller/${TokenId.id}/orders?orderStatus.status=$filter";
+      var url = "https://api.pehchankidukan.com/seller/650861407bfbdb03672c18de/orders?status=OrderAccepted";
       final uri = Uri.parse(url);
       final response = await http.get(
         uri,
@@ -57,7 +58,6 @@ class _RecentOrderState extends State<RecentOrder> {
     } catch (e) {
       print('Error while fetching orders: $e');
     }
-    orders1 = [];
     return orders1;
   }
 
@@ -81,16 +81,22 @@ class _RecentOrderState extends State<RecentOrder> {
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
-            print("re${snapshot.data?.length}");
-            final orders = snapshot.data;
-            if(orders?.length==0)return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Center(child: (Text("No orders Now",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),))),
-            );
+            // print("re${snapshot.data?.length}");
+            List<Order>? orders = snapshot.data;
+            if(orders?.length==0){
+              Categories.viewmore=false;
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(child: (Text("Currently There Is No Orders",style: TextStyle(fontWeight: FontWeight.w400,fontSize: 18),))),
+              );
+            }
+            Categories.viewmore=true;
             return ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
               itemCount: min(2,orders!.length),
               itemBuilder: (BuildContext context, int index) {
-                final order = orders?[index];
+                final order = orders[index];
                 return Padding(
                   padding: const EdgeInsets.only(
                       left: 15.0, right: 15.0, top: 10.0),
@@ -109,7 +115,7 @@ class _RecentOrderState extends State<RecentOrder> {
                           children: [
                             Row(
                               children: [
-                                Text('#${order?.id?.substring(order.id!.length - 3)}',style: TextStyle(fontSize: 23,fontWeight: FontWeight.bold),),
+                                Text('#${order.id.substring(order.id.length - 3)}',style: TextStyle(fontSize: 23,fontWeight: FontWeight.bold),),
                                 const SizedBox(width: 20,),
                                 Expanded(
                                   child: Container(
@@ -124,13 +130,13 @@ class _RecentOrderState extends State<RecentOrder> {
                             ),
                             Row(
                               children: [
-                                Text('${order?.shippedBy.name}\'s Order',
+                                Text('${order.shippedBy.name}\'s Order',
                                   style: const TextStyle(
                                     fontSize: 17,
                                     fontWeight: FontWeight.w500,
                                   ),),
                                 const Spacer(),
-                                Text(DateFormat.Hm().format(order!.createdAt)),
+                                Text(DateFormat.Hm().format(order.createdAt)),
                               ],
                             ),
                           ],
@@ -141,7 +147,7 @@ class _RecentOrderState extends State<RecentOrder> {
                             const SizedBox(height: 5,),
                             Row(
                               children: [
-                                Text(order!.productShowOnOrder,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),),
+                                Text(order.productShowOnOrder,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),),
                                 const Spacer(),
                                 const Text('Total Bill: ',
                                   style: TextStyle(
@@ -172,12 +178,12 @@ class _RecentOrderState extends State<RecentOrder> {
                               ],
                             ),
                             // const SizedBox(height: 10),
-                            const Row(
-                              children: [
-                                Text("pappu singh is waiting for order  ",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500),),
-                                Spacer()
-                              ],
-                            ),
+                            // const Row(
+                            //   children: [
+                            //     Text("pappu singh is waiting for order  ",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500),),
+                            //     Spacer()
+                            //   ],
+                            // ),
                             const SizedBox(height: 10),
                             Container(
                               height: 38,

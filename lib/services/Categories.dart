@@ -10,7 +10,8 @@ class Categories {
       subCategories = [],images=[];
   static int pindex=1;
   static List<Order> orders =[];
-
+  static bool viewmore=false;
+  static bool viewmore1=false;
 
   static Future<void> getSubCategories(category) async {
     category = category.replaceAll('&', '%26');

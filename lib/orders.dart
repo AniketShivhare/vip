@@ -1,37 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:e_commerce/sellerOrderPage.dart';
 import 'package:e_commerce/services/User_api.dart';
 import 'package:e_commerce/services/tokenId.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../apis/orderModel.dart';
 import 'package:http/http.dart' as http;
-
 import 'orderDescriptionPage.dart';
-
-void main() {
-  runApp( sellerFrontPage(index1:1));
-}
-
-class OrderPage extends StatefulWidget {
-
-  @override
-  State<OrderPage> createState() => _BankDetailsAppState();
-}
-
-class _BankDetailsAppState extends State<OrderPage> {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Order Details',
-      debugShowCheckedModeBanner: false,
-      home: sellerFrontPage(index1:1),
-    );
-  }
-}
-
-
 
 
 class sellerFrontPage extends StatefulWidget {
@@ -58,7 +35,7 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
    Future<List<Order>> fetchOrderData(filter, {bool ok = true}) async {
      print(filter);
     try {
-      var url = "https://api.pehchankidukan.com/seller/${TokenId.id}/orders?orderStatus.status=$filter";
+      var url = "https://api.pehchankidukan.com/seller/650861407bfbdb03672c18de/orders?status=OrderAccepted";
       final uri = Uri.parse(url);
       final response = await http.get(
         uri,
@@ -102,7 +79,7 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
 
   void fetchDataPeriodically() {
     Timer.periodic(const Duration(seconds: 2), (timer) {
-      fetchOrderData("OrderReceived");
+      fetchOrderData("OrderAccepted");
     });
   }
   int currentTabIndex=0;
@@ -117,10 +94,10 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
   @override
   void initState() {
     super.initState();
-    fetchOrderData("OrderReceived");
+    fetchOrderData("OrderAccepted");
     currentTabIndex = widget.index1;
     _fetchOrderTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
-      fetchOrderData("OrderReceived");
+      fetchOrderData("OrderAccepted");
     });
     // fetchOrderData("OrderReceived");
     // fetchOrderData("OrderReceived");
@@ -135,9 +112,27 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
         appBar: AppBar(
           backgroundColor: const Color(0xFF204969),
           toolbarHeight: 45,
-          title: const Text('Order Details',
-            style: TextStyle(
-                color: Colors.white),
+          title: Row(
+            children: [
+              const Text('Order Details',
+                style: TextStyle(
+                    color: Colors.white),
+              ),
+              Spacer(),
+              InkWell(
+                onTap: (){
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                    builder: (context) =>  sellerReturnReplacement(index1: 0,),
+                    ));
+                    },
+                child: const Text('Return Replacement',
+                  style: TextStyle(
+                      color: Colors.white),
+                ),
+              ),
+            ],
           ),
           centerTitle: true,
           bottom:  TabBar(
@@ -166,7 +161,7 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   print("snapshot.data");
-                  // print(snapshot.data);
+                  print(snapshot.data);
                   List<Order>? orders = snapshot.data;
                   return buildPage1(orders);
                 }
@@ -252,6 +247,7 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
                             ),
                           ],
                         ),
+                        Divider(),
                         Row(
                           children: [
                             Text('${order?.shippedBy.name}\'s Order',
@@ -313,7 +309,10 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
                           height: 38,
                           color: const Color(0xFF204969),
                           width: double.infinity,
-                          child: ElevatedButton(onPressed: () {},
+                          child: ElevatedButton(onPressed: () {
+                            String st = "OrderPrepared";
+                            UserApi.changeOrderStatus(st, order?.id );
+                          },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF204969),
                                 elevation: 3, // Remove button elevation if not needed
@@ -376,6 +375,7 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
                             ),
                           ],
                         ),
+                        Divider(),
                         Row(
                           children: [
                             Text('${order?.customer.name}\'s Order',
@@ -406,8 +406,6 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
                             Text(order.payment.paymentAmount.toString(),style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500),)
                           ],
                         ),
-
-
                         Row(
                           children: [
                             GestureDetector(
@@ -458,5 +456,34 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
           },
         )
     );
+  }
+
+  Future<void> changeOrderstatus({required orderId, required String state}) async {
+    final apiUrl = 'https://api.pehchankidukan.com/seller/changeOrderStatus';
+
+    final Map<String, dynamic> productJson = {
+
+    };
+    var uri = Uri.parse(apiUrl);
+    try {
+      final response = await http.patch(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${TokenId.token}'
+        },
+        body: jsonEncode(productJson),
+      );
+
+      if (response.statusCode == 200) {
+        print("product updated succesfully");
+
+      } else {
+        print('Failed to update product. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 }
