@@ -38,11 +38,6 @@ class _SuccessfulAddState extends State<SuccessfulAdd> {
               Icons.notifications,
               color: Colors.white,
             )),
-            CircleAvatar(
-              backgroundColor: Colors.red.shade100,
-              backgroundImage: AssetImage('assets/images/avatar.png'),
-              radius: 18,
-            ),
           ],
         ),
         centerTitle: true,

@@ -75,17 +75,17 @@ class _SellerProfileShopDetailsState extends State<SellerProfileShopDetails> {
 //     url = seller.data.fssaiImageUrl;
 // print("urlaesaserasfasdfadfasfasfasdfasdfasf");
 // print(url);
-    if(seller.data.gstin.gstinImage.isNotEmpty) {
-      GSTimageUrl = seller.data.gstin.gstinImage;
-    }
+
+      GSTimageUrl = seller.data.gstin?.gstinImage ?? '';
+
     if(seller.data.fssaiImageUrl.isNotEmpty) {
       FSSAIimageUrl = seller.data.fssaiImageUrl;
       print("FSSAIimageUrlFSSAIimageUrlFSSAIimageUrl");
       print(FSSAIimageUrl);
     }
     shopNameController.text = seller.data.shopName;
-    GSTController.text = seller.data.gstin.gstinNo;
-    shopAddressController.text = seller.data.address.addressLine;
+    GSTController.text = seller.data.gstin?.gstinNo ?? '';
+    shopAddressController.text = seller.data.address?.addressLine ?? '';
     LandlineController.text = seller.data.phone;
     // FSSAIController.text = seller.data.;
     // LandlineController.text = seller.data.;
@@ -122,7 +122,7 @@ class _SellerProfileShopDetailsState extends State<SellerProfileShopDetails> {
         .showSnackBar(SnackBar(content: Text("Shop Details Updated")));
     Navigator.pop(context);
     print("response is priintingggg");
-    print(response.data.address.addressLine);
+    print(response.data.address?.addressLine);
   }
 
   bool addMoreShopImages =false;

@@ -50,8 +50,8 @@ class Order {
       orderStatus:(json['orderStatus'] as List? ?? [])
           .map((productJson) => OrderStatus.fromJson(productJson ?? {}))
           .toList(),
-      createdAt: DateTime.parse(json['createdAt'] ?? ''),
-      updatedAt: DateTime.parse(json['updatedAt'] ?? ''),
+      createdAt: DateTime.parse(json['createdAt'] ?? '2023-11-27T11:35:25.601+00:00'),
+      updatedAt: DateTime.parse(json['updatedAt'] ?? '2023-11-27T11:35:25.601+00:00'),
       shippedBy: ShippedBy.fromJson(json['shippedBy'] ?? {}),
       payment: Payment.fromJson(json['payment'] ?? {}),
     );
@@ -73,7 +73,7 @@ class OrderStatus {
     return OrderStatus(
       id: json['_id'] ?? "",
       status: json['status'] ?? "",
-      date: DateTime.parse(json['date'] ?? ""),
+      date: DateTime.parse("2023-11-27T11:35:25.601+00:00"),
     );
   }
 

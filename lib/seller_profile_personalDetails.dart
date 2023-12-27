@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:e_commerce/services/User_api.dart';
 import 'package:e_commerce/services/sellerApi.dart';
 import 'package:e_commerce/services/sellerTokenId.dart';
+import 'package:e_commerce/services/tokenId.dart';
 import 'package:e_commerce/uploadmages.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -59,10 +60,10 @@ class _SellerProfilePersonalDetailsState
   Future<void> postPersonalDetails() async {
     Map<String, dynamic> json = {
       "ownerName": nameController.text,
-      "phone": phoneController.text,
+      // "phone": phoneController.text,
     };
     final response =
-        await SellerApi().updateProfile(json, sellerId, sellerToken);
+        await SellerApi().updateProfile(json, TokenId.id, TokenId.token);
     if (imageFile1 != null) {
       await UserApi.uploadImage(imageFile1!, "profilePhoto");
     }
@@ -174,9 +175,9 @@ class _SellerProfilePersonalDetailsState
         ],
       ));
     }
-
     return widgets;
   }
+
 
   @override
   Widget build(BuildContext context) {

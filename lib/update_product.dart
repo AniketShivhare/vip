@@ -14,207 +14,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as path;
 
-class PriceQuantitySpinnerRow extends StatefulWidget {
-  final List<ItemOption> options;
-  final ValueChanged<ItemOption> onOptionAdded;
-  final Function(List<TextEditingController>, List<TextEditingController>,
-      List<TextEditingController>) updateInitialValue;
-
-  PriceQuantitySpinnerRow({
-    required this.options,
-    required this.onOptionAdded,
-    required this.updateInitialValue,
-  });
-
-  @override
-  _PriceQuantitySpinnerRowState createState() =>
-      _PriceQuantitySpinnerRowState();
-}
-
-class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
-
-
-  ItemOption newItem = ItemOption(
-    price: "",
-    quantity: "",
-    unit: 'kg',
-    offerPrice: "",
-  );
-  List<String> dropDownItems = [
-    "kg",
-    "litre",
-    "piece",
-    "packet",
-    "box",
-    "bottle",
-    "can",
-    "bag",
-    "sack",
-    "tin",
-    "other",
-  ];
-
-  void addOption() {
-    widget.onOptionAdded(newItem);
-    newItem = ItemOption(
-      price: "",
-      quantity: "",
-      unit: 'kg',
-      offerPrice: "",
-    );
-  }
-
-  bool _validate4 = false;
-  bool _validate5 = false;
-  bool _validate6 = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Column(
-          children: widget.options.map((option) {
-            return Container(
-              child: Padding(
-                padding: EdgeInsets.all(12),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller:
-                                TextEditingController(text: option.quantity.toString()),
-                            onChanged: (value) => option.quantity = value ,
-                            decoration: InputDecoration(
-                              hintText: 'Quantity',
-                              label: const Text('Quantity'),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),                              errorText:
-                                  _validate4 ? 'Value Can\'t Be Empty' : null,
-                            ),
-                            style: TextStyle(
-                              color: Colors.black.withOpacity(1.0),
-                              fontSize: 16,
-                              fontFamily: 'Urbanist',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 16),
-                        Container(
-                          height: 60,
-                          padding: EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              width: 1,
-                              color: Colors.black,
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: DropdownButton<String>(
-                            value: option.unit,
-                            onChanged: (String? value) {
-                              setState(() {
-                                option.unit = value!;
-                              });
-                            },
-                            items: dropDownItems.map((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(
-                                  value,
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontFamily: 'Urbanist',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                        InkWell(
-                          onTap: () {
-
-                          },
-                          child: Icon(
-                            Icons.delete_outlined,
-                          ),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller:
-                                TextEditingController(text: option.price.toString()),
-                            onChanged: (value) => option.price = value ,
-                            decoration: InputDecoration(
-                              hintText: 'Price (In Rs.)',
-                              label: const Text('Price (In Rs.)'),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              errorText:
-                                  _validate5 ? 'Value Can\'t Be Empty' : null,
-                            ),
-                            style: TextStyle(
-                              color: Colors.black.withOpacity(1.0),
-                              fontSize: 16,
-                              fontFamily: 'Urbanist',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 16),
-                        Expanded(
-                          child: TextFormField(
-                            controller: TextEditingController(
-                                text: option.offerPrice.toString()),
-                            onChanged: (value) => option.offerPrice = value,
-                            decoration: InputDecoration(
-                              hintText: 'Offer Price',
-                              labelText: 'Offer Price',
-                              border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                              errorText:
-                                  _validate6 ? 'Value Can\'t Be Empty' : null,
-                            ),
-                            style: TextStyle(
-                              color: Colors.black.withOpacity(1.0),
-                              fontSize: 16,
-                              fontFamily: 'Urbanist',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-        Center(
-            // margin: EdgeInsets.only(left: 20),
-            child: ElevatedButton(
-              onPressed: addOption,
-              child: Text("Add items"),
-            )),
-      ],
-    );
-  }
-}
-
 class UpdateProducts extends StatefulWidget {
   // String productImage = '';
   String productName = '';
@@ -322,317 +121,11 @@ class _UpdateProductsState extends State<UpdateProducts> {
 
   List<String> imgList = [];
 
-  Future<void> removeImage(int index) async {
-    //we have to change condition this one later
-    print("lengthhh");
-    print(widget.prod.globalProductID.images.length);
-      await UserApi.deleteImage(widget.prod.globalProductID.images[index], widget.pid);
-    setState(() {
-      imgList.removeAt(index);
-      widget.prod.globalProductID.images.removeAt(index);
-      print("lengthhh");
-      print(widget.prod.globalProductID.images.length);
-      // widget.prod.s3Url.removeAt(index);
-    });
-  }
-  Future<void> showDeleteConfirmationDialog(int index) async {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Delete Image?'),
-          content: Text('Are you sure you want to delete this image?'),
-          actions: [
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-            TextButton(
-              child: Text('Delete'),
-              onPressed: () {
-                removeImage(index); // Remove the image from the list
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-  void showImageExpansion(int index) {
-    Navigator.of(context ).push(
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('Expanded Image'),
-            ),
-            body: Center(
-              child: Hero(
-                tag: 'image_$index',
-                child: Image.network(
-                  imgList[index],
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-  void removeCameraImage(int index) {
-    setState(() {
-      imageFileList!.removeAt(index);
-    });
-  }
-  Future<void> showCameraDeleteConfirmationDialog(int index) async {
-    return showDialog(
-      context: context ,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Delete Image?'),
-          content: Text('Are you sure you want to delete this image?'),
-          actions: [
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-            TextButton(
-              child: Text('Delete'),
-              onPressed: () {
-                removeCameraImage(index); // Remove the image from the list
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-  void showCameraImageExpansion(int index) {
-    Navigator.of(context ).push(
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('Expanded Image'),
-            ),
-            body: Center(
-              child: Hero(
-                  tag: 'image_$index',
-                  child: Image.file(
-                    File(imageFileList![index].path),
-                    fit: BoxFit.cover,
-                  )),
-            ),
-          );
-        },
-      ),
-    );
-  }
-  Widget categoryDialog() {
-    return Container(
-      height: 600,
-      width: 500,
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            FutureBuilder(
-              future: getCategory(TokenId.token),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text("Error : ${snapshot.error}"),
-                  );
-                } else {
-                  final items = snapshot.data!.data;
-                  return Column(
-                    children: items.map((item) {
-                      return ListTile(
-                        onTap: () {
-                          setState(() {
-                            pCategory = item.toString();
-                          });
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Row(
-                                  children: [
-                                    InkWell(
-                                      onTap: () => Navigator.pop(context),
-                                      child: const Icon(Icons.arrow_back_ios),
-                                    ),
-                                    const SizedBox(width: 5),
-                                    const Text("Sub Category 1"),
-                                  ],
-                                ),
-                                content: subCategory1Dialog(),
-                              );
-                            },
-                          );
-                        },
-                        leading: CircleAvatar(),
-                        trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 20,
-                        ),
-                        title: Text(
-                          item.toString(),
-                          style: TextStyle(fontSize: 14),
-                        ),
-                      );
-                    }).toList(),
-                  );
-                }
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-  Widget subCategory1Dialog() {
-    return Container(
-      height: 600,
-      width: 500,
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            FutureBuilder(
-              future: getSubCategory(TokenId.token, pCategory),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text("Error : ${snapshot.error}"),
-                  );
-                } else {
-                  print("adfghjkl");
-                  print(snapshot.data!.data.length);
-                  final items = snapshot.data!.data;
-                  return Column(
-                    children: items.map((item) {
-                      return ListTile(
-                        onTap: () {
-                          setState(() {
-                            pSCategory1 = item;
-                          });
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Row(
-                                  children: [
-                                    InkWell(
-                                      onTap: () => Navigator.pop(context),
-                                      child: Icon(Icons.arrow_back_ios),
-                                    ),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      "Sub Category 2",
-                                    ),
-                                  ],
-                                ),
-                                content: subCategory2Dialog(),
-                              );
-                            },
-                          );
-                        },
-                        trailing: Icon(
-                          Icons.arrow_forward_ios,
-                          size: 20,
-                        ),
-                        title: Text(
-                          item,
-                          style: TextStyle(fontSize: 14),
-                        ),
-                      );
-                    }).toList(),
-                  );
-                }
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-  Widget subCategory2Dialog() {
-    return Container(
-      height: 600,
-      width: 500,
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            FutureBuilder(
-              future: getSubCategory2(TokenId.token, pCategory, pSCategory1),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text("Error : ${snapshot.error}"),
-                  );
-                } else if (snapshot.data!.data.length == 0) {
-                  Future.delayed(Duration(milliseconds: 1), () {
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                    pSCategory2 = '';
-                    setState(() {});
-                  });
-                  return Center(
-                    child: Text("No subcategories available for the selected criteria."),
-                  );
-                } else {
-                  return Column(
-                    children: snapshot.data!.data.map((subCategory) {
-                      return ListTile(
-                        onTap: () {
-                          setState(() {
-                            pSCategory2 = subCategory;
-                          });
-                          Navigator.pop(context);
-                          Navigator.pop(context);
-                          Navigator.pop(context);
-                        },
-                        title: Text(
-                          subCategory,
-                          style: TextStyle(fontSize: 14),
-                        ),
-                      );
-                    }).toList(),
-                  );
-                }
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   void initState() {
     super.initState();
-    pCategory = widget.productCategory;
+    pCategory = widget.prod.globalProductID.category;
     pSCategory1 = widget.productSubCategory1;
     pSCategory2 = widget.productSubCategory2;
   }
@@ -661,6 +154,8 @@ class _UpdateProductsState extends State<UpdateProducts> {
     if (pSCategory2 != '') {
       AllpCategory += '/ $pSCategory2';
     }
+    print("AllpCategory");
+    print(AllpCategory);
 
     return Scaffold(
       appBar: AppBar(
@@ -907,8 +402,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
                               // ),
                             ],
                           )),
-                      pCategory.isNotEmpty && pSCategory1.isNotEmpty ||
-                              pSCategory2.isNotEmpty
+                      pCategory.isNotEmpty
                           ?Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -1274,15 +768,8 @@ class _UpdateProductsState extends State<UpdateProducts> {
   }
 
   Future<void> saveProductData(
-  List<XFile> imageFileList,
-      TextEditingController pName,
-      String pSCategory2,
-      TextEditingController description,
-      String token,
-      String id,
-      String pid,
-      dummyProductList,
-      toSave) async {
+  List<XFile> imageFileList, TextEditingController pName, String pSCategory2, TextEditingController
+      description, String token, String id, String pid, dummyProductList, toSave) async {
     print("dummyProductList");
     itemOptions.forEach((itemOption) {
       dummyProductList.add(QuantityPricing(
@@ -1305,4 +792,518 @@ class _UpdateProductsState extends State<UpdateProducts> {
       );
     }
   }
+
+
+  Future<void> removeImage(int index) async {
+    //we have to change condition this one later
+    print("lengthhh");
+    print(widget.prod.globalProductID.images.length);
+    await UserApi.deleteImage(widget.prod.globalProductID.images[index], widget.pid);
+    setState(() {
+      imgList.removeAt(index);
+      widget.prod.globalProductID.images.removeAt(index);
+      print("lengthhh");
+      print(widget.prod.globalProductID.images.length);
+      // widget.prod.s3Url.removeAt(index);
+    });
+  }
+  Future<void> showDeleteConfirmationDialog(int index) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Image?'),
+          content: Text('Are you sure you want to delete this image?'),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: Text('Delete'),
+              onPressed: () {
+                removeImage(index); // Remove the image from the list
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  void showImageExpansion(int index) {
+    Navigator.of(context ).push(
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('Expanded Image'),
+            ),
+            body: Center(
+              child: Hero(
+                tag: 'image_$index',
+                child: Image.network(
+                  imgList[index],
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+  void removeCameraImage(int index) {
+    setState(() {
+      imageFileList!.removeAt(index);
+    });
+  }
+  Future<void> showCameraDeleteConfirmationDialog(int index) async {
+    return showDialog(
+      context: context ,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Delete Image?'),
+          content: Text('Are you sure you want to delete this image?'),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: Text('Delete'),
+              onPressed: () {
+                removeCameraImage(index); // Remove the image from the list
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  void showCameraImageExpansion(int index) {
+    Navigator.of(context ).push(
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('Expanded Image'),
+            ),
+            body: Center(
+              child: Hero(
+                  tag: 'image_$index',
+                  child: Image.file(
+                    File(imageFileList![index].path),
+                    fit: BoxFit.cover,
+                  )),
+            ),
+          );
+        },
+      ),
+    );
+  }
+  Widget categoryDialog() {
+    return Container(
+      height: 600,
+      width: 500,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            FutureBuilder(
+              future: getCategory(TokenId.token),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text("Error : ${snapshot.error}"),
+                  );
+                } else {
+                  final items = snapshot.data!.data;
+                  return Column(
+                    children: items.map((item) {
+                      return ListTile(
+                        onTap: () {
+                          setState(() {
+                            pCategory = item.toString();
+                          });
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Row(
+                                  children: [
+                                    InkWell(
+                                      onTap: () => Navigator.pop(context),
+                                      child: const Icon(Icons.arrow_back_ios),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    const Text("Sub Category 1"),
+                                  ],
+                                ),
+                                content: subCategory1Dialog(),
+                              );
+                            },
+                          );
+                        },
+                        leading: CircleAvatar(),
+                        trailing: const Icon(
+                          Icons.arrow_forward_ios,
+                          size: 20,
+                        ),
+                        title: Text(
+                          item.toString(),
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget subCategory1Dialog() {
+    return Container(
+      height: 600,
+      width: 500,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            FutureBuilder(
+              future: getSubCategory(TokenId.token, pCategory),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text("Error : ${snapshot.error}"),
+                  );
+                } else {
+                  print("adfghjkl");
+                  print(snapshot.data!.data.length);
+                  final items = snapshot.data!.data;
+                  return Column(
+                    children: items.map((item) {
+                      return ListTile(
+                        onTap: () {
+                          setState(() {
+                            pSCategory1 = item;
+                          });
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Row(
+                                  children: [
+                                    InkWell(
+                                      onTap: () => Navigator.pop(context),
+                                      child: Icon(Icons.arrow_back_ios),
+                                    ),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      "Sub Category 2",
+                                    ),
+                                  ],
+                                ),
+                                content: subCategory2Dialog(),
+                              );
+                            },
+                          );
+                        },
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                          size: 20,
+                        ),
+                        title: Text(
+                          item,
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget subCategory2Dialog() {
+    return Container(
+      height: 600,
+      width: 500,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            FutureBuilder(
+              future: getSubCategory2(TokenId.token, pCategory, pSCategory1),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text("Error : ${snapshot.error}"),
+                  );
+                } else if (snapshot.data!.data.length == 0) {
+                  Future.delayed(Duration(milliseconds: 1), () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                    pSCategory2 = '';
+                    setState(() {});
+                  });
+                  return Center(
+                    child: Text("No subcategories available for the selected criteria."),
+                  );
+                } else {
+                  return Column(
+                    children: snapshot.data!.data.map((subCategory) {
+                      return ListTile(
+                        onTap: () {
+                          setState(() {
+                            pSCategory2 = subCategory;
+                          });
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                        title: Text(
+                          subCategory,
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
 }
+
+
+
+
+class PriceQuantitySpinnerRow extends StatefulWidget {
+  final List<ItemOption> options;
+  final ValueChanged<ItemOption> onOptionAdded;
+  final Function(List<TextEditingController>, List<TextEditingController>,
+      List<TextEditingController>) updateInitialValue;
+
+  PriceQuantitySpinnerRow({
+    required this.options,
+    required this.onOptionAdded,
+    required this.updateInitialValue,
+  });
+
+  @override
+  _PriceQuantitySpinnerRowState createState() =>
+      _PriceQuantitySpinnerRowState();
+}
+
+class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
+
+
+  ItemOption newItem = ItemOption(
+    price: "",
+    quantity: "",
+    unit: 'kg',
+    offerPrice: "",
+  );
+  List<String> dropDownItems = [
+    "kg",
+    "litre",
+    "piece",
+    "packet",
+    "box",
+    "bottle",
+    "can",
+    "bag",
+    "sack",
+    "tin",
+    "other",
+  ];
+
+  void addOption() {
+    widget.onOptionAdded(newItem);
+    newItem = ItemOption(
+      price: "",
+      quantity: "",
+      unit: 'kg',
+      offerPrice: "",
+    );
+  }
+
+  bool _validate4 = false;
+  bool _validate5 = false;
+  bool _validate6 = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Column(
+          children: widget.options.map((option) {
+            return Container(
+              child: Padding(
+                padding: EdgeInsets.all(12),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller:
+                            TextEditingController(text: option.quantity.toString()),
+                            onChanged: (value) => option.quantity = value ,
+                            decoration: InputDecoration(
+                              hintText: 'Quantity',
+                              label: const Text('Quantity'),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),                              errorText:
+                            _validate4 ? 'Value Can\'t Be Empty' : null,
+                            ),
+                            style: TextStyle(
+                              color: Colors.black.withOpacity(1.0),
+                              fontSize: 16,
+                              fontFamily: 'Urbanist',
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 16),
+                        Container(
+                          height: 60,
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 1,
+                              color: Colors.black,
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: DropdownButton<String>(
+                            value: option.unit,
+                            onChanged: (String? value) {
+                              setState(() {
+                                option.unit = value!;
+                              });
+                            },
+                            items: dropDownItems.map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(
+                                  value,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontFamily: 'Urbanist',
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+
+                          },
+                          child: Icon(
+                            Icons.delete_outlined,
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller:
+                            TextEditingController(text: option.price.toString()),
+                            onChanged: (value) => option.price = value ,
+                            decoration: InputDecoration(
+                              hintText: 'Price (In Rs.)',
+                              label: const Text('Price (In Rs.)'),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              errorText:
+                              _validate5 ? 'Value Can\'t Be Empty' : null,
+                            ),
+                            style: TextStyle(
+                              color: Colors.black.withOpacity(1.0),
+                              fontSize: 16,
+                              fontFamily: 'Urbanist',
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: TextFormField(
+                            controller: TextEditingController(
+                                text: option.offerPrice.toString()),
+                            onChanged: (value) => option.offerPrice = value,
+                            decoration: InputDecoration(
+                              hintText: 'Offer Price',
+                              labelText: 'Offer Price',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              errorText:
+                              _validate6 ? 'Value Can\'t Be Empty' : null,
+                            ),
+                            style: TextStyle(
+                              color: Colors.black.withOpacity(1.0),
+                              fontSize: 16,
+                              fontFamily: 'Urbanist',
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+        Center(
+          // margin: EdgeInsets.only(left: 20),
+            child: ElevatedButton(
+              onPressed: addOption,
+              child: Text("Add items"),
+            )),
+      ],
+    );
+  }
+}
+

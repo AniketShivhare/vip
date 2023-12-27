@@ -45,90 +45,101 @@ class _ManageProductsState extends State<ManageProducts> {
   String stockOut = 'Out of stock';
   String sortt = "";
   bool isSelected = false;
-  final ScrollController _scrollController = ScrollController();
-  double scrollPosition = 0.0;
+  late ScrollController _scrollController = ScrollController();
   late Order order;
   late List<Product> product;
   String response1 = "";
   Future<List<Product>>? _productData;
-  int numberOfPages = 8;
-  // int currentPage = 2;
+  List<Product> data =[];
+  bool _isLoading = false;
+  int _currentPage = 1;
 
   @override
   void dispose() {
+    _scrollController.dispose();
     FilterOptions.clear();
   }
   @override
-  initState() {
-    super.initState();
+  initState()  {
+    sortt = widget.sortt;
+
+    _scrollController.addListener(_scrollListener);
     if (FilterOptions.changed == true) {
-      // _productData = fetchOrders(sortt, TokenId.token, TokenId.id, Categories.pindex);
-      _productData = UserApi.filterProduct(widget.token, widget.id);
+      callfilterProduct();
     } else {
-      sortt = widget.sortt;
-      _productData = fetchProducts(sortt, TokenId.token, TokenId.id, Categories.pindex);
-      print("_productData");
-      print(_productData);
+      callFetchProduct(1);
     }
+    super.initState();
   }
+
 
   @override
   Widget build(BuildContext context) {
+    Widget backButton = Navigator.canPop(context)
+        ? IconButton(
+      icon: Icon(Icons.arrow_back, color: Colors.white),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    ) : SizedBox(width: 18,);
     String token = widget.token;
     String id = widget.id;
     print("token = " +token);
-    // print("currentPage1234");
-    // print(currentPage);
     return Scaffold(
         appBar: AppBar(
-          title: Container(
-            height: 50,
-            margin: EdgeInsets.only(left: 5, right: 5),
-            child: Container(
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                border: Border.all(color: Colors.black, width: 1),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black38.withOpacity(0.5), //color of shadow
-                    blurRadius: 7, // blur radius
-                  ),
-                  //you can set more BoxShadow() here
-                ],
-              ),
-              margin: const EdgeInsets.only(bottom: 5),
-              child: TextField(
-                style: const TextStyle(
-                    fontSize: 16, color: Colors.black, fontFamily: 'comfort'),
-                decoration: const InputDecoration(
-                  hintText: 'search',
-                  hintStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: Colors.black,
-                  ),
-                  border: InputBorder.none,
-                ),
-                onChanged: (query) async {
-                  await updateOnSearch(query);
-                },
-              ),
-            ),
-          ),
-          backgroundColor: Colors.lightBlue.shade300,
-          iconTheme: const IconThemeData(color: Colors.white),
-        ),
-        backgroundColor: Colors.white,
-        body: SingleChildScrollView(
-          child: Column(
+          automaticallyImplyLeading: false,
+          toolbarHeight: 115,
+          flexibleSpace: Column(
             children: [
-              Container(
-                color: Colors.lightBlue.shade300,
+              SizedBox(height:40),
+              Padding(
+                padding:  EdgeInsets.only(right: 18.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    backButton,
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          border: Border.all(color: Colors.black, width: 1),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black38.withOpacity(0.5), //color of shadow
+                              blurRadius: 7, // blur radius
+                            ),
+                            //you can set more BoxShadow() here
+                          ],
+                        ),
+                        margin: const EdgeInsets.only(bottom: 5),
+                        child: TextField(
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.black, fontFamily: 'comfort'),
+                          decoration: const InputDecoration(
+                            hintText: 'search',
+                            hintStyle: TextStyle(color: Colors.black),
+                            prefixIcon: Icon(
+                              Icons.search,
+                              color: Colors.black,
+                            ),
+                            border: InputBorder.none,
+                          ),
+                          onChanged: (query) async {
+                            await updateOnSearch(query);
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                height: 50,
+                margin: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  children: [
+                    if(Navigator.canPop(context))
+                      SizedBox(width: 18.0,),
                     Expanded(
                       flex: 2,
                       child: InkWell(
@@ -250,10 +261,10 @@ class _ManageProductsState extends State<ManageProducts> {
                                       FilterOptions.sortChanged = true;
                                       FilterOptions.sortName = "minMrpPrice:asc";
                                       setState(() {
-                                        _productData = fetchProducts(
-                                            "minMrpPrice:asc", token, id,
-                                            Categories.pindex);
-                                        sortt = "productDetails.mrpPrice";
+                                        data=[];
+                                        sortt = "minMrpPrice:asc";
+                                        _currentPage=1;
+                                        callFetchProduct(_currentPage);
                                       });
                                     },
                                     closeOnItemClick: true,
@@ -273,10 +284,10 @@ class _ManageProductsState extends State<ManageProducts> {
                                       FilterOptions.sortChanged = true;
                                       FilterOptions.sortName = "minMrpPrice:desc";
                                       setState(() {
-                                        _productData = fetchProducts(
-                                            "minMrpPrice:desc", token, id,
-                                            Categories.pindex);
-                                        sortt = "-productDetails.mrpPrice";
+                                        data=[];
+                                        sortt = "minMrpPrice:desc";
+                                        _currentPage=1;
+                                        callFetchProduct(_currentPage);
                                       });
                                     },
                                     closeOnItemClick: true,
@@ -295,10 +306,7 @@ class _ManageProductsState extends State<ManageProducts> {
                                     onTap: () {
                                       FilterOptions.sortChanged = true;
                                       setState(() {
-                                        _productData = fetchProducts(
-                                            "-productSoldCount", token, id,
-                                            Categories.pindex);
-                                        sortt = "-productSoldCount";
+
                                       });
                                     },
                                     closeOnItemClick: true,
@@ -317,8 +325,7 @@ class _ManageProductsState extends State<ManageProducts> {
                                     onTap: () {
                                       FilterOptions.sortChanged = true;
                                       setState(() {
-                                        _productData = fetchProducts("-createdAt", token, id,
-                                            Categories.pindex);
+
                                       });
                                     },
                                     closeOnItemClick: true,
@@ -337,9 +344,10 @@ class _ManageProductsState extends State<ManageProducts> {
                                     onTap: () {
                                       FilterOptions.sortChanged = true;
                                       setState(() {
-                                        _productData = fetchProducts(
-                                            "-createdAt", token, id,
-                                            Categories.pindex);
+                                        data=[];
+                                        sortt="-createdAt";
+                                        _currentPage=1;
+                                        callFetchProduct(_currentPage);
                                       });
                                     },
                                     closeOnItemClick: true,
@@ -363,305 +371,277 @@ class _ManageProductsState extends State<ManageProducts> {
                   ],
                 ),
               ),
-              FutureBuilder<List<Product>>(
-                future: _productData,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(child: Text('No Products Found')),
-                    );
-                  } else {
-                    final List<Product>? data = snapshot.data;
+            ],
+          ),
+          backgroundColor: Colors.lightBlue.shade300,
+          iconTheme: const IconThemeData(color: Colors.white),
+        ),
+        backgroundColor: Colors.white,
+        body:   (data.isNotEmpty)?
+    ListView.builder(
+      shrinkWrap: true,
+      controller: _scrollController,
+      // scrollDirection: Axis.horizontal,
+      itemCount: data.length+1,
+      itemBuilder: (context, index) {
+        if(index==data.length) return Center(child: CircularProgressIndicator(),);
+        final prod = data[index];
+        String s = prod.inStock.toString() == 'true'
+            ? 'In stock'
+            : 'Out of stock';
 
-                    return (data!.isNotEmpty)?Column(
-                      children: [
-                        ListView.builder(
-                          shrinkWrap: true,
-                          controller: _scrollController,
-                          // scrollDirection: Axis.horizontal,
-                          itemCount: data.length,
-                          itemBuilder: (context, index) {
-                            final prod = data[index];
-                            String s = prod.inStock.toString() == 'true'
-                                ? 'In stock'
-                                : 'Out of stock';
+        String starRating = '';
+        double prating = prod.globalProductID.productName.length % 6;
+        if (prating == 0) {
+          starRating = '⭐';
+        } else {
+          int fullStars = prating.floor();
+          double remaining =
+          (prating - fullStars) as double;
 
-                            String starRating = '';
-                            double prating = prod.globalProductID.productName.length % 6;
-                            if (prating == 0) {
-                              starRating = '⭐';
-                            } else {
-                              int fullStars = prating.floor();
-                              double remaining =
-                              (prating - fullStars) as double;
+          starRating = '⭐' * fullStars;
+        }
+        return InkWell(
+          onTap: () {
+            // print("0000");
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ProductDetailsScreen(
+                        prod: prod, productId: prod.id)));
+          },
+          child: Container(
+            color: Colors.grey.shade300,
+            child: Card(
+              margin: EdgeInsets.only(
+                  left: 10, right: 10, top: 6, bottom: 6),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      // margin: EdgeInsets.only(bottom: 5, top: 5, left: 11,right: 10),
 
-                              starRating = '⭐' * fullStars;
-                            }
-                            return InkWell(
-                              onTap: () {
-                                // print("0000");
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ProductDetailsScreen(
-                                            prod: prod, productId: prod.id)));
-                              },
+                      child: SingleChildScrollView(
+                        child: Row(
+                          children: [
+                            Expanded(
                               child: Container(
-                                color: Colors.grey.shade300,
-                                child: Card(
-                                  margin: EdgeInsets.only(
-                                      left: 10, right: 10, top: 6, bottom: 6),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                          // margin: EdgeInsets.only(bottom: 5, top: 5, left: 11,right: 10),
-
-                                          child: SingleChildScrollView(
-                                            child: Row(
-                                              children: [
-                                                Expanded(
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                        color: Colors.white,
-                                                        borderRadius:
-                                                        BorderRadius.all(
-                                                            Radius
-                                                                .circular(
-                                                                10))),
-                                                    height: 170,
-                                                    padding:
-                                                    EdgeInsets.all(10),
-                                                    child: Column(
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius:
+                                    BorderRadius.all(
+                                        Radius
+                                            .circular(
+                                            10))),
+                                height: 170,
+                                padding:
+                                EdgeInsets.all(10),
+                                child: Column(
+                                  children: [
+                                    Expanded(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .spaceBetween,
+                                        children: [
+                                          Transform.scale(
+                                            scale: 0.7,
+                                            child:
+                                            CupertinoSwitch(
+                                              activeColor: Colors.green,
+                                              value: prod.inStock,
+                                              onChanged: (bool value) {
+                                                // s = value == true ? 'In stock' : 'Out of stock';
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (BuildContext context) {
+                                                    return AlertDialog(
+                                                      title: const Text('Update Product Stock'),
+                                                      content: StockUpdateDialog(prod: prod, callSetState: callSetState),
+                                                    );
+                                                  },
+                                                );
+                                                // setState(() {
+                                                //       prod.inStock = value;
+                                                //       updateStock(value, prod.id);
+                                                //     });
+                                              },
+                                            ),
+                                          ),
+                                          Expanded(
+                                              flex: 2,
+                                              child:
+                                              Container(
+                                                child: Text(s,
+                                                    style: TextStyle(
+                                                        color: Colors.green.shade900,
+                                                        fontSize: 11,
+                                                        fontFamily: 'Poppins',
+                                                        fontWeight: FontWeight.bold)),
+                                              )),
+                                          IconButton(
+                                            icon: Icon(
+                                              Icons.delete,
+                                              color: Colors.red.shade900,
+                                              size: 25,
+                                            ),
+                                            onPressed: () {
+                                              showDeleteConfirmationDialog(prod.id);
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Expanded(
+                                      flex: 3,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child:
+                                              Container(
+                                                margin: EdgeInsets
+                                                    .only(
+                                                    right:
+                                                    15),
+                                                child: (prod.globalProductID.images.length > 0)
+                                                    ? Image.network(
+                                                  prod.globalProductID.images[0],
+                                                  height: 150, width: 80,
+                                                  fit: BoxFit.fill,
+                                                ) : Image.asset('assets/images/a1.jpg',
+                                                    height: 150, width: 80),
+                                              )),
+                                          Expanded(
+                                            flex: 2,
+                                            child:
+                                            Container(
+                                              child:
+                                              Column(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Expanded(
+                                                      child:
+                                                      Container(
+                                                        // margin: EdgeInsets.only(left: 20),
+                                                        child: Text(prod.globalProductID.productName,
+                                                            style: TextStyle(
+                                                                color: Colors.black,
+                                                                fontSize: 19,
+                                                                fontFamily: 'comfart',
+                                                                fontWeight: FontWeight.bold)),
+                                                      )),
+                                                  Expanded(
+                                                    child:
+                                                    Row(
                                                       children: [
-                                                        Expanded(
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                            children: [
-                                                              Transform.scale(
-                                                                scale: 0.7,
-                                                                child:
-                                                                CupertinoSwitch(
-                                                                  activeColor: Colors.green,
-                                                                  value: prod.inStock,
-                                                                  onChanged: (bool value) {
-                                                                    // s = value == true ? 'In stock' : 'Out of stock';
-                                                                    showDialog(
-                                                                      context: context,
-                                                                      builder: (BuildContext context) {
-                                                                        return AlertDialog(
-                                                                          title: const Text('Update Product Stock'),
-                                                                          content: StockUpdateDialog(prod: prod, callSetState: callSetState),
-                                                                        );
-                                                                      },
-                                                                    );
-                                                                    // setState(() {
-                                                                    //       prod.inStock = value;
-                                                                    //       updateStock(value, prod.id);
-                                                                    //     });
-                                                                  },
-                                                                ),
-                                                              ),
-                                                              Expanded(
-                                                                  flex: 2,
-                                                                  child:
-                                                                  Container(
-                                                                    child: Text(s,
-                                                                        style: TextStyle(
-                                                                            color: Colors.green.shade900,
-                                                                            fontSize: 11,
-                                                                            fontFamily: 'Poppins',
-                                                                            fontWeight: FontWeight.bold)),
-                                                                  )),
-                                                              IconButton(
-                                                                icon: Icon(
-                                                                  Icons.delete,
-                                                                  color: Colors.red.shade900,
-                                                                  size: 25,
-                                                                ),
-                                                                onPressed: () {
-                                                                  showDeleteConfirmationDialog(prod.id);
-                                                                },
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
+                                                        Text(
+                                                            '₹${prod.minMrpPrice.toString()}',
+                                                            style: TextStyle(
+                                                                color: Colors.black,
+                                                                fontSize: 16,
+                                                                fontFamily: 'comfort',
+                                                                fontWeight: FontWeight.bold)),
                                                         SizedBox(
-                                                          height: 5,
+                                                          width: 10,
                                                         ),
-                                                        Expanded(
-                                                          flex: 3,
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                            MainAxisAlignment.spaceBetween,
-                                                            children: [
-                                                              Expanded(
-                                                                  child:
-                                                                  Container(
-                                                                    margin: EdgeInsets
-                                                                        .only(
-                                                                        right:
-                                                                        15),
-                                                                    child: (prod.globalProductID.images.length > 0)
-                                                                        ? Image.network(
-                                                                      prod.globalProductID.images[0],
-                                                                      height: 150, width: 80,
-                                                                      fit: BoxFit.fill,
-                                                                    ) : Image.asset('assets/images/a1.jpg',
-                                                                        height: 150, width: 80),
-                                                                  )),
-                                                              Expanded(
-                                                                flex: 2,
-                                                                child:
-                                                                Container(
-                                                                  child:
-                                                                  Column(
-                                                                    mainAxisAlignment: MainAxisAlignment.start,
-                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                    children: [
-                                                                      Expanded(
-                                                                          child:
-                                                                          Container(
-                                                                            // margin: EdgeInsets.only(left: 20),
-                                                                            child: Text(prod.globalProductID.productName,
-                                                                                style: TextStyle(
-                                                                                    color: Colors.black,
-                                                                                    fontSize: 19,
-                                                                                    fontFamily: 'comfart',
-                                                                                    fontWeight: FontWeight.bold)),
-                                                                          )),
-                                                                      Expanded(
-                                                                        child:
-                                                                        Row(
-                                                                          children: [
-                                                                            Text(
-                                                                                '₹${prod.minMrpPrice.toString()}',
-                                                                                style: TextStyle(
-                                                                                    color: Colors.black,
-                                                                                    fontSize: 16,
-                                                                                    fontFamily: 'comfort',
-                                                                                    fontWeight: FontWeight.bold)),
-                                                                            SizedBox(
-                                                                              width: 10,
-                                                                            ),
-                                                                            Text('MRP ''₹${prod.minMrpPrice.toString()}''${860}',
-                                                                                style: TextStyle(
-                                                                                    color: Colors.black,
-                                                                                    fontSize: 14,
-                                                                                    fontFamily: 'comfort',
-                                                                                    decoration: TextDecoration.lineThrough)),
-                                                                          ],
-                                                                        ),
-                                                                      ),
-                                                                      Expanded(
-                                                                        child:
-                                                                        Container(
-                                                                          width:
-                                                                          100,
-                                                                          height:
-                                                                          18,
-                                                                          decoration: const BoxDecoration(
-                                                                            //  border: Border.all(color: Colors.black),
-                                                                              borderRadius: BorderRadius.all(
-                                                                                  Radius.circular(5))),
-                                                                          //   margin: EdgeInsets.only(right: 20),
-                                                                          child:
-                                                                          Text(starRating,
-                                                                              style: const TextStyle(
-                                                                                  color: Colors.black,
-                                                                                  fontSize: 13.5,
-                                                                                  fontFamily: 'comfort',
-                                                                                  fontWeight: FontWeight.bold)),
-                                                                        ),
-                                                                      ),
-                                                                      Expanded(
-                                                                        child:
-                                                                        Container(
-                                                                          width:
-                                                                          220,
-                                                                          child:
-                                                                          MaterialButton(
-                                                                            color: Colors.lightBlue.shade400,
-                                                                            onPressed: () {
-                                                                              Navigator.push(context,
-                                                                                  MaterialPageRoute(
-                                                                                      builder: (context) =>
-                                                                                          UpdateProducts(
-                                                                                            prod:prod,
-                                                                                            imageList:prod.globalProductID.images,
-                                                                                            pid: prod.id,
-                                                                                            token: token,
-                                                                                            id: id,
-                                                                                            productName: prod.globalProductID.productName,
-                                                                                            productCategory: prod.globalProductID.category,
-                                                                                            productSubCategory1: prod.globalProductID.subCategory1,
-                                                                                            productSubCategory2: prod.globalProductID.subCategory2,
-                                                                                            quantityPricing: prod.productDetails,
-                                                                                            stockTF: prod.inStock,
-                                                                                            stockIO: s,
-                                                                                            description: prod.globalProductID.description,
-                                                                                          )));
-                                                                            },
-                                                                            child: Text(
-                                                                              'Edit',
-                                                                              style: TextStyle(
-                                                                                  color: Colors.white,
-                                                                                  fontWeight: FontWeight.bold,
-                                                                                  fontSize: 16),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
+                                                        Text('MRP ''₹${prod.minMrpPrice.toString()}''${860}',
+                                                            style: TextStyle(
+                                                                color: Colors.black,
+                                                                fontSize: 14,
+                                                                fontFamily: 'comfort',
+                                                                decoration: TextDecoration.lineThrough)),
                                                       ],
                                                     ),
                                                   ),
-                                                ),
-                                              ],
+                                                  Expanded(
+                                                    child:
+                                                    Container(
+                                                      width:
+                                                      100,
+                                                      height:
+                                                      18,
+                                                      decoration: const BoxDecoration(
+                                                        //  border: Border.all(color: Colors.black),
+                                                          borderRadius: BorderRadius.all(
+                                                              Radius.circular(5))),
+                                                      //   margin: EdgeInsets.only(right: 20),
+                                                      child:
+                                                      Text(starRating,
+                                                          style: const TextStyle(
+                                                              color: Colors.black,
+                                                              fontSize: 13.5,
+                                                              fontFamily: 'comfort',
+                                                              fontWeight: FontWeight.bold)),
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child:
+                                                    Container(
+                                                      width:
+                                                      220,
+                                                      child:
+                                                      MaterialButton(
+                                                        color: Colors.lightBlue.shade400,
+                                                        onPressed: () {
+                                                          Navigator.push(context,
+                                                              MaterialPageRoute(
+                                                                  builder: (context) =>
+                                                                      UpdateProducts(
+                                                                        prod:prod,
+                                                                        imageList:prod.globalProductID.images,
+                                                                        pid: prod.id,
+                                                                        token: token,
+                                                                        id: id,
+                                                                        productName: prod.globalProductID.productName,
+                                                                        productCategory: prod.globalProductID.category,
+                                                                        productSubCategory1: prod.globalProductID.subCategory1,
+                                                                        productSubCategory2: prod.globalProductID.subCategory2,
+                                                                        quantityPricing: prod.productDetails,
+                                                                        stockTF: prod.inStock,
+                                                                        stockIO: s,
+                                                                        description: prod.globalProductID.description,
+                                                                      )));
+                                                        },
+                                                        child: Text(
+                                                          'Edit',
+                                                          style: TextStyle(
+                                                              color: Colors.white,
+                                                              fontWeight: FontWeight.bold,
+                                                              fontSize: 16),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            );
-                          },
+                            ),
+                          ],
                         ),
-                      ],
-                    ) : Center(child: Text('No products Found'),);
-                }
-                },
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              Container(
-                height: 20,
-                color: Colors.grey.shade300,
-              ),
-              Container(
-                color: Colors.grey.shade300, // Set the background color here
-                child: NumberPaginator(
-                  numberPages: numberOfPages,
-                  onPageChange: (index) {
-                    pagination1(index);
-                  },
-                ),
-              ),
-              SizedBox(height: 10,)
-            ],
+            ),
           ),
-        ));
+        );
+      },
+    ) : Center(child: CircularProgressIndicator(),)
+    );
   }
 
   Future<void> showDeleteConfirmationDialog(String id) async {
@@ -688,8 +668,8 @@ class _ManageProductsState extends State<ManageProducts> {
                 print(id);
                 UserApi.deleteProduct(id);
                 // Remove the image from the list
-                _productData =
-                    fetchProducts("", TokenId.token, TokenId.id, Categories.pindex);
+                // _productData =
+                //     fetchProducts("", TokenId.token, TokenId.id, Categories.pindex);
                 setState(() {
                   Navigator.of(context).pop();
                 });
@@ -705,31 +685,18 @@ class _ManageProductsState extends State<ManageProducts> {
   Future<void> updateOnSearch(query) async {
     if (query.length == 0) {
       setState(() {
-        _productData =
-            fetchProducts("-createdAt", TokenId.token, TokenId.id, Categories.pindex);
+        if(data.length==0)
+           callFetchProduct(1);
       });
       print(_productData);
-    } else if (query.length < 3) {
-      return;
     } else {
+      data = await UserApi.searchProducts(query, TokenId.token, TokenId.id);
       setState(() {
         _productData = UserApi.searchProducts(query, TokenId.token, TokenId.id);
       });
-      print(_productData);
     }
   }
 
-  void pagination1(int index) {
-    pagination(index);
-  }
-
-  Future<void> pagination(int index) async {
-    setState(() {
-      Categories.pindex = index + 1;
-      _productData = fetchProducts("", widget.token, widget.id, Categories.pindex);
-
-    });
-  }
 
   void removeImage(int index) {
     setState(() {
@@ -738,14 +705,17 @@ class _ManageProductsState extends State<ManageProducts> {
   }
 
   //fetch product all
-  Future<List<Product>> fetchProducts(sort, token, id, currentPage) async {
-    final List<Product> data;
-    if (sort == "") {
-      data = await UserApi.getProducts(token, id, currentPage);
-    } else {
-      data = await UserApi.getSellerProducts(sort, token, id,currentPage);
+  Future<void> fetchProducts(sort, currentPage) async {
+    if(FilterOptions.changed==true) {
+      //too implement sort and filter combo there
     }
-    return data;
+    if (sort == "") {
+      data = await UserApi.getProducts(TokenId.token, TokenId.id, currentPage);
+    } else {
+      data = await UserApi.getSellerProducts(sort, TokenId.token, TokenId.id,currentPage);
+    }
+    setState(() {
+    });
   }
 
   //update Stock only
@@ -781,6 +751,47 @@ class _ManageProductsState extends State<ManageProducts> {
     } catch (e) {
       print(e);
     }
+  }
+
+  void _scrollListener() {
+    print("asdgsdgsd");
+    print(_isLoading);
+    // Check if we are approaching the end of the scroll
+    if (!_isLoading && _scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent-1500 ) {
+      print('Approaching the end!');
+      _loadMoreData();
+    }
+  }
+
+  Future<void> _loadMoreData() async {
+    if (!_isLoading) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      List<Product> newData = await UserApi.getProducts(TokenId.token, TokenId.id, ++_currentPage);
+
+      setState(() {
+        data += newData;
+        _isLoading = false;
+      });
+    }
+  }
+
+  void callFetchProduct(int index) {
+      fetchProducts(sortt, index);
+  }
+
+  void callfilterProduct() {
+    Userapifilterproductcall();
+  }
+
+  Future<void> Userapifilterproductcall() async {
+    data = await UserApi.filterProduct(widget.token, widget.id);
+    setState(() {
+
+    });
   }
 }
 

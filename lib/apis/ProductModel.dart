@@ -19,7 +19,7 @@ class QuantityPricing {
           ? json['offerPrice'].toDouble()
           : 0.0,
       quantity: (json['quantity'] != null) ? json['quantity'].toString() : '',
-      unit: json['unit'] ?? '',
+      unit: json['unit'] ?? 'kg',
       mrpPrice: (json['mrpPrice'] != null) ? json['mrpPrice'].toDouble() : 0.0,
       inStock:  true,
     );
@@ -64,7 +64,7 @@ class QuantityPricing {
       sellerID: json['sellerID'] ?? '',
       globalProductID: (json['globalProductInfo']!=null && json['globalProductInfo'].length>0) ?  GlobalProductID.fromJson(json['globalProductInfo'][0]) : GlobalProductID(id: "657939947955a237931d8622", productName: "", category: "", subCategory1: "", subCategory2: "", images: [], description: "",),
       inStock: json['inStock']?? false,
-      productDetails: List<QuantityPricing>.from(json['productDetails'].map((x) => QuantityPricing.fromJson(x))),
+      productDetails: List<QuantityPricing>.from(json['productDetails'].map((x) => QuantityPricing.fromJson(x))) ,
       // createdAt: DateTime.parse(json['createdAt']),
       // updatedAt: DateTime.parse(json['updatedAt']),
       minMrpPrice: (json['minMrpPrice']!=null) ?((json['minMrpPrice'] is int)

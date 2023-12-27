@@ -92,11 +92,11 @@ class _SellerRegistrationPageState extends State<Regest> {
     Map<String, dynamic> updatedFields = {
       "shopName": shopNameController.text,
       "ownerName": ownerNameController.text,
-      "phone": mobileNoController.text,
-      "landlineNumber": landlineNoController.text,
-      "addressLine": addressController.text
+      // "phone": mobileNoController.text,
+      // "landlineNumber": landlineNoController.text,
+      // "addressLine": addressController.text
     };
-    // await UserApi.updateSeller(widget.token, widget.id, updatedFields);
+    await UserApi.updateSeller(widget.token, widget.id, updatedFields);
 
     Navigator.push(
         context,

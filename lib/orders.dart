@@ -34,8 +34,14 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
 
    Future<List<Order>> fetchOrderData(filter, {bool ok = true}) async {
      print(filter);
+     print(filter);
+     print(filter);
+     print(filter);
+     print(filter);
+     print(filter);
+     print(filter);
     try {
-      var url = "https://api.pehchankidukan.com/seller/650861407bfbdb03672c18de/orders?status=OrderAccepted";
+      var url = "https://api.pehchankidukan.com/seller/${TokenId.id}/orders?status=$filter";
       final uri = Uri.parse(url);
       final response = await http.get(
         uri,
@@ -53,8 +59,8 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
         final Map<String, dynamic> productJson = jsonDecode(bodyString);
 
         List<Order> orders = (productJson['allOrders'] as List<dynamic>?)
-            ?.map((e) => Order.fromJson(e as Map<String, dynamic>))
-            .toList() ?? [];
+             ?.map((e) => Order.fromJson(e as Map<String, dynamic>))
+             .toList() ?? [];
         for (Order order in orders) {
             order.getProductListString();
         }
@@ -426,9 +432,9 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
                           ],
                         ),
                         // const SizedBox(height: 10),
-                        (orderStatus1 =='ready for pick up ') ? const Row(
+                        (orderStatus1 =='ready for pick up ') ?  Row(
                           children: [
-                            Text("chintu singh is waiting for order  ",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500),),
+                            Text("${order.shippedBy.name} is waiting for order  ",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500),),
                             Spacer()
                           ],
                         ):Container(),
@@ -456,34 +462,5 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
           },
         )
     );
-  }
-
-  Future<void> changeOrderstatus({required orderId, required String state}) async {
-    final apiUrl = 'https://api.pehchankidukan.com/seller/changeOrderStatus';
-
-    final Map<String, dynamic> productJson = {
-
-    };
-    var uri = Uri.parse(apiUrl);
-    try {
-      final response = await http.patch(
-        uri,
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${TokenId.token}'
-        },
-        body: jsonEncode(productJson),
-      );
-
-      if (response.statusCode == 200) {
-        print("product updated succesfully");
-
-      } else {
-        print('Failed to update product. Status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
-      }
-    } catch (e) {
-      print(e);
-    }
   }
 }

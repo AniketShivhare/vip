@@ -46,9 +46,12 @@ class _BankAccountDetailsState extends State<BankAccountDetails> {
     // }
     // print(imageUrl);
     // print(imageUrl);
-    Bank_Account_Controller.text = seller.data.bankDetails.accountNo;
-    Bank_IFSC_Controller.text = seller.data.bankDetails.ifscCode;
-    Pan_Card_Controller.text = seller.data.panCard.panNo;
+    if (seller.data.bankDetails != null) {
+      Bank_Account_Controller.text = seller.data.bankDetails?.accountNo ?? '';
+    }
+
+    Bank_IFSC_Controller.text = seller.data.bankDetails?.ifscCode ?? '';
+    Pan_Card_Controller.text = seller.data.panCard?.panNo ?? '';
   }
 
   Future<void> postBankDetails() async {

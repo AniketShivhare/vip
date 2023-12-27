@@ -31,7 +31,12 @@ class SellerApi {
     );
 
     if (response.statusCode == 200) {
-      return SellerProfile.fromJson(jsonDecode(response.body));
+      try{
+        return SellerProfile.fromJson(jsonDecode(response.body));
+      } catch (e) {
+        print("Error saving seller data:  $e");
+        throw Exception('Failed to update profile');
+      }
     } else {
       throw Exception('Failed to update profile');
     }
