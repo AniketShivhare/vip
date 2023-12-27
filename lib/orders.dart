@@ -118,27 +118,9 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
         appBar: AppBar(
           backgroundColor: const Color(0xFF204969),
           toolbarHeight: 45,
-          title: Row(
-            children: [
-              const Text('Order Details',
-                style: TextStyle(
-                    color: Colors.white),
-              ),
-              Spacer(),
-              InkWell(
-                onTap: (){
-                    Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                    builder: (context) =>  sellerReturnReplacement(index1: 0,),
-                    ));
-                    },
-                child: const Text('Return Replacement',
-                  style: TextStyle(
-                      color: Colors.white),
-                ),
-              ),
-            ],
+          title: const Text('Order Details',
+            style: TextStyle(
+                color: Colors.white),
           ),
           centerTitle: true,
           bottom:  TabBar(
