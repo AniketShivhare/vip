@@ -1,5 +1,8 @@
 import 'package:e_commerce/firebase_api.dart';
 import 'package:e_commerce/firebase_options.dart';
+import 'package:e_commerce/menuPage.dart';
+import 'package:e_commerce/productRatingAndReviews.dart';
+import 'package:e_commerce/salesReportPages.dart';
 import 'package:e_commerce/seller_dashboard.dart';
 import 'package:e_commerce/seller_login.dart';
 import 'package:e_commerce/splash_screen.dart';

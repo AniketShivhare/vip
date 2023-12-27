@@ -14,10 +14,9 @@ class profileOptions extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-            child: Text(
+        title: Text(
           'Profile Page',
-        )),
+        ),
         backgroundColor: Colors.blue.shade100,
       ),
       body: Container(

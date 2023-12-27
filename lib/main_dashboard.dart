@@ -1,3 +1,4 @@
+import 'package:e_commerce/menuPage.dart';
 import 'package:e_commerce/seller_dashboard.dart';
 import 'package:e_commerce/seller_profile_option.dart';
 import 'package:e_commerce/services/User_api.dart';
@@ -28,8 +29,8 @@ const List<TabItem> items = [
     title: 'Orders',
   ),
   TabItem(
-    icon: Icons.account_circle_sharp,
-    title: 'Profile',
+    icon: Icons.menu_outlined,
+    title: 'Menu',
   ),
 ];
 
@@ -77,7 +78,7 @@ class _MainDashboardState extends State<MainDashboard> with TickerProviderStateM
       ProductSelectionPage(),
       const SellerDashboard(token: '', id: ''),
       const sellerFrontPage(index1:1),
-      const profileOptions(),
+      const menuScreen(),
     ];
     return Scaffold(
       backgroundColor: const Color(0xfffcf5f4),
