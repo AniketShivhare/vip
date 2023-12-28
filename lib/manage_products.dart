@@ -53,6 +53,7 @@ class _ManageProductsState extends State<ManageProducts> {
   List<Product> data =[];
   bool _isLoading = false;
   int _currentPage = 1;
+  bool ApproachedEnd=false;
 
   @override
   void dispose() {
@@ -384,7 +385,16 @@ class _ManageProductsState extends State<ManageProducts> {
       // scrollDirection: Axis.horizontal,
       itemCount: data.length+1,
       itemBuilder: (context, index) {
-        if(index==data.length) return Center(child: CircularProgressIndicator(),);
+        if(index==data.length) {
+          if(ApproachedEnd==false) return Center(child: CircularProgressIndicator(),);
+          else return Column(
+            children: [
+              SizedBox(height: 10,),
+              Text('No More Products Found',style: TextStyle(fontSize: 19),),
+              SizedBox(height: 20,)
+            ],
+          );
+        }
         final prod = data[index];
         String s = prod.inStock.toString() == 'true'
             ? 'In stock'
@@ -398,7 +408,6 @@ class _ManageProductsState extends State<ManageProducts> {
           int fullStars = prating.floor();
           double remaining =
           (prating - fullStars) as double;
-
           starRating = '⭐' * fullStars;
         }
         return InkWell(
@@ -461,10 +470,6 @@ class _ManageProductsState extends State<ManageProducts> {
                                                     );
                                                   },
                                                 );
-                                                // setState(() {
-                                                //       prod.inStock = value;
-                                                //       updateStock(value, prod.id);
-                                                //     });
                                               },
                                             ),
                                           ),
@@ -754,24 +759,21 @@ class _ManageProductsState extends State<ManageProducts> {
   }
 
   void _scrollListener() {
-    print("asdgsdgsd");
-    print(_isLoading);
-    // Check if we are approaching the end of the scroll
     if (!_isLoading && _scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent-1500 ) {
-      print('Approaching the end!');
       _loadMoreData();
     }
   }
 
   Future<void> _loadMoreData() async {
+    if(ApproachedEnd==true)return;
     if (!_isLoading) {
       setState(() {
         _isLoading = true;
       });
 
       List<Product> newData = await UserApi.getProducts(TokenId.token, TokenId.id, ++_currentPage);
-
+      if(newData.length==0)ApproachedEnd=true;
       setState(() {
         data += newData;
         _isLoading = false;

@@ -78,45 +78,53 @@ class SplashScreenState extends State<SplashScreen> {
   void whereToGo() async {
     // String keyTo="";
     // String keyI="";
-    var sharedPref = await SharedPreferences.getInstance();
+    TokenId.id = "656b0aca0baf2e623bad1d0f";
+    TokenId.token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NmIwYWNhMGJhZjJlNjIzYmFkMWQwZiIsImlhdCI6MTcwMzUwODM2NCwiZXhwIjoxNzA2MTAwMzY0fQ.EIBVX5wl9qtIl6XaFohx1BfttDPPXTUXVI_Jg6EKTUY";
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>  MainDashboard(token: '', id: '', pageIndex: 2,sortt:""),
+        ));
 
-    var isLoggedIn = sharedPref.getBool(KEYLOGIN);
-
-    String keyToken;
-    keyToken = sharedPref.getString(KEYTOKEN) ?? "tt";
-
-    String keyId;
-    keyId = sharedPref.getString(KEYID) ?? "tt";
-    TokenId.token=keyToken;
+    // var sharedPref = await SharedPreferences.getInstance();
     //
-    TokenId.id=keyId;
-
-
-    Future.delayed(const Duration(seconds: 2), () {
-      print(KEYTOKEN);
-      print(KEYID);
-      if(isLoggedIn!=null) {
-        if(isLoggedIn==true) {
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>  MainDashboard(token: keyToken, id: keyId, pageIndex: 2,sortt:""),
-              ));
-        } else{
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const LoginScreen(),
-              ));
-        }
-      } else{
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const LoginScreen(),
-            ));
-      }
-
-    });
+    // var isLoggedIn = sharedPref.getBool(KEYLOGIN);
+    //
+    // String keyToken;
+    // keyToken = sharedPref.getString(KEYTOKEN) ?? "tt";
+    //
+    // String keyId;
+    // keyId = sharedPref.getString(KEYID) ?? "tt";
+    // TokenId.token=keyToken;
+    // //
+    // TokenId.id=keyId;
+    //
+    //
+    // Future.delayed(const Duration(seconds: 2), () {
+    //   print(KEYTOKEN);
+    //   print(KEYID);
+    //   if(isLoggedIn!=null) {
+    //     if(isLoggedIn==true) {
+    //       Navigator.pushReplacement(
+    //           context,
+    //           MaterialPageRoute(
+    //             builder: (context) =>  MainDashboard(token: keyToken, id: keyId, pageIndex: 2,sortt:""),
+    //           ));
+    //     } else{
+    //       Navigator.pushReplacement(
+    //           context,
+    //           MaterialPageRoute(
+    //             builder: (context) => const LoginScreen(),
+    //           ));
+    //     }
+    //   } else{
+    //     Navigator.pushReplacement(
+    //         context,
+    //         MaterialPageRoute(
+    //           builder: (context) => const LoginScreen(),
+    //         ));
+    //   }
+    //
+    // });
   }
 }

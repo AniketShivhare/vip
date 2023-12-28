@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:e_commerce/main_dashboard.dart';
 import 'package:e_commerce/services/tokenId.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -46,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       print("response.statusCode");
       print(response.statusCode);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         final Map<String, dynamic> responseData = json.decode(response.body);
         print("responseData");
         print(responseData);
@@ -56,8 +57,40 @@ class _LoginScreenState extends State<LoginScreen> {
         print(responseData['message']);
         TokenId.token = token;
         TokenId.id = id;
-      } else {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => Regest(token: token, id: id)),
+              (route) => false,
+        );
+      }
+      else if(response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        print("responseData");
+        print(responseData);
+
+        token = responseData['token'];
+        id = responseData['id'];
+        print(responseData['message']);
+        TokenId.token = token;
+        TokenId.id = id;
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => MainDashboard(token: '', id: '', pageIndex: 2, sortt: '',)),
+              (route) => false,
+        );
+      }
+      else {
         print('Error: ${response.statusCode}');
+        final snackBar = SnackBar(
+          content: const Text('Enter Correct Details'),
+          action: SnackBarAction(
+            label: 'Undo',
+            onPressed: () {
+              // Some code to undo the change.
+            },
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     } catch (e) {
       print('Error: $e');
@@ -67,12 +100,6 @@ class _LoginScreenState extends State<LoginScreen> {
     print(id);
     TokenId.token = token;
     TokenId.id = id;
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => Regest(token: token, id: id)),
-          (route) => false,
-    );
-
   }
 
   Future<void> registerUser() async {

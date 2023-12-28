@@ -84,19 +84,8 @@ class _UpdateProductsState extends State<UpdateProducts> {
   ];
 
   String units = 'kg';
-  List<String> dropDownItems = [
-    "kg",
-    "litre",
-    "piece",
-    "packet",
-    "box",
-    "bottle",
-    "can",
-    "bag",
-    "sack",
-    "tin",
-    "other",
-  ];
+  List<String> dropDownItems =
+    ["KG", "G", "L", "ML", "PACK OF", "BOX", "BAG", "CAN"];
 
   final qController = TextEditingController();
 
@@ -298,108 +287,6 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                     height:20,
                                     child: Text('No Images Available',style: TextStyle(fontSize: 17),)),
                               ),
-                              // Container(
-                              //   margin: EdgeInsets.only(
-                              //       right: 20, top: 20, left: 20),
-                              //   child: Text(
-                              //     'Add Images',
-                              //     style: TextStyle(
-                              //       fontSize: 18,
-                              //       fontFamily: 'Poppins',
-                              //       color: Colors.black87,
-                              //     ),
-                              //   ),
-                              // ),
-                              // Row(
-                              //   children: [
-                              //     Expanded(
-                              //       child: InkWell(
-                              //         onTap: () {
-                              //           selectImages();
-                              //         },
-                              //         child: Container(
-                              //             height: 100,
-                              //             width: 100,
-                              //             margin: EdgeInsets.only(
-                              //                 left: 20,
-                              //                 right: 20,
-                              //                 top: 10,
-                              //                 bottom: 5),
-                              //             decoration: BoxDecoration(
-                              //               color: Colors.grey.shade100,
-                              //               borderRadius: BorderRadius.all(
-                              //                   Radius.circular(13)),
-                              //             ),
-                              //             child: Column(
-                              //               mainAxisAlignment:
-                              //                   MainAxisAlignment.center,
-                              //               children: [
-                              //                 Icon(Icons.camera_alt),
-                              //                 Icon(Icons.add_circle_outline),
-                              //               ],
-                              //             )),
-                              //       ),
-                              //     ),
-                              //     Expanded(
-                              //       flex: 2,
-                              //       child: Container(
-                              //         height: 120,
-                              //         width: 100,
-                              //         child: Padding(
-                              //           padding: const EdgeInsets.all(8.0),
-                              //           child: GridView.builder(
-                              //               scrollDirection: Axis.horizontal,
-                              //               itemCount: imageFileList!.length,
-                              //               gridDelegate:
-                              //                   SliverGridDelegateWithFixedCrossAxisCount(
-                              //                       crossAxisCount: 1,
-                              //                       mainAxisSpacing: 5),
-                              //               itemBuilder: (BuildContext context,
-                              //                   int index) {
-                              //                 return Stack(
-                              //                   children: [
-                              //                     Container(
-                              //                       height:100,
-                              //                       width: 100,
-                              //                       child: Hero(
-                              //                         tag: 'image_$index',
-                              //                         child: GestureDetector(
-                              //                             onTap: () {
-                              //                               showCameraImageExpansion(
-                              //                                   index);
-                              //                             },
-                              //                             child: Image.file(
-                              //                               File(imageFileList![
-                              //                                       index]
-                              //                                   .path),
-                              //                               fit: BoxFit.cover,
-                              //                             )),
-                              //                       ),
-                              //                     ),
-                              //                     Positioned(
-                              //                       top: -10,
-                              //                       right: -5,
-                              //                       child: IconButton(
-                              //                         icon: Icon(
-                              //                           Icons.cancel_outlined,
-                              //                           color:
-                              //                               Colors.cyanAccent,
-                              //                         ),
-                              //                         onPressed: () {
-                              //                           showCameraDeleteConfirmationDialog(
-                              //                               index);
-                              //                           // removeImage(index);
-                              //                         },
-                              //                       ),
-                              //                     ),
-                              //                   ],
-                              //                 );
-                              //               }),
-                              //         ),
-                              //       ),
-                              //     ),
-                              //   ],
-                              // ),
                             ],
                           )),
                       pCategory.isNotEmpty
@@ -776,7 +663,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
           offerPrice: double.parse(itemOption.offerPrice),
           quantity: (itemOption.quantity),
           mrpPrice: double.parse(itemOption.price),
-          unit: itemOption.unit, inStock: false));
+          unit: itemOption.unit, inStock: true));
     });
     itemOptions = [];
     print(dummyProductList.length);
@@ -1129,29 +1016,17 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
   ItemOption newItem = ItemOption(
     price: "",
     quantity: "",
-    unit: 'kg',
+    unit: 'KG',
     offerPrice: "",
   );
-  List<String> dropDownItems = [
-    "kg",
-    "litre",
-    "piece",
-    "packet",
-    "box",
-    "bottle",
-    "can",
-    "bag",
-    "sack",
-    "tin",
-    "other",
-  ];
+  List<String> dropDownItems = ["KG", "G", "L", "ML", "PACK OF", "BOX", "BAG", "CAN"];
 
   void addOption() {
     widget.onOptionAdded(newItem);
     newItem = ItemOption(
       price: "",
       quantity: "",
-      unit: 'kg',
+      unit: 'KG',
       offerPrice: "",
     );
   }
@@ -1183,8 +1058,8 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                               label: const Text('Quantity'),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
-                              ),                              errorText:
-                            _validate4 ? 'Value Can\'t Be Empty' : null,
+                              ),
+                              errorText: _validate4 ? 'Value Can\'t Be Empty' : null,
                             ),
                             style: TextStyle(
                               color: Colors.black.withOpacity(1.0),

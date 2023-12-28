@@ -80,18 +80,15 @@ class UserApi {
   static Future<void> deleteProduct(id) async {
     print("iddiidd");
     print(id);
-    final Url = 'https://api.pehchankidukan.com/seller/${TokenId.id}/products';
+    final Url = 'https://api.pehchankidukan.com/seller/${TokenId.id}/products/$id';
     final url = Uri.parse(Url);
-    final Map<String, dynamic> queryParameters = {
-      "productID": id
-    };
+
     final response = await http.delete(
       url,
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${TokenId.token}',
       },
-      body:jsonEncode(queryParameters)
     );
     if (response.statusCode == 200) {
       print("deletion successfull");
@@ -415,11 +412,12 @@ class UserApi {
         'mrpPrice': (item.mrpPrice),
         'offerPrice': (item.offerPrice),
         'unit': item.unit,
+        "inStock": true
       };
     }).toList();
     final Map<String, dynamic> productJson = {
       "productDetails": itemOptionsMap,
-      "inStock":"true",
+      "inStock": true,
     };
     print(itemOptionsMap);
     var uri = Uri.parse(apiUrl);
@@ -472,7 +470,6 @@ class UserApi {
       print("Error $e");
     }
     return [];
-
   }
 
   static Future<void> uploadImage(XFile imageFile, String imageName) async {
@@ -662,6 +659,7 @@ class UserApi {
       throw Exception('Failed to SellerReplacement: ${response.reasonPhrase}');
     }
   }
+
 
 
 }
