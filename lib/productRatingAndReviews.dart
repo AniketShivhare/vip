@@ -176,8 +176,8 @@ class _customerRatingReviewsState extends State<customerRatingReviews> {
                                 trimLines: 3,
                                 textAlign: TextAlign.justify,
                                 trimMode: TrimMode.Line,
-                                trimCollapsedText: 'ReadMore',
-                                trimExpandedText: 'ReadLess',
+                                trimCollapsedText: 'Read More',
+                                trimExpandedText: 'Read Less',
                                 lessStyle: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.blue),

@@ -93,7 +93,7 @@ class _menuScreenState extends State<menuScreen> {
                             width: 7,
                           ),
                           Text(
-                            "Return and Replacement",
+                            "Returns and Replacements",
                             style: TextStyle(
                               fontSize: 18,
                             ),
@@ -167,7 +167,7 @@ class _menuScreenState extends State<menuScreen> {
                             width: 5,
                           ),
                           Text(
-                            "Rating and Reviews",
+                            "Ratings and Reviews",
                             style: TextStyle(
                               fontSize: 18,
                             ),
