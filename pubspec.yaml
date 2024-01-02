@@ -63,6 +63,8 @@ dependencies:
   readmore: ^2.2.0
 
   google_mlkit_text_recognition: ^0.10.0
+  telephony: ^0.2.0
+  permission_handler: ^11.1.0
 
 
 dev_dependencies:
