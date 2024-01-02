@@ -1,5 +1,7 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'DataSaveClasses/ProductId.dart';
 import 'add_product.dart';
 import 'apis/ProductSearchModel.dart';
@@ -28,6 +30,24 @@ class _ProductSelectionPageState extends State<ProductSelectionPage> {
   void _updateFilteredProducts(String query) async {
     _filteredProducts =   UserApi.fetchGlobalProduct(query);
     setState(() {
+    });
+  }
+
+// This variable is used to store BarCode Number by Scanning
+  var _scanBarcodeResult;
+
+  Future<void> scanBarcodeNormal() async {
+    String barcodeSacanRes;
+    try {
+      barcodeSacanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.BARCODE);
+      debugPrint(barcodeSacanRes);
+    } on PlatformException {
+      barcodeSacanRes = 'Failed to get platform version';
+    }
+    if (!mounted) return;
+    setState(() {
+      _scanBarcodeResult = barcodeSacanRes;
     });
   }
 
@@ -249,30 +269,73 @@ class _ProductSelectionPageState extends State<ProductSelectionPage> {
           ),
         ],
       ),
-      floatingActionButton: SizedBox(
-        height: 65.0,
-        width: 250.0,
-        child: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddProduct(
-                    productName: '',
-                    productDescription: '', productDetails:  const [], itemOptions: const [],
+
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          SizedBox(
+            height: 65.0,
+            width: 270.0,
+            child: FloatingActionButton(
+              onPressed: () {
+                scanBarcodeNormal();
+              },
+              backgroundColor: Colors.blue,
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.add,
+                    size: 17,
+                    color: Colors.white,
                   ),
-                ));
-          },
-          backgroundColor: Colors.blue,
-          child: const Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.add,size: 17,color: Colors.white,),
-              SizedBox(width: 5), // Add some spacing between icon and text
-              Text('Add New Product',style: TextStyle(fontSize: 17,color: Colors.white),),
-            ],
-          ), // Customize the color as needed
-        ),
+                  SizedBox(width: 5), // Add some spacing between icon and text
+                  Text(
+                    'Add New Product by Barcode',
+                    style: TextStyle(fontSize: 17, color: Colors.white),
+                  ),
+                ],
+              ), // Customize the color as needed
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          SizedBox(
+            height: 65.0,
+            width: 250.0,
+            child: FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddProduct(
+                        productName: '',
+                        productDescription: '',
+                        productDetails: const [],
+                        itemOptions: const [],
+                      ),
+                    ));
+              },
+              backgroundColor: Colors.blue,
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.add,
+                    size: 17,
+                    color: Colors.white,
+                  ),
+                  SizedBox(width: 5), // Add some spacing between icon and text
+                  Text(
+                    'Add New Product',
+                    style: TextStyle(fontSize: 17, color: Colors.white),
+                  ),
+                ],
+              ), // Customize the color as needed
+            ),
+          ),
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );

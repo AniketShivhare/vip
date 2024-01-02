@@ -6,6 +6,8 @@ import 'package:e_commerce/services/User_api.dart';
 import 'package:e_commerce/services/category_api.dart';
 import 'package:e_commerce/services/tokenId.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'addFromExistingProduct.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
