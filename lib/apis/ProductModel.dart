@@ -40,6 +40,7 @@ class QuantityPricing {
   class Product {
   String id;
   String sellerID;
+  String productName;
   GlobalProductID globalProductID;
   bool inStock;
   List<QuantityPricing> productDetails;
@@ -50,6 +51,7 @@ class QuantityPricing {
   Product({
     required this.id,
     required this.sellerID,
+    required this.productName,
     required this.globalProductID,
     required this.inStock,
     required this.productDetails,
@@ -62,9 +64,10 @@ class QuantityPricing {
     return Product(
       id: json['_id'] ?? '',
       sellerID: json['sellerID'] ?? '',
+      productName: json['productName'] ?? 'd',
       globalProductID: (json['globalProductInfo']!=null && json['globalProductInfo'].length>0) ?  GlobalProductID.fromJson(json['globalProductInfo'][0]) : GlobalProductID(id: "657939947955a237931d8622", productName: "", category: "", subCategory1: "", subCategory2: "", images: [], description: "",),
       inStock: json['inStock']?? false,
-      productDetails: List<QuantityPricing>.from(json['productDetails'].map((x) => QuantityPricing.fromJson(x))) ,
+      productDetails: (json['productDetails'] == null) ? [] : List<QuantityPricing>.from(json['productDetails'].map((x) => QuantityPricing.fromJson(x))) ,
       // createdAt: DateTime.parse(json['createdAt']),
       // updatedAt: DateTime.parse(json['updatedAt']),
       minMrpPrice: (json['minMrpPrice']!=null) ?((json['minMrpPrice'] is int)

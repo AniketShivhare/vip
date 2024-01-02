@@ -86,13 +86,14 @@ class _FilterScreenState extends State<FilterScreen> {
     FilterOptions.minPrice = _minPrice;
     FilterOptions.maxPrice = _maxPrice;
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MainDashboard(token: TokenId.token, id: TokenId.id, pageIndex: 0,sortt:""),
-      ),
-          // This line clears the navigator stack
-    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => MainDashboard(token: TokenId.token, id: TokenId.id, pageIndex: 0,sortt:""),
+    //   ),
+    //       // This line clears the navigator stack
+    // );
+    Navigator.pop(context);
   }
 
 
@@ -113,11 +114,12 @@ class _FilterScreenState extends State<FilterScreen> {
                   ok=false;
                 } else {
                   selectedCategories = [categories[index]];
+                  FilterOptions.categories = [categories[index]];
                   FilterOptions.changed=true;
                   ok=true;
                 }
               });
-              await Categories.getSubCategories(categories[0]) ;
+              await Categories.getSubCategories(FilterOptions.categories[0]) ;
               List<String> subCat = Categories.subCategories;
               subcategories[selectedCategories[0]] = subCat;
             },
@@ -232,7 +234,7 @@ class _FilterScreenState extends State<FilterScreen> {
       child: ListView.builder(
         itemCount: 1,
         itemBuilder: (context, categoryIndex) {
-          final category = selectedCategories[categoryIndex];
+          final category = FilterOptions.categories[0];
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -240,10 +242,10 @@ class _FilterScreenState extends State<FilterScreen> {
               Text(category),
               ListView.builder(
                 shrinkWrap: true,
-                itemCount: subcategories[category]!.length,
+                itemCount: FilterOptions.subcategories[category]?.length,
 
                 itemBuilder: (context, subcategoryIndex) {
-                  final subcategory = subcategories[category]![subcategoryIndex];
+                  final subcategory = FilterOptions.subcategories[category]![subcategoryIndex];
                   final isSelected = selectedSubcategories[category]?.contains(subcategory) ?? false;
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

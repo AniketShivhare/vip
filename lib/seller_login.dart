@@ -4,10 +4,12 @@ import 'dart:io';
 
 import 'package:e_commerce/main_dashboard.dart';
 import 'package:e_commerce/services/tokenId.dart';
+import 'package:e_commerce/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'Regestration.dart';
 import 'package:telephony/telephony.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -74,7 +76,8 @@ class _LoginScreenState extends State<LoginScreen> {
           MaterialPageRoute(builder: (context) => Regest(token: token, id: id)),
           (route) => false,
         );
-      } else if (response.statusCode == 200) {
+      }
+      else if(response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
         print("responseData");
         print(responseData);
@@ -84,6 +87,10 @@ class _LoginScreenState extends State<LoginScreen> {
         print(responseData['message']);
         TokenId.token = token;
         TokenId.id = id;
+        var sharedPref = await SharedPreferences.getInstance();
+        await sharedPref.setBool(SplashScreenState.KEYLOGIN, true);
+        await sharedPref.setString(SplashScreenState.KEYTOKEN, token);
+        await sharedPref.setString(SplashScreenState.KEYID, id);
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(

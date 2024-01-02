@@ -2,6 +2,7 @@
 class FilterOptions {
   static List<String> categories=[];
   static Map<String, List<String>> subcategories={};
+  static List<String> SelectedSubCat=[];
   static double minPrice=0;
   static double maxPrice=1000;
   static List<String> sizes=[];
@@ -14,6 +15,7 @@ class FilterOptions {
   static bool selectedCat = false;
 
   static void clear() {
+    SelectedSubCat=[];
     changed=false;
     sortChanged = false;
     selectedSubCat=false;

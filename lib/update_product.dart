@@ -187,13 +187,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                 activeColor: Colors.green,
                                 value: _switchValue,
                                 onChanged: (bool value) {
-                                  s = value == false
-                                      ? 'In stock'
-                                      : 'Out of stock';
-                                  // setState(() {
-                                  //   _switchValue = value;
-                                  // });
-                                  // updateStock(value);
+                                  s = value == false ? 'In stock' : 'Out of stock';
                                   showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
@@ -227,8 +221,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
                             children: [
                               Text("Product Images:",
                                   textScaleFactor: 1.2,
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
+                                  style: TextStyle(fontWeight: FontWeight.bold)),
                               (imgList.length>0) ?
                               Container(
                                 height: 120,
@@ -237,14 +230,9 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                   child: GridView.builder(
                                       scrollDirection: Axis.horizontal,
                                       itemCount: imgList.length,
-                                      gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 1,
-                                          mainAxisSpacing: 5),
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
+                                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1, mainAxisSpacing: 5),
+                                      itemBuilder: (BuildContext context, int index) {
                                         return Stack(
-
                                           children: [
                                             Container(
                                               height:100,
@@ -262,21 +250,20 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                                 ),
                                               ),
                                             ),
-                                            // Positioned(
-                                            //   top: -10,
-                                            //   right: -5,
-                                            //   child: IconButton(
-                                            //     icon: Icon(
-                                            //       Icons.cancel_outlined,
-                                            //       color: Colors.cyanAccent,
-                                            //     ),
-                                            //     onPressed: () {
-                                            //       showDeleteConfirmationDialog(
-                                            //           index);
-                                            //       // removeImage(index);
-                                            //     },
-                                            //   ),
-                                            // ),
+                                            Positioned(
+                                              top: -10,
+                                              right: -5,
+                                              child: IconButton(
+                                                icon: Icon(
+                                                  Icons.cancel_outlined,
+                                                  color: Colors.cyanAccent,
+                                                ),
+                                                onPressed: () {
+                                                  showDeleteConfirmationDialog(index);
+                                                  // removeImage(index);
+                                                },
+                                              ),
+                                            ),
                                           ],
                                         );
                                       }),
@@ -294,8 +281,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            margin: EdgeInsets.only(
-                                left: 20, right: 20, top: 20),
+                            margin: EdgeInsets.only(left: 20, right: 20, top: 20),
                             child: const Text(
                               'Category :',
                               style: TextStyle(
@@ -401,7 +387,6 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                 borderSide:
                                     BorderSide(color: Colors.teal.shade900)),
                           ),
-
                         ),
                       ),
                       Container(
@@ -507,11 +492,22 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                               }).toList(),
                                             ),
                                           ),
+                                          SizedBox(width: 20,),
+                                          InkWell(
+                                            onTap: () {
+
+                                             setState(() {
+                                               showDeleteConfirmationVarient(index);
+                                             });
+                                            },
+                                            child: Icon(
+                                              size:35,
+                                              Icons.delete_outlined,
+                                            ),
+                                          )
                                         ],
                                       ),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
+                                      SizedBox(height: 8,),
                                       Row(
                                         children: [
                                           Expanded(
@@ -519,24 +515,19 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                               keyboardType:
                                                   TextInputType.number,
                                               controller: TextEditingController(
-                                                  text: product.mrpPrice
-                                                      .toString()),
+                                                  text: product.mrpPrice.toString()),
                                               onChanged: (value) {
-                                                itemOptions[index].price =
-                                                    value;
+                                                itemOptions[index].price = value;
                                               },
                                               decoration: InputDecoration(
                                                 hintText: 'Price (In Rs.)',
-                                                label: const Text(
-                                                    'Price (In Rs.)'),
+                                                label: const Text('Price (In Rs.)'),
                                                 border: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(15),
+                                                  borderRadius: BorderRadius.circular(15),
                                                 ),
                                               ),
                                               style: TextStyle(
-                                                color: Colors.black
-                                                    .withOpacity(1.0),
+                                                color: Colors.black.withOpacity(1.0),
                                                 fontSize: 16,
                                                 fontFamily: 'Urbanist',
                                                 fontWeight: FontWeight.w400,
@@ -546,27 +537,21 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                           SizedBox(width: 16),
                                           Expanded(
                                             child: TextFormField(
-                                              keyboardType:
-                                                  TextInputType.number,
+                                              keyboardType: TextInputType.number,
                                               controller: TextEditingController(
-                                                  text: product.offerPrice
-                                                      .toString()),
+                                                  text: product.offerPrice.toString()),
                                               onChanged: (value) {
-                                                itemOptions[index].offerPrice =
-                                                    value;
+                                                itemOptions[index].offerPrice = value;
                                               },
                                               decoration: InputDecoration(
                                                 hintText: 'Offer Price',
-                                                label:
-                                                    const Text('Offer Price'),
+                                                label: const Text('Offer Price'),
                                                 border: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
+                                                  borderRadius: BorderRadius.circular(15),
                                                 ),
                                               ),
                                               style: TextStyle(
-                                                color: Colors.black
-                                                    .withOpacity(1.0),
+                                                color: Colors.black.withOpacity(1.0),
                                                 fontSize: 16,
                                                 fontFamily: 'Urbanist',
                                                 fontWeight: FontWeight.w400,
@@ -617,6 +602,9 @@ class _UpdateProductsState extends State<UpdateProducts> {
         ),
       ),
     );
+  }
+  void DeleteExistedVarient(int index) {
+
   }
 
 //update Stock only
@@ -691,7 +679,6 @@ class _UpdateProductsState extends State<UpdateProducts> {
       widget.prod.globalProductID.images.removeAt(index);
       print("lengthhh");
       print(widget.prod.globalProductID.images.length);
-      // widget.prod.s3Url.removeAt(index);
     });
   }
   Future<void> showDeleteConfirmationDialog(int index) async {
@@ -720,6 +707,35 @@ class _UpdateProductsState extends State<UpdateProducts> {
       },
     );
   }
+  Future<void> showDeleteConfirmationVarient(int index) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Varient'),
+          content: Text('Are you sure you want to delete this Price Varient'),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Delete'),
+              onPressed: () {
+                setState(() {
+                  dummyProductList.removeAt(index);
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void showImageExpansion(int index) {
     Navigator.of(context ).push(
       MaterialPageRoute<void>(
@@ -994,7 +1010,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
 
 
 class PriceQuantitySpinnerRow extends StatefulWidget {
-  final List<ItemOption> options;
+   List<ItemOption> options;
   final ValueChanged<ItemOption> onOptionAdded;
   final Function(List<TextEditingController>, List<TextEditingController>,
       List<TextEditingController>) updateInitialValue;
@@ -1034,139 +1050,148 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
   bool _validate4 = false;
   bool _validate5 = false;
   bool _validate6 = false;
+  List<ItemOption> options=[];// = widget.options;
+  @override
+  void initstate() {
+    options = widget.options;
+  }
 
   @override
   Widget build(BuildContext context) {
+    options = widget.options;
     return Column(
       children: [
         Column(
-          children: widget.options.map((option) {
-            return Container(
-              child: Padding(
-                padding: EdgeInsets.all(12),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller:
-                            TextEditingController(text: option.quantity.toString()),
-                            onChanged: (value) => option.quantity = value ,
-                            decoration: InputDecoration(
-                              hintText: 'Quantity',
-                              label: const Text('Quantity'),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              errorText: _validate4 ? 'Value Can\'t Be Empty' : null,
+         children: options.asMap().entries.map((entry) {
+            int index = entry.key;
+            ItemOption option = entry.value;
+            return Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller:
+                          TextEditingController(text: option.quantity.toString()),
+                          onChanged: (value) => option.quantity = value ,
+                          decoration: InputDecoration(
+                            hintText: 'Quantity',
+                            label: const Text('Quantity'),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                            style: TextStyle(
-                              color: Colors.black.withOpacity(1.0),
-                              fontSize: 16,
-                              fontFamily: 'Urbanist',
-                              fontWeight: FontWeight.w400,
-                            ),
+                            errorText: _validate4 ? 'Value Can\'t Be Empty' : null,
+                          ),
+                          style: TextStyle(
+                            color: Colors.black.withOpacity(1.0),
+                            fontSize: 16,
+                            fontFamily: 'Urbanist',
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
-                        SizedBox(width: 16),
-                        Container(
-                          height: 60,
-                          padding: EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              width: 1,
-                              color: Colors.black,
-                            ),
-                            borderRadius: BorderRadius.circular(12),
+                      ),
+                      SizedBox(width: 16),
+                      Container(
+                        height: 60,
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 1,
+                            color: Colors.black,
                           ),
-                          child: DropdownButton<String>(
-                            value: option.unit,
-                            onChanged: (String? value) {
-                              setState(() {
-                                option.unit = value!;
-                              });
-                            },
-                            items: dropDownItems.map((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(
-                                  value,
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontFamily: 'Urbanist',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        InkWell(
-                          onTap: () {
-
+                        child: DropdownButton<String>(
+                          value: option.unit,
+                          onChanged: (String? value) {
+                            setState(() {
+                              option.unit = value!;
+                            });
                           },
-                          child: Icon(
-                            Icons.delete_outlined,
-                          ),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller:
-                            TextEditingController(text: option.price.toString()),
-                            onChanged: (value) => option.price = value ,
-                            decoration: InputDecoration(
-                              hintText: 'Price (In Rs.)',
-                              label: const Text('Price (In Rs.)'),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
+                          items: dropDownItems.map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(
+                                value,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontFamily: 'Urbanist',
+                                  fontWeight: FontWeight.w400,
+                                ),
                               ),
-                              errorText:
-                              _validate5 ? 'Value Can\'t Be Empty' : null,
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      SizedBox(width: 25,),
+                      InkWell(
+                        onTap: () {
+                          print("asdfdfadsfasdfasdfads");
+                          showDeleteConfirmationVarient1(index);
+                        },
+                        child: Icon(
+                          size:35,
+                          Icons.delete_outlined,
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller:
+                          TextEditingController(text: option.price.toString()),
+                          onChanged: (value) => option.price = value ,
+                          decoration: InputDecoration(
+                            hintText: 'Price (In Rs.)',
+                            label: const Text('Price (In Rs.)'),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                            style: TextStyle(
-                              color: Colors.black.withOpacity(1.0),
-                              fontSize: 16,
-                              fontFamily: 'Urbanist',
-                              fontWeight: FontWeight.w400,
-                            ),
+                            errorText:
+                            _validate5 ? 'Value Can\'t Be Empty' : null,
+                          ),
+                          style: TextStyle(
+                            color: Colors.black.withOpacity(1.0),
+                            fontSize: 16,
+                            fontFamily: 'Urbanist',
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
-                        SizedBox(width: 16),
-                        Expanded(
-                          child: TextFormField(
-                            controller: TextEditingController(
-                                text: option.offerPrice.toString()),
-                            onChanged: (value) => option.offerPrice = value,
-                            decoration: InputDecoration(
-                              hintText: 'Offer Price',
-                              labelText: 'Offer Price',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              errorText:
-                              _validate6 ? 'Value Can\'t Be Empty' : null,
+                      ),
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: TextFormField(
+                          controller: TextEditingController(
+                              text: option.offerPrice.toString()),
+                          onChanged: (value) => option.offerPrice = value,
+                          decoration: InputDecoration(
+                            hintText: 'Offer Price',
+                            labelText: 'Offer Price',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                            style: TextStyle(
-                              color: Colors.black.withOpacity(1.0),
-                              fontSize: 16,
-                              fontFamily: 'Urbanist',
-                              fontWeight: FontWeight.w400,
-                            ),
+                            errorText:
+                            _validate6 ? 'Value Can\'t Be Empty' : null,
+                          ),
+                          style: TextStyle(
+                            color: Colors.black.withOpacity(1.0),
+                            fontSize: 16,
+                            fontFamily: 'Urbanist',
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             );
           }).toList(),
@@ -1180,5 +1205,34 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
       ],
     );
   }
+  Future<void> showDeleteConfirmationVarient1(int index) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Varient'),
+          content: Text('Are you sure you want to delete this Price Varient'),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Delete'),
+              onPressed: () {
+                setState(() {
+                  options.removeAt(index);
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }
 

@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../apis/orderModel.dart';
 import '../orderDescriptionPage.dart';
 import '../services/Categories.dart';
+import '../services/User_api.dart';
 import '../services/tokenId.dart';
 import 'package:http/http.dart'as http;
 
@@ -23,7 +24,7 @@ class _RecentOrderState extends State<RecentOrder> {
   Future<List<Order>> fetchOrderData(filter, {bool ok = true}) async {
     print(filter);
     try {
-      var url = "https://api.pehchankidukan.com/seller/650861407bfbdb03672c18de/orders?status=OrderAccepted";
+      var url = "https://api.pehchankidukan.com/seller/${TokenId.id}/orders?status=OrderAccepted";
       final uri = Uri.parse(url);
       final response = await http.get(
         uri,
@@ -112,22 +113,25 @@ class _RecentOrderState extends State<RecentOrder> {
                       child: ListTile(
                         tileColor: Colors.white,
                         title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Text('ID: #${order.id.substring(order.id.length - 15)}',style: TextStyle(fontSize: 23,fontWeight: FontWeight.bold),),
+                            const SizedBox(width: 20,),
                             Row(
                               children: [
-                                Text('#${order.id.substring(order.id.length - 3)}',style: TextStyle(fontSize: 23,fontWeight: FontWeight.bold),),
-                                const SizedBox(width: 20,),
-                                Expanded(
-                                  child: Container(
-                                    height: 25,
-                                    color: Colors.orangeAccent,
-                                    child: const Center(
-                                      child: Text('Preparing',),
-                                    ),
+                                Container(
+                                  height: 25,
+                                  width: 200,
+                                  color: Colors.orangeAccent,
+                                  child: const Center(
+                                    child: Text('Preparing',style: TextStyle(fontSize: 17),),
                                   ),
                                 ),
+                                Spacer(),
+                                Text(DateFormat('dd-MM-yyyy').format(order.createdAt),style: TextStyle(fontSize: 18),),
                               ],
                             ),
+                            Divider(),
                             Row(
                               children: [
                                 Text('${order.shippedBy.name}\'s Order',
@@ -135,7 +139,7 @@ class _RecentOrderState extends State<RecentOrder> {
                                     fontSize: 17,
                                     fontWeight: FontWeight.w500,
                                   ),),
-                                const Spacer(),
+                                Spacer(),
                                 Text(DateFormat.Hm().format(order.createdAt)),
                               ],
                             ),
@@ -189,7 +193,10 @@ class _RecentOrderState extends State<RecentOrder> {
                               height: 38,
                               color: const Color(0xFF204969),
                               width: double.infinity,
-                              child: ElevatedButton(onPressed: () {},
+                              child: ElevatedButton(onPressed: () {
+                                String st = "OrderPrepared";
+                                UserApi.changeOrderStatus(st, order.id );
+                              },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFF204969),
                                     elevation: 3, // Remove button elevation if not needed

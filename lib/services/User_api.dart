@@ -9,7 +9,9 @@ import 'package:e_commerce/services/filterData.dart';
 import 'package:e_commerce/services/tokenId.dart';
 import 'package:image_picker/image_picker.dart';
 import '../apis/ProductModel.dart';
+import '../apis/ProductRatingAndReviews.dart';
 import '../apis/ProductSearchModel.dart';
+import '../apis/RatingReviewProduct.dart';
 import '../apis/ReturnModel.dart';
 import '../apis/orderModel.dart';
 import 'package:http/http.dart' as http;
@@ -20,36 +22,64 @@ import 'package:path/path.dart';
 class UserApi {
 
 
-  static Future<List<Product>> filterProduct(token, id) async {
+  static Future<List<Product>> filterProduct(sort, queryyy, page) async {
     print("called filterrr function");
-    print("id-$id");
-    print("token-$token");
-    String url = 'https://api.pehchankidukan.com/seller/${TokenId.id}/products';
-    int count=0;
-    if(FilterOptions.categories[0].isNotEmpty) {
-      url+='?';
-      FilterOptions.categories[0]=FilterOptions.categories[0].replaceAll('&', '%26');
-      url += 'category=${FilterOptions.categories[0]}';
-      count++;
-    }
-    if(FilterOptions.sortChanged==true) {
-      if(count == 0)
+    print("id-${TokenId.id}");
+    print("token-${TokenId.token}");
+    String url = 'https://api.pehchankidukan.com/seller/${TokenId.id}/products?page=$page';
+    int count=1;
+    if(queryyy.length>0) {
+      if(count==0) {
         url += '?';
-      else url += '&';
-      url += 'sort=${FilterOptions.sortName}';
-      count++;
-    }
-    if(FilterOptions.selectedSubCat) {
-      if(count==0)
-        url+='?';
-
-      List<String>? subCategory = FilterOptions.subcategories[FilterOptions.categories[0]];
-      if(count>0)
+        count++;
+      } else
         url += '&';
-      print(subCategory);
-      String? formattedSubCategories = subCategory?.map((category) => '"$category"').join(',');
-      formattedSubCategories = formattedSubCategories?.replaceAll('&', '%26');
-      url += 'subCategory1=[$formattedSubCategories]';
+      url+='keyword=$queryyy';
+    }
+    if(FilterOptions.changed==true)
+    {
+      if (FilterOptions.categories[0].isNotEmpty) {
+        if(count==0) {
+          url += '?';
+          count++;
+        } else
+          url += '&';
+        FilterOptions.categories[0] =
+            FilterOptions.categories[0].replaceAll('&', '%26');
+        url += 'category=${FilterOptions.categories[0]}';
+        count++;
+      }
+      // if (FilterOptions.sortChanged == true) {
+      //   if (count == 0) {
+      //     url += '?';
+      //     count++;
+      //   } else
+      //     url += '&';
+      //   url += 'sort=${FilterOptions.sortName}';
+      //   count++;
+      // }
+      if (FilterOptions.selectedSubCat) {
+        if (count == 0) {
+          url += '?';
+          count++;
+        } else url += '&';
+
+
+        List<String>? subCategory =
+            FilterOptions.subcategories[FilterOptions.categories[0]];
+        print(subCategory);
+        String? formattedSubCategories =
+            subCategory?.map((category) => '"$category"').join(',');
+        formattedSubCategories = formattedSubCategories?.replaceAll('&', '%26');
+        url += 'subCategory1=[$formattedSubCategories]';
+      }
+    }
+    if(sort.length>0) {
+      if (count == 0) {
+        url += '?';
+        count++;
+      } else url += '&';
+      url += 'sort=$sort';
     }
     print("url12345");
     print(url);
@@ -133,7 +163,7 @@ class UserApi {
 
   //search
   static Future<List<Product>> searchProducts(String keyword, token, id) async {
-    final Url = 'https://api.pehchankidukan.com/seller/$id/products/search';
+    final Url = 'https://api.pehchankidukan.com/seller/${TokenId.id}/products/search';
     final url = Uri.parse('$Url?searchTerm=$keyword');
     print("query123");
     print(keyword);
@@ -626,6 +656,32 @@ class UserApi {
     }
   }
 
+  static Future<List<Replacement>> getAllReplacementReturn() async {
+    final Url = 'https://api.pehchankidukan.com/seller/658931121dcf59fa471b9ce8/getAllReturnReplacement';
+    final url = Uri.parse(Url);
+    print(url);
+    final response = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${TokenId.token}',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseBody = jsonDecode(response.body);
+      List<Replacement> products = (responseBody['replacements'] as List<dynamic>?)
+          ?.map((e) => Replacement.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [];
+      print(products);
+      return products;
+    } else {
+      return [];
+      throw Exception('Failed to get return products: ${response.reasonPhrase}');
+    }
+  }
+
+
   static Future<void> ReplacementFromSeller(Replacement rep) async {
     final Url = 'https://api.pehchankidukan.com/seller/${rep.productInstance?.productID}/ReplacementFromSeller/658931121dcf59fa471b9ce8';
     final url = Uri.parse(Url);
@@ -660,6 +716,57 @@ class UserApi {
     }
   }
 
+  static Future<List<ProductInfo>> GetAllReviewAndRating() async {
+    final Url = 'https://api.pehchankidukan.com/seller/${TokenId.id}/getAllProductsRatings';
+    final url = Uri.parse(Url);
+    print(url);
+    final response = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${TokenId.token}',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseBody = jsonDecode(response.body);
+      List<ProductInfo> products = (responseBody['allProducts'] as List<dynamic>?)
+          ?.map((e) => ProductInfo.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [];
+      print(products);
+      return products;
+    } else {
+      return [];
+      throw Exception('Failed to get return products: ${response.reasonPhrase}');
+    }
+  }
+
+
+  static Future<List<RatingReview>> GetCustomerReviewAndRating(String Pid) async {
+    final Url = 'https://api.pehchankidukan.com/seller/${Pid}/productRatingReviews';
+    final url = Uri.parse(Url);
+    print(Pid);
+    print(url);
+    final response = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${TokenId.token}',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseBody = jsonDecode(response.body);
+      List<RatingReview> products = (responseBody['allRatingReviews'] as List<dynamic>?)
+          ?.map((e) => RatingReview.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [];
+      print(products);
+      return products;
+    } else {
+      return [];
+      throw Exception('Failed to get return products: ${response.reasonPhrase}');
+    }
+  }
 
 
 }

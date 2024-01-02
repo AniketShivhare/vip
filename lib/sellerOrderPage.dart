@@ -47,6 +47,11 @@ class _BankDetailsFormState extends State<sellerReturnReplacement> {
     List<Replacement> returnProducts = await UserApi.getAllReplacement();
     return returnProducts;
   }
+  Future<List<Replacement>> fetchReplacementReturnData( {bool ok = true}) async {
+    List<Replacement> returnProducts = await UserApi.getAllReplacementReturn();
+    return returnProducts;
+  }
+
 
   void fetchDataPeriodically() {
     Timer.periodic(const Duration(seconds: 2), (timer) {
@@ -75,7 +80,7 @@ class _BankDetailsFormState extends State<sellerReturnReplacement> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         backgroundColor: Color(0xFFFFF7F7),
         appBar: AppBar(
@@ -87,7 +92,7 @@ class _BankDetailsFormState extends State<sellerReturnReplacement> {
           ),
           centerTitle: true,
           bottom:  TabBar(
-            indicatorWeight: 5,
+            indicatorWeight: 6,
             indicatorColor: Colors.black54,
             labelColor: Colors.white,
             unselectedLabelColor: Colors.white,
@@ -101,6 +106,7 @@ class _BankDetailsFormState extends State<sellerReturnReplacement> {
             tabs: const [
               Tab(text: 'Return'),
               Tab(text: 'Replacement'),
+              Tab(text:'Copleted Requests')
             ],
           ),
         ),
@@ -135,6 +141,19 @@ class _BankDetailsFormState extends State<sellerReturnReplacement> {
                 } else {
                   print("re${snapshot.data?.length}");
                   return buildPage3(snapshot.data!);
+                }
+              },
+            ),
+            FutureBuilder<List<Replacement>>(
+              future: fetchReplacementReturnData(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  print("re${snapshot.data?.length}");
+                  return buildPage4(snapshot.data!);
                 }
               },
             ),
@@ -327,9 +346,14 @@ class _BankDetailsFormState extends State<sellerReturnReplacement> {
                         ),
 
                         const SizedBox(height: 10),
-                         const Row(
+                          Row(
                           children: [
-                            Text("Reason:  product quality is not upto the mark",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500),),
+                            Text(
+                              "Reason: ${order.reasons}",
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                             Spacer()
                           ],
                         ),
@@ -361,6 +385,92 @@ class _BankDetailsFormState extends State<sellerReturnReplacement> {
           },
         );
   }
+  Widget buildPage4( List<Replacement> orders) {
+    return
+      ListView.builder(
+        itemCount: orders.length,
+        itemBuilder: (BuildContext context, int index) {
+          Replacement order = orders[index];
+          return Padding(
+            padding: const EdgeInsets.only(
+                left: 15.0, right: 15.0, top: 10.0),
+            child: InkWell(
+              onTap: () {
+                // Navigator.push(context,
+                //     MaterialPageRoute(builder: (context) => OrderDescriptionPage(order: order, status: 'Preparing', )));
+              },
+              child: Card(
+                color: Colors.white10,
+                elevation: 5, // Add elevation to make it appear as a card
+                child: ListTile(
+                  tileColor: Colors.white,
+                  title: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Text('#${order.id}',style: TextStyle(fontSize: 23,fontWeight: FontWeight.bold),),
+                        ],
+                      ),
+                      const SizedBox(width: 10,),
+                      Row(
+                        children: [
+                          Text('Status: ${order.status}',style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),),
+                          Spacer(),
+                          Text(DateFormat('yyyy-MM-dd').format(order.createdAt!),style: TextStyle(fontSize: 18),),
+                        ],
+                      ),
+                      Divider(),
+                      Row(
+                        children: [
+                          Text('${order.shippedBy?.name}\'s Order',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),),
+                          const Spacer(),
+                        ],
+                      ),
+                    ],
+                  ),
+                  subtitle: Column(
+                    // crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 5,),
+                      Row(
+                        children: [
+                          Text('${order.productInstance?.quantity}${order.productInstance?.unit} ${order.productInstance?.productName}',style: TextStyle(fontWeight: FontWeight.w500,fontSize: 18),),
+                          const Spacer(),
+                          Text('Total Bill: ${order.productInstance?.offerPrice}',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),),
+                          // Spacer(),
+                        ],
+                      ),
+
+                      const SizedBox(height: 10),
+                       Row(
+                        children: [
+                          Text(
+                            "Reason: ${order.reasons}",
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Spacer()
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      );
+  }
+
 
   void showCustomDialog(BuildContext context, String request) {
     showDialog(

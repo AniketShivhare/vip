@@ -64,13 +64,13 @@ class _StockUpdateDialogState extends State<StockUpdateDialog> {
                   return Column(
                     children: [
                       ListTile(
-                        title: Text('Quantity: ${pricing.quantity}${pricing.unit}'),
+                        title: Text('Quantity: ${widget.prod.productDetails[index].quantity}${widget.prod.productDetails[index].unit}'),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                Text('MRP Price: ${pricing.mrpPrice}'),
+                                Text('MRP Price: ${widget.prod.productDetails[index].mrpPrice}'),
                                 Spacer(),
                                 Transform.scale(
                                   scale: 0.7,
@@ -80,14 +80,14 @@ class _StockUpdateDialogState extends State<StockUpdateDialog> {
                                     onChanged: (bool value) {
                                       isChanged=true;
                                       setState(() {
-                                        pricing.inStock = value;
+                                        widget.prod.productDetails[index].inStock = value;
                                       });
                                     },
                                   ),
                                 ),
                               ],
                             ),
-                            Text('Offer Price: ${pricing.offerPrice}'),
+                            Text('Offer Price: ${widget.prod.productDetails[index].offerPrice}'),
                           ],
                         ),
                       ),
@@ -100,6 +100,7 @@ class _StockUpdateDialogState extends State<StockUpdateDialog> {
             if(isChanged==true)
               Center(
                 child: ElevatedButton(onPressed: (){
+                  postPersonalDetails(widget.prod.productDetails);
                   widget.callSetState();
                   Navigator.pop(context);
                 },
@@ -130,7 +131,7 @@ class _StockUpdateDialogState extends State<StockUpdateDialog> {
               TextButton(
                 child: Text('Save'),
                 onPressed: () {
-                  // postPersonalDetails;
+                  postPersonalDetails(widget.prod.productDetails);
                   Navigator.of(context).pop(true);
                 },
               ),
@@ -140,6 +141,9 @@ class _StockUpdateDialogState extends State<StockUpdateDialog> {
       ) ?? false;
     }
      return true;
+  }
+  Future<void> postPersonalDetails (productDetails) async{
+
   }
 
 }

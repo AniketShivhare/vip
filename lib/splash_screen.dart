@@ -99,6 +99,7 @@ class SplashScreenState extends State<SplashScreen> {
     //
     TokenId.id=keyId;
 
+
     Future.delayed(const Duration(seconds: 2), () {
       print(KEYTOKEN);
       print(KEYID);
@@ -123,6 +124,7 @@ class SplashScreenState extends State<SplashScreen> {
               builder: (context) => const LoginScreen(),
             ));
       }
+
     });
   }
 }

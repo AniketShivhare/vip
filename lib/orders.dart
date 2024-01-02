@@ -219,20 +219,22 @@ class _BankDetailsFormState extends State<sellerFrontPage> {
                   child: ListTile(
                     tileColor: Colors.white,
                     title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text('ID: #${order?.id?.substring(order.id!.length - 15)}',style: TextStyle(fontSize: 23,fontWeight: FontWeight.bold),),
+                        const SizedBox(width: 20,),
                         Row(
                           children: [
-                            Text('#${order?.id?.substring(order.id!.length - 3)}',style: TextStyle(fontSize: 23,fontWeight: FontWeight.bold),),
-                            const SizedBox(width: 20,),
-                            Expanded(
-                              child: Container(
-                                height: 25,
-                                color: Colors.orangeAccent,
-                                child: const Center(
-                                  child: Text('Preparing',),
-                                ),
+                            Container(
+                              height: 25,
+                              width:200,
+                              color: Colors.orangeAccent,
+                              child: const Center(
+                                child: Text('Preparing',),
                               ),
                             ),
+                            Spacer(),
+                            Text(DateFormat('dd-MM-yyyy').format(order.createdAt),style: TextStyle(fontSize: 18),),
                           ],
                         ),
                         Divider(),

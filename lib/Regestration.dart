@@ -651,14 +651,14 @@ class _SellerRegistrationPageState extends State<Regest> {
                               Colors.grey.shade300)),
                       onPressed: () {
                         if (food_present) {
-                          if (true)
-                          // (_formkey.currentState!.validate() &&
-                          //     isGetCurrentLocation &&
-                          //     isshopTimeDone &&
-                          //     isSelectStoreCategory &&
-                          //     isSelectStoreType &&
-                          //     isFoodSelectAsStoreCategory &&
-                          //     isPureVegFilled)
+                          if
+                          (_formkey.currentState!.validate() &&
+                              isGetCurrentLocation &&
+                              isshopTimeDone &&
+                              isSelectStoreCategory &&
+                              isSelectStoreType &&
+                              isFoodSelectAsStoreCategory &&
+                              isPureVegFilled)
                           {
                             print('success');
                             postPersonalDetails();
@@ -667,12 +667,12 @@ class _SellerRegistrationPageState extends State<Regest> {
                             setState(() {});
                           }
                         } else {
-                          if (true)
-                          // (_formkey.currentState!.validate() &&
-                          //     isGetCurrentLocation &&
-                          //     isshopTimeDone &&
-                          //     isSelectStoreCategory &&
-                          //     isSelectStoreType)
+                          if
+                          (_formkey.currentState!.validate() &&
+                              isGetCurrentLocation &&
+                              isshopTimeDone &&
+                              isSelectStoreCategory &&
+                              isSelectStoreType)
                           {
                             print('success');
                             postPersonalDetails();

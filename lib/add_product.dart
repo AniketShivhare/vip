@@ -471,7 +471,6 @@ class _AddProductState extends State<AddProduct> {
                                         child: TextFormField(
                                           controller:
                                           productDescriptionController,
-
                                           enabled: (ProductId.categoryCheck) ?false:true,
                                           style: TextStyle(
                                               color: Colors.black87,
@@ -539,7 +538,11 @@ class _AddProductState extends State<AddProduct> {
                                   // color: Colors.blue,
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      if (_formkey.currentState!.validate()) {
+                                      if (_formkey.currentState!.validate() &&
+                                          productNameContt.text.isNotEmpty &&
+                                          productDescriptionController.text.isNotEmpty &&
+                                          category.isNotEmpty
+                                      ) {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
