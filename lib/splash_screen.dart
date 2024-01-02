@@ -83,23 +83,22 @@ class SplashScreenState extends State<SplashScreen> {
     // Navigator.pushReplacement(
     //     context,
     //     MaterialPageRoute(
-    //       builder: (context) =>  MainDashboard(token: '', id: '', pageIndex: 2,sortt:""),
+    //       builder: (context) =>  MainDashboard(token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NmIwYWNhMGJhZjJlNjIzYmFkMWQwZiIsImlhdCI6MTcwMzUwODM2NCwiZXhwIjoxNzA2MTAwMzY0fQ.EIBVX5wl9qtIl6XaFohx1BfttDPPXTUXVI_Jg6EKTUY', id: '656b0aca0baf2e623bad1d0f', pageIndex: 2,sortt:""),
     //     ));
 
     var sharedPref = await SharedPreferences.getInstance();
-    
+
     var isLoggedIn = sharedPref.getBool(KEYLOGIN);
-    
+
     String keyToken;
     keyToken = sharedPref.getString(KEYTOKEN) ?? "tt";
-    
+
     String keyId;
     keyId = sharedPref.getString(KEYID) ?? "tt";
     TokenId.token=keyToken;
     //
     TokenId.id=keyId;
-    
-    
+
     Future.delayed(const Duration(seconds: 2), () {
       print(KEYTOKEN);
       print(KEYID);
@@ -124,7 +123,6 @@ class SplashScreenState extends State<SplashScreen> {
               builder: (context) => const LoginScreen(),
             ));
       }
-    
     });
   }
 }
