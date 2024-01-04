@@ -119,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
       print('Error: $e');
     }
     print("token is printing");
-    print("token is ${token}");
+    print("token is ${TokenId.token}");
     print(id);
     TokenId.token = token;
     TokenId.id = id;

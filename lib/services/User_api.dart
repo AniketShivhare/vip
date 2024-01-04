@@ -362,6 +362,7 @@ class UserApi {
             ?.map((e) => Order.fromJson(e as Map<String, dynamic>))
             .toList() ?? [];
         print("Order get successfulll");
+        print({TokenId.token});
         return orders;
       } else {
         print('Failed to get orders. Status code: ${response.statusCode}');
@@ -550,8 +551,9 @@ class UserApi {
 
   static Future<List<Product2>> fetchGlobalProduct(String query) async {
     if(query=="")return [];
-    final Url = 'https://api.pehchankidukan.com/seller/${TokenId.id}/globalProductSearch';
-    final url = Uri.parse('$Url?query=$query');
+    final Url =
+        'https://api.pehchankidukan.com/seller/${TokenId.id}/globalProducts/search';
+    final url = Uri.parse('$Url?keyword=$query');
     print(url);
     print(query);
     final response = await http.get(
