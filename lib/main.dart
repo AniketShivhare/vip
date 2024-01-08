@@ -13,7 +13,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // import 'dart:ui_web' show debugEmulateFlutterTesterEnvironment;
 
 void main() async {
-  // WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   // await Firebase.initializeApp(
   //     options: DefaultFirebaseOptions.currentPlatform);
   // await FirebaseApi().initNotifications();

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:e_commerce/services/filterData.dart';
 import 'package:http/http.dart' as http;
 import 'package:e_commerce/services/tokenId.dart';
 
@@ -29,7 +30,7 @@ class Categories {
     final List<String> stringData = data.map((item) => item.toString()).toList();
     List<String> subCat  = data.map((item) => item["subCategory1"].toString()).toList();
     subCategories = subCat;
-
+    FilterOptions.subcategories[category] = subCat;
     print("cattt");
       print(subCategories);
       // return subCategories;

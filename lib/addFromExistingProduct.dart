@@ -383,6 +383,7 @@ class _ProductSelectionPageState extends State<ProductSelectionPage> {
           ), // Customize the color as needed
         ),
       ),
+
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }

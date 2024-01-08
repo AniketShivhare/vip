@@ -8,11 +8,15 @@ import 'package:e_commerce/apis/ReplacementModel.dart';
 import 'package:e_commerce/services/filterData.dart';
 import 'package:e_commerce/services/tokenId.dart';
 import 'package:image_picker/image_picker.dart';
+import '../apis/CustomDateRangeSalesReport.dart';
+import '../apis/DailySales.dart';
+import '../apis/MonthlySales.dart';
 import '../apis/ProductModel.dart';
 import '../apis/ProductRatingAndReviews.dart';
 import '../apis/ProductSearchModel.dart';
 import '../apis/RatingReviewProduct.dart';
 import '../apis/ReturnModel.dart';
+import '../apis/WeeklySales.dart';
 import '../apis/orderModel.dart';
 import 'package:http/http.dart' as http;
 import 'Categories.dart';
@@ -105,7 +109,6 @@ class UserApi {
     }
     return[];
   }
-
 
   static Future<void> deleteProduct(id) async {
     print("iddiidd");
@@ -769,6 +772,94 @@ class UserApi {
       throw Exception('Failed to get return products: ${response.reasonPhrase}');
     }
   }
+
+  static Future<OrderSummaryDaily> GetDailySales() async {
+    final Url = 'https://api.pehchankidukan.com/seller/${TokenId.id}/dailySales';
+    final url = Uri.parse(Url);
+    final response = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${TokenId.token}',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseBody = jsonDecode(response.body);
+      OrderSummaryDaily products =  OrderSummaryDaily.fromJson(responseBody);
+      print(products);
+      return products;
+    } else {
+      throw Exception('Failed to get return products: ${response.reasonPhrase}');
+    }
+  }
+
+  static Future<OrderSummaryWeekly> GetWeeklySales() async {
+    final Url = 'https://api.pehchankidukan.com/seller/${TokenId.id}/weeklySales';
+    final url = Uri.parse(Url);
+    final response = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${TokenId.token}',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseBody = jsonDecode(response.body);
+      OrderSummaryWeekly products =  OrderSummaryWeekly.fromJson(responseBody);
+      print(products);
+      return products;
+    } else {
+      throw Exception('Failed to get return products: ${response.reasonPhrase}');
+    }
+  }
+
+  static Future<OrderSummaryMonthly> GetMonthlySales() async {
+    final Url = 'https://api.pehchankidukan.com/seller/${TokenId.id}/monthlySales';
+    final url = Uri.parse(Url);
+    final response = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${TokenId.token}',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseBody = jsonDecode(response.body);
+      OrderSummaryMonthly products =  OrderSummaryMonthly.fromJson(responseBody);
+      print(products);
+      return products;
+    } else {
+      throw Exception('Failed to get return products: ${response.reasonPhrase}');
+    }
+  }
+  static Future<TotalOrder> GetCustomSales(String start, String end) async {
+    final Url = 'https://api.pehchankidukan.com/seller/${TokenId.id}/customeDurationSales?start=$start&end=$end';
+    print(Url);
+    final url = Uri.parse(Url);
+    final response = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${TokenId.token}',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseBody = jsonDecode(response.body);
+      TotalOrder products =  TotalOrder.fromJson(responseBody);
+      print(products);
+      return products;
+    } else {
+      throw Exception('Failed to get return products: ${response.reasonPhrase}');
+    }
+  }
+
+
+
+
 
 
 }

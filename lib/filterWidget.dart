@@ -6,9 +6,6 @@ import 'package:e_commerce/services/tokenId.dart';
 import 'package:flutter/material.dart';
 import 'googleFonts.dart';
 import 'main_dashboard.dart';
-void main() {
-  runApp(MyApp());
-}
 
 bool ok=false;
 double _minPrice = 0;
@@ -19,14 +16,7 @@ String selectedDiscountOption = 'Any Discount';
 String selectedRatingOption = 'Any Rating';
 bool priceChanged=false;
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: FilterScreen(),
-    );
-  }
-}
+
 
 
 class FilterScreen extends StatefulWidget {
@@ -39,8 +29,7 @@ class _FilterScreenState extends State<FilterScreen> {
   void initState() {
     if(FilterOptions.categories.length>0) {
       selectedCategories=FilterOptions.categories;
-       Categories.getSubCategories(categories[0]) ;
-
+       Categories.getSubCategories(selectedCategories[0]) ;
     }
   }
 
@@ -111,6 +100,7 @@ class _FilterScreenState extends State<FilterScreen> {
                 if (isSelected) {
                   selectedCategories.clear();
                   FilterOptions.changed=false;
+                  FilterOptions.categories=[];
                   ok=false;
                 } else {
                   selectedCategories = [categories[index]];
@@ -158,8 +148,7 @@ class _FilterScreenState extends State<FilterScreen> {
         child: Text('Select Category First'),
       );
     }
-    return ok
-        ? FutureBuilder<void>(
+    return (FilterOptions.categories.length!=0) ? FutureBuilder<void>(
       future: Future.delayed(const Duration(seconds: 1)),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
@@ -168,7 +157,7 @@ class _FilterScreenState extends State<FilterScreen> {
               child: ListView.builder(
                 itemCount: 1,
                 itemBuilder: (context, categoryIndex) {
-                  final category = selectedCategories[0];
+                  final category = FilterOptions.categories[0];
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -176,9 +165,9 @@ class _FilterScreenState extends State<FilterScreen> {
                       Text(category),
                       ListView.builder(
                         shrinkWrap: true,
-                        itemCount: subcategories[category]!.length,
+                        itemCount: FilterOptions.subcategories[category]!.length,
                         itemBuilder: (context, subcategoryIndex) {
-                          final subcategory = subcategories[category]![subcategoryIndex];
+                          final subcategory = FilterOptions.subcategories[category]![subcategoryIndex];
                           final isSelected = selectedSubcategories[category]?.contains(subcategory) ?? false;
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -228,66 +217,68 @@ class _FilterScreenState extends State<FilterScreen> {
           );
         }
       },
-    )
-        : Container(
-      padding: EdgeInsets.all(8),
-      child: ListView.builder(
-        itemCount: 1,
-        itemBuilder: (context, categoryIndex) {
-          final category = FilterOptions.categories[0];
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 12,),
-              Text(category),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: FilterOptions.subcategories[category]?.length,
-
-                itemBuilder: (context, subcategoryIndex) {
-                  final subcategory = FilterOptions.subcategories[category]![subcategoryIndex];
-                  final isSelected = selectedSubcategories[category]?.contains(subcategory) ?? false;
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          subcategory,
-                          maxLines: 2, // Display text in up to 2 lines
-                          overflow: TextOverflow.ellipsis, // Handle overflow with ellipsis
-                        ),
-                      ),
-                      Checkbox(
-                        value: isSelected,
-                        onChanged: (selected) {
-                          setState(() {
-                            if (selected != null) {
-                              if (selected) {
-                                if (selectedSubcategories[category] == null) {
-                                  FilterOptions.selectedSubCat=false;
-                                  selectedSubcategories[category] = [];
-                                } else {
-                                  FilterOptions.selectedSubCat=true;
-                                }
-                                selectedSubcategories[category]!.add(subcategory);
-
-                              } else {
-                                selectedSubcategories[category]?.remove(subcategory);
-                              }
-                            }
-                          });
-
-                        },
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ],
-          );
-        },
-      ),
+    ) : Center(
+      child: Text('Select Category First'),
     );
+    //     : Container(
+    //   padding: EdgeInsets.all(8),
+    //   child: ListView.builder(
+    //     itemCount: 1,
+    //     itemBuilder: (context, categoryIndex) {
+    //       final category = FilterOptions.categories[0];
+    //       return Column(
+    //         crossAxisAlignment: CrossAxisAlignment.start,
+    //         children: [
+    //           SizedBox(height: 12,),
+    //           Text(category),
+    //           ListView.builder(
+    //             shrinkWrap: true,
+    //             itemCount: FilterOptions.subcategories[category]?.length,
+    //
+    //             itemBuilder: (context, subcategoryIndex) {
+    //               final subcategory = FilterOptions.subcategories[category]?[subcategoryIndex];
+    //               final isSelected = selectedSubcategories[category]?.contains(subcategory) ?? false;
+    //               return Row(
+    //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //                 children: [
+    //                   Expanded(
+    //                     child: Text(
+    //                       subcategory!,
+    //                       maxLines: 2, // Display text in up to 2 lines
+    //                       overflow: TextOverflow.ellipsis, // Handle overflow with ellipsis
+    //                     ),
+    //                   ),
+    //                   Checkbox(
+    //                     value: isSelected,
+    //                     onChanged: (selected) {
+    //                       setState(() {
+    //                         if (selected != null) {
+    //                           if (selected) {
+    //                             if (selectedSubcategories[category] == null) {
+    //                               FilterOptions.selectedSubCat=false;
+    //                               selectedSubcategories[category] = [];
+    //                             } else {
+    //                               FilterOptions.selectedSubCat=true;
+    //                             }
+    //                             selectedSubcategories[category]!.add(subcategory);
+    //
+    //                           } else {
+    //                             selectedSubcategories[category]?.remove(subcategory);
+    //                           }
+    //                         }
+    //                       });
+    //
+    //                     },
+    //                   ),
+    //                 ],
+    //               );
+    //             },
+    //           ),
+    //         ],
+    //       );
+    //     },
+    //   ),
+    // );
   }
 
 
@@ -359,6 +350,18 @@ class _FilterScreenState extends State<FilterScreen> {
           title: Text('3 or above'),
           leading: Radio<String>(
             value: '3 or above',
+            groupValue: selectedRatingOption,
+            onChanged: (value) {
+              setState(() {
+                selectedRatingOption = value!;
+              });
+            },
+          ),
+        ),
+        ListTile(
+          title: Text('2 or above'),
+          leading: Radio<String>(
+            value: '2 or above',
             groupValue: selectedRatingOption,
             onChanged: (value) {
               setState(() {
@@ -459,9 +462,9 @@ class _FilterScreenState extends State<FilterScreen> {
         return buildCategoryScreen();
       case 1:
         return  buildSubcategoryScreen();
-      case 3:
+      case 2:
         return buildRatingsScreen();
-      case 4:
+      case 3:
         return buildDiscountScreen();
       default:
         return Center(

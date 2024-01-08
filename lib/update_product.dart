@@ -662,7 +662,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
         context,
         MaterialPageRoute(
             builder: (context) =>
-                MainDashboard(token: token, id: id, pageIndex: 2, sortt: "")),
+                MainDashboard(token: token, id: id, pageIndex: 0, sortt: "")),
         (route) => false,
       );
     }

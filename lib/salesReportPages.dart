@@ -1,7 +1,13 @@
 // import 'dart:html';
 
+import 'package:e_commerce/apis/WeeklySales.dart';
+import 'package:e_commerce/services/User_api.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import 'apis/CustomDateRangeSalesReport.dart';
+import 'apis/DailySales.dart';
+import 'apis/MonthlySales.dart';
 
 class SalesReportPages extends StatefulWidget {
   const SalesReportPages({super.key});
@@ -62,10 +68,56 @@ class dailySalesOverview extends StatefulWidget {
 }
 
 class _dailySalesOverviewState extends State<dailySalesOverview> {
+   late OrderSummaryDaily data ;
   late DateTime selectedDate = DateTime.now();
   TextEditingController _dateController = TextEditingController();
+bool ok = false;
+  Future<void> fetchData() async{
+    data = await UserApi.GetDailySales();
+    setState(() {
+ok=true;
+    });
+  }
+
+
+  @override
+  void initState() {
+    fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
+    bool plus =false,minus=false,zero=false;
+    if(ok)
+    {
+      String yourString = data.percentChangeInAmount.toString();
+
+      // Check if the string starts with +, -, or 0
+      plus= yourString.startsWith('+') ;
+      minus =    yourString.startsWith('-');
+
+      zero =     yourString.startsWith('0');
+    }bool plus1 =false,minus1=false,zero1=false;
+    if(ok)
+    {
+      String yourString = data.percentChangeInDeliveredOrders.toString();
+
+      // Check if the string starts with +, -, or 0
+      plus1= yourString.startsWith('+') ;
+      minus1 =    yourString.startsWith('-');
+
+      zero =     yourString.startsWith('0');
+    }bool plus2 =false,minus2=false,zero2=false;
+    if(ok)
+    {
+      String yourString = data.percentChangeInAvgOrdervalue.toString();
+
+      // Check if the string starts with +, -, or 0
+      plus2= yourString.startsWith('+') ;
+      minus2 =    yourString.startsWith('-');
+
+      zero2 =     yourString.startsWith('0');
+    }
     double ewidth = MediaQuery.of(context).size.width;
     return Scaffold(
         body: Container(
@@ -99,12 +151,12 @@ class _dailySalesOverviewState extends State<dailySalesOverview> {
           SizedBox(
             height: 10,
           ),
-          Container(
+          (ok)?Container(
             color: Colors.grey.shade100,
             width: ewidth * 0.94,
             padding: EdgeInsets.all(8),
             child: Column(
-                // crossAxisAlignment: CrossAxisAlignment.center,
+              // crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(
                     height: 5,
@@ -163,7 +215,7 @@ class _dailySalesOverviewState extends State<dailySalesOverview> {
                       Row(
                         children: [
                           Text(
-                            '₹2400',
+                            '₹${data?.todaysOrder[0].totalAmount}',
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -171,13 +223,27 @@ class _dailySalesOverviewState extends State<dailySalesOverview> {
                             width: 7,
                           ),
                           Text(
-                            '+4%',
-                            style: TextStyle(color: Colors.green.shade600),
+                            '${data.percentChangeInAmount}%',
+                            style: TextStyle(
+                              color: plus ? Colors.green.shade700 : (minus ? Colors.red.shade700 : Colors.green.shade700),
+                            ),
                           ),
-                          Icon(
-                            Icons.arrow_upward_outlined,
-                            size: 15,
-                            color: Colors.green.shade600,
+                          Column(
+                            children: [
+                              if (plus) ...[
+                                Icon(
+                                  Icons.arrow_upward,
+                                  size: 15,
+                                  color: Colors.green.shade700,
+                                ),
+                              ] else if (minus) ...[
+                                Icon(
+                                  Icons.arrow_downward,
+                                  size: 15,
+                                  color: Colors.red.shade700,
+                                ),
+                              ],
+                            ],
                           )
                         ],
                       )
@@ -187,11 +253,11 @@ class _dailySalesOverviewState extends State<dailySalesOverview> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Previous Thur',
+                        'Previous Day',
                         style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                       Text(
-                        '₹2300',
+                        '₹${data?.yesterdayOrders[0].totalAmount}',
                         style: TextStyle(
                             fontSize: 14, color: Colors.grey.shade600),
                       )
@@ -218,7 +284,7 @@ class _dailySalesOverviewState extends State<dailySalesOverview> {
                       Row(
                         children: [
                           Text(
-                            '15',
+                            ' ${data.todaysOrder[0].deliveredOrders}',
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -226,11 +292,28 @@ class _dailySalesOverviewState extends State<dailySalesOverview> {
                             width: 7,
                           ),
                           Text(
-                            '-1%',
-                            style: TextStyle(color: Colors.red.shade700),
+                            '${data.percentChangeInDeliveredOrders}%',
+                            style: TextStyle(
+                              color: plus ? Colors.green.shade700 : (minus ? Colors.red.shade700 : Colors.green.shade700),
+                            ),
                           ),
-                          Icon(Icons.arrow_downward,
-                              size: 15, color: Colors.red.shade700)
+                          Column(
+                            children: [
+                              if (plus1) ...[
+                                Icon(
+                                  Icons.arrow_upward,
+                                  size: 15,
+                                  color: Colors.green.shade700,
+                                ),
+                              ] else if (minus1) ...[
+                                Icon(
+                                  Icons.arrow_downward,
+                                  size: 15,
+                                  color: Colors.red.shade700,
+                                ),
+                              ],
+                            ],
+                          )
                         ],
                       )
                     ],
@@ -256,7 +339,7 @@ class _dailySalesOverviewState extends State<dailySalesOverview> {
                       Row(
                         children: [
                           Text(
-                            '₹155',
+                            '₹${data.todaysOrder[0].avgOrderValue}',
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -264,11 +347,28 @@ class _dailySalesOverviewState extends State<dailySalesOverview> {
                             width: 7,
                           ),
                           Text(
-                            '-1%',
-                            style: TextStyle(color: Colors.red.shade700),
+                            '${data.percentChangeInAvgOrdervalue}%',
+                            style: TextStyle(
+                              color: plus ? Colors.green.shade700 : (minus ? Colors.red.shade700 : Colors.green.shade700),
+                            ),
                           ),
-                          Icon(Icons.arrow_downward,
-                              size: 15, color: Colors.red.shade700)
+                          Column(
+                            children: [
+                              if (plus2) ...[
+                                Icon(
+                                  Icons.arrow_upward,
+                                  size: 15,
+                                  color: Colors.green.shade700,
+                                ),
+                              ] else if (minus2) ...[
+                                Icon(
+                                  Icons.arrow_downward,
+                                  size: 15,
+                                  color: Colors.red.shade700,
+                                ),
+                              ],
+                            ],
+                          )
                         ],
                       )
                     ],
@@ -277,7 +377,7 @@ class _dailySalesOverviewState extends State<dailySalesOverview> {
                     height: 5,
                   ),
                 ]),
-          )
+          ):Center(child: CircularProgressIndicator(),)
         ],
       ),
     ));
@@ -340,8 +440,58 @@ class weeklySalesOverview extends StatefulWidget {
 }
 
 class _weeklySalesOverviewState extends State<weeklySalesOverview> {
+
+  late OrderSummaryWeekly data ;
+  bool ok = false;
+  Future<void> fetchData() async{
+     data = await UserApi.GetWeeklySales();
+     print(data);
+     setState(() {
+        ok=true;
+     });
+  }
+
+  @override
+  void initState() {
+    fetchData();
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    bool plus =false,minus=false,zero=false;
+    if(ok)
+    {
+      String yourString = data.percentChangeInAmount.toString();
+
+      // Check if the string starts with +, -, or 0
+      plus= yourString.startsWith('+') ;
+      minus =    yourString.startsWith('-');
+
+      zero =     yourString.startsWith('0');
+    }
+    bool plus1 =false,minus1=false,zero1=false;
+    if(ok)
+    {
+      String yourString = data.percentChangeInDeliveredOrders.toString();
+
+      // Check if the string starts with +, -, or 0
+      plus1= yourString.startsWith('+') ;
+      minus1 =    yourString.startsWith('-');
+
+      zero =     yourString.startsWith('0');
+    }
+    bool plus2 =false,minus2=false,zero2=false;
+    if(ok)
+    {
+      String yourString = data.percentChangeInAvgOrdervalue.toString();
+
+      // Check if the string starts with +, -, or 0
+      plus2= yourString.startsWith('+') ;
+      minus2 =    yourString.startsWith('-');
+
+      zero2 =     yourString.startsWith('0');
+    }
     double ewidth = MediaQuery.of(context).size.width;
     return Scaffold(
         body: Container(
@@ -352,17 +502,17 @@ class _weeklySalesOverviewState extends State<weeklySalesOverview> {
           SizedBox(
             height: 10,
           ),
-          Container(
+          (ok)? Container(
             color: Colors.grey.shade100,
             width: ewidth * 0.94,
             padding: EdgeInsets.all(8),
             child: Column(
-                // crossAxisAlignment: CrossAxisAlignment.center,
+              // crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(
                     height: 5,
                   ),
-                  Row(
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
@@ -416,7 +566,7 @@ class _weeklySalesOverviewState extends State<weeklySalesOverview> {
                       Row(
                         children: [
                           Text(
-                            '₹24000',
+                            '₹${data?.todaysOrder[0].totalAmount}',
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -424,14 +574,29 @@ class _weeklySalesOverviewState extends State<weeklySalesOverview> {
                             width: 7,
                           ),
                           Text(
-                            '+4%',
-                            style: TextStyle(color: Colors.green.shade600),
+                            '${data.percentChangeInAmount}%',
+                            style: TextStyle(
+                              color: plus ? Colors.green.shade700 : (minus ? Colors.red.shade700 : Colors.black),
+                            ),
                           ),
-                          Icon(
-                            Icons.arrow_upward_outlined,
-                            size: 15,
-                            color: Colors.green.shade600,
+                          Column(
+                            children: [
+                              if (plus) ...[
+                                Icon(
+                                  Icons.arrow_upward,
+                                  size: 15,
+                                  color: Colors.green.shade700,
+                                ),
+                              ] else if (minus) ...[
+                                Icon(
+                                  Icons.arrow_downward,
+                                  size: 15,
+                                  color: Colors.red.shade700,
+                                ),
+                              ],
+                            ],
                           )
+
                         ],
                       )
                     ],
@@ -444,7 +609,7 @@ class _weeklySalesOverviewState extends State<weeklySalesOverview> {
                         style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                       Text(
-                        '₹23000',
+                        '₹${data?.yesterdayOrders[0].totalAmount}',
                         style: TextStyle(
                             fontSize: 14, color: Colors.grey.shade600),
                       )
@@ -471,7 +636,7 @@ class _weeklySalesOverviewState extends State<weeklySalesOverview> {
                       Row(
                         children: [
                           Text(
-                            '155',
+                            ' ${data?.todaysOrder[0].deliveredOrders}',
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -479,11 +644,28 @@ class _weeklySalesOverviewState extends State<weeklySalesOverview> {
                             width: 7,
                           ),
                           Text(
-                            '-1%',
-                            style: TextStyle(color: Colors.red.shade700),
+                            '${data.percentChangeInDeliveredOrders}%',
+                            style: TextStyle(
+                              color: plus ? Colors.green.shade700 : (minus ? Colors.red.shade700 : Colors.green.shade700),
+                            ),
                           ),
-                          Icon(Icons.arrow_downward,
-                              size: 15, color: Colors.red.shade700)
+                          Column(
+                            children: [
+                              if (plus1) ...[
+                                Icon(
+                                  Icons.arrow_upward,
+                                  size: 15,
+                                  color: Colors.green.shade700,
+                                ),
+                              ] else if (minus1) ...[
+                                Icon(
+                                  Icons.arrow_downward,
+                                  size: 15,
+                                  color: Colors.red.shade700,
+                                ),
+                              ],
+                            ],
+                          )
                         ],
                       )
                     ],
@@ -509,7 +691,7 @@ class _weeklySalesOverviewState extends State<weeklySalesOverview> {
                       Row(
                         children: [
                           Text(
-                            '₹155',
+                            '₹${data?.todaysOrder[0].avgOrderValue}',
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -517,11 +699,28 @@ class _weeklySalesOverviewState extends State<weeklySalesOverview> {
                             width: 7,
                           ),
                           Text(
-                            '-1%',
-                            style: TextStyle(color: Colors.red.shade700),
+                            '${data.percentChangeInAvgOrdervalue}%',
+                            style: TextStyle(
+                              color: plus ? Colors.green.shade700 : (minus ? Colors.red.shade700 : Colors.green.shade700),
+                            ),
                           ),
-                          Icon(Icons.arrow_downward,
-                              size: 15, color: Colors.red.shade700)
+                          Column(
+                            children: [
+                              if (plus2) ...[
+                                Icon(
+                                  Icons.arrow_upward,
+                                  size: 15,
+                                  color: Colors.green.shade700,
+                                ),
+                              ] else if (minus2) ...[
+                                Icon(
+                                  Icons.arrow_downward,
+                                  size: 15,
+                                  color: Colors.red.shade700,
+                                ),
+                              ],
+                            ],
+                          )
                         ],
                       )
                     ],
@@ -530,7 +729,7 @@ class _weeklySalesOverviewState extends State<weeklySalesOverview> {
                     height: 5,
                   ),
                 ]),
-          )
+          ) : Center(child: CircularProgressIndicator(),)
         ],
       ),
     ));
@@ -545,8 +744,55 @@ class monthlySalesOverview extends StatefulWidget {
 }
 
 class _monthlySalesOverviewState extends State<monthlySalesOverview> {
+
+  late OrderSummaryMonthly data ;
+bool ok = false;
+  Future<void > fetchData() async {
+    data = await UserApi.GetMonthlySales();
+    setState(() {
+ok=true;
+    });
+  }
+
+  @override
+  void initState() {
+    fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
+    bool plus =false,minus=false,zero=false;
+    if(ok)
+    {
+      String yourString = data.percentChangeInAmount.toString();
+
+      // Check if the string starts with +, -, or 0
+      plus= yourString.startsWith('+') ;
+      minus =    yourString.startsWith('-');
+
+      zero =     yourString.startsWith('0');
+    }bool plus1 =false,minus1=false,zero1=false;
+    if(ok)
+    {
+      String yourString = data.percentChangeInDeliveredOrders.toString();
+
+      // Check if the string starts with +, -, or 0
+      plus1= yourString.startsWith('+') ;
+      minus1 =    yourString.startsWith('-');
+
+      zero =     yourString.startsWith('0');
+    }bool plus2 =false,minus2=false,zero2=false;
+    if(ok)
+    {
+      String yourString = data.percentChangeInAvgOrdervalue.toString();
+
+      // Check if the string starts with +, -, or 0
+      plus2= yourString.startsWith('+') ;
+      minus2 =    yourString.startsWith('-');
+
+      zero2 =     yourString.startsWith('0');
+    }
+
     double ewidth = MediaQuery.of(context).size.width;
     return Scaffold(
         body: Container(
@@ -557,12 +803,12 @@ class _monthlySalesOverviewState extends State<monthlySalesOverview> {
           SizedBox(
             height: 10,
           ),
-          Container(
+          (ok) ? Container(
             color: Colors.grey.shade100,
             width: ewidth * 0.94,
             padding: EdgeInsets.all(8),
             child: Column(
-                // crossAxisAlignment: CrossAxisAlignment.center,
+              // crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(
                     height: 5,
@@ -621,7 +867,7 @@ class _monthlySalesOverviewState extends State<monthlySalesOverview> {
                       Row(
                         children: [
                           Text(
-                            '₹48000',
+                            '₹${data.todaysOrder[0].totalAmount}',
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -629,13 +875,27 @@ class _monthlySalesOverviewState extends State<monthlySalesOverview> {
                             width: 7,
                           ),
                           Text(
-                            '+4%',
-                            style: TextStyle(color: Colors.green.shade600),
+                            '${data.percentChangeInAmount}%',
+                            style: TextStyle(
+                              color: plus ? Colors.green.shade700 : (minus ? Colors.red.shade700 : Colors.green.shade700),
+                            ),
                           ),
-                          Icon(
-                            Icons.arrow_upward_outlined,
-                            size: 15,
-                            color: Colors.green.shade600,
+                          Column(
+                            children: [
+                              if (plus) ...[
+                                Icon(
+                                  Icons.arrow_upward,
+                                  size: 15,
+                                  color: Colors.green.shade700,
+                                ),
+                              ] else if (minus) ...[
+                                Icon(
+                                  Icons.arrow_downward,
+                                  size: 15,
+                                  color: Colors.red.shade700,
+                                ),
+                              ],
+                            ],
                           )
                         ],
                       )
@@ -676,7 +936,7 @@ class _monthlySalesOverviewState extends State<monthlySalesOverview> {
                       Row(
                         children: [
                           Text(
-                            '155',
+                            ' ${data.todaysOrder[0].deliveredOrders}',
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -684,11 +944,28 @@ class _monthlySalesOverviewState extends State<monthlySalesOverview> {
                             width: 7,
                           ),
                           Text(
-                            '-1%',
-                            style: TextStyle(color: Colors.red.shade700),
+                            '${data.percentChangeInDeliveredOrders}%',
+                            style: TextStyle(
+                              color: plus ? Colors.green.shade700 : (minus ? Colors.red.shade700 : Colors.green.shade700),
+                            ),
                           ),
-                          Icon(Icons.arrow_downward,
-                              size: 15, color: Colors.red.shade700)
+                          Column(
+                            children: [
+                              if (plus1) ...[
+                                Icon(
+                                  Icons.arrow_upward,
+                                  size: 15,
+                                  color: Colors.green.shade700,
+                                ),
+                              ] else if (minus1) ...[
+                                Icon(
+                                  Icons.arrow_downward,
+                                  size: 15,
+                                  color: Colors.red.shade700,
+                                ),
+                              ],
+                            ],
+                          )
                         ],
                       )
                     ],
@@ -714,7 +991,7 @@ class _monthlySalesOverviewState extends State<monthlySalesOverview> {
                       Row(
                         children: [
                           Text(
-                            '₹155',
+                            '₹${data.todaysOrder[0].avgOrderValue}',
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -722,11 +999,28 @@ class _monthlySalesOverviewState extends State<monthlySalesOverview> {
                             width: 7,
                           ),
                           Text(
-                            '-1%',
-                            style: TextStyle(color: Colors.red.shade700),
+                            '${data.percentChangeInAvgOrdervalue}%',
+                            style: TextStyle(
+                              color: plus ? Colors.green.shade700 : (minus ? Colors.red.shade700 : Colors.green.shade700),
+                            ),
                           ),
-                          Icon(Icons.arrow_downward,
-                              size: 15, color: Colors.red.shade700)
+                          Column(
+                            children: [
+                              if (plus1) ...[
+                                Icon(
+                                  Icons.arrow_upward,
+                                  size: 15,
+                                  color: Colors.green.shade700,
+                                ),
+                              ] else if (minus1) ...[
+                                Icon(
+                                  Icons.arrow_downward,
+                                  size: 15,
+                                  color: Colors.red.shade700,
+                                ),
+                              ],
+                            ],
+                          )
                         ],
                       )
                     ],
@@ -735,7 +1029,7 @@ class _monthlySalesOverviewState extends State<monthlySalesOverview> {
                     height: 5,
                   ),
                 ]),
-          )
+          ): Center(child: CircularProgressIndicator(),)
         ],
       ),
     ));
@@ -751,9 +1045,34 @@ class daysRangeSalesOverview extends StatefulWidget {
 
 class _daysRangeSalesOverviewState extends State<daysRangeSalesOverview> {
   // late DateTime selectedDate = DateTime.now();
-  DateTimeRange selectedDates =
-      DateTimeRange(start: DateTime.now(), end: DateTime.now());
+  late TotalOrder data ;
+
+  DateTimeRange selectedDates = DateTimeRange(
+    start: DateTime.now(),
+    end: DateTime.now(),
+  );
   TextEditingController _daterangeController = TextEditingController();
+  bool ok = false;
+
+  Future<void> fetchData() async {
+    // Format the start and end dates to "yyyy-MM-dd" format
+    String formattedStartDate = DateFormat('yyyy-MM-dd').format(selectedDates.start);
+    String formattedEndDate = DateFormat('yyyy-MM-dd').format(selectedDates.end);
+  print("formattedStartDate");
+  print(formattedStartDate);
+    data = await UserApi.GetCustomSales(formattedStartDate, formattedEndDate);
+
+    setState(() {
+      ok = true;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
     double ewidth = MediaQuery.of(context).size.width;
@@ -794,11 +1113,11 @@ class _daysRangeSalesOverviewState extends State<daysRangeSalesOverview> {
               SizedBox(
                 height: 10,
               ),
-              Container(
+              (ok) ? Container(
                 color: Colors.grey.shade100,
                 width: ewidth * 0.94,
                 padding: EdgeInsets.all(8),
-                child: Column(
+                child:  Column(
                     // crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SizedBox(
@@ -838,6 +1157,8 @@ class _daysRangeSalesOverviewState extends State<daysRangeSalesOverview> {
                           )
                         ],
                       ),
+
+
                       SizedBox(
                         height: 10,
                       ),
@@ -851,61 +1172,7 @@ class _daysRangeSalesOverviewState extends State<daysRangeSalesOverview> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "Today's sales",
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                '₹2400',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              SizedBox(
-                                width: 7,
-                              ),
-                              Text(
-                                '+4%',
-                                style: TextStyle(color: Colors.green.shade600),
-                              ),
-                              Icon(
-                                Icons.arrow_upward_outlined,
-                                size: 15,
-                                color: Colors.green.shade600,
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Previous Thur',
-                            style: TextStyle(fontSize: 14, color: Colors.grey),
-                          ),
-                          Text(
-                            '₹2300',
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey.shade600),
-                          )
-                        ],
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Divider(
-                        height: 1,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Delivered orders',
+                            'Total Orders',
                             style: TextStyle(
                               fontSize: 16,
                             ),
@@ -913,19 +1180,46 @@ class _daysRangeSalesOverviewState extends State<daysRangeSalesOverview> {
                           Row(
                             children: [
                               Text(
-                                '15',
+                                '${data.totalOrders[0].totalOrders.toString()}',
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.bold),
                               ),
                               SizedBox(
                                 width: 7,
                               ),
+
+                            ],
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Divider(
+                        height: 1,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ), Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Total Amount',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          Row(
+                            children: [
                               Text(
-                                '-1%',
-                                style: TextStyle(color: Colors.red.shade700),
+                                '₹${data.totalOrders[0].totalAmount}',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              Icon(Icons.arrow_downward,
-                                  size: 15, color: Colors.red.shade700)
+                              SizedBox(
+                                width: 7,
+                              ),
+
                             ],
                           )
                         ],
@@ -939,6 +1233,7 @@ class _daysRangeSalesOverviewState extends State<daysRangeSalesOverview> {
                       SizedBox(
                         height: 10,
                       ),
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -951,19 +1246,14 @@ class _daysRangeSalesOverviewState extends State<daysRangeSalesOverview> {
                           Row(
                             children: [
                               Text(
-                                '₹155',
+                                '₹${data.totalOrders[0].avgOrderValue}',
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.bold),
                               ),
                               SizedBox(
                                 width: 7,
                               ),
-                              Text(
-                                '-1%',
-                                style: TextStyle(color: Colors.red.shade700),
-                              ),
-                              Icon(Icons.arrow_downward,
-                                  size: 15, color: Colors.red.shade700)
+
                             ],
                           )
                         ],
@@ -972,7 +1262,7 @@ class _daysRangeSalesOverviewState extends State<daysRangeSalesOverview> {
                         height: 5,
                       ),
                     ]),
-              )
+              ) : Center(child: CircularProgressIndicator(),)
             ],
           ),
         ));
@@ -984,6 +1274,7 @@ class _daysRangeSalesOverviewState extends State<daysRangeSalesOverview> {
     if (dateTimeRange != null) {
       setState(() {
         selectedDates = dateTimeRange;
+        fetchData();
         updateDateRangeText(selectedDates);
       });
     }

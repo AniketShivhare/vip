@@ -64,7 +64,7 @@ class _ManageProductsState extends State<ManageProducts> {
   void dispose() {
     // _debounceTimer.cancel();
     _scrollController.dispose();
-    if(ok)
+    // if(ok)
     FilterOptions.clear();
     super.dispose();
   }
@@ -674,6 +674,7 @@ class _ManageProductsState extends State<ManageProducts> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      isDismissible:false,
       builder: (context) {
         return Container(
           height: MediaQuery.of(context).size.height * 0.6, // Adjust the fraction as needed
