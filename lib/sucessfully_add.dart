@@ -159,6 +159,7 @@ class _SuccessfulAddState extends State<SuccessfulAdd> {
                             productDescription: '',
                             productDetails: [],
                             itemOptions: [],
+                            barCodeNumber: '',
                           ),
                         ));
                   },

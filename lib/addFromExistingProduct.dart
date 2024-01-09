@@ -312,6 +312,7 @@ class _ProductSelectionPageState extends State<ProductSelectionPage> {
                                                                       prod.description,
                                                                   productDetails: [],
                                                                   itemOptions: [],
+                                                                  barCodeNumber: prod.barCodeNumber,
                                                                 ),
                                                               ));
                                                         },
@@ -362,6 +363,7 @@ class _ProductSelectionPageState extends State<ProductSelectionPage> {
                     productDescription: '',
                     productDetails: const [],
                     itemOptions: const [],
+                    barCodeNumber: '',
                   ),
                 ));
           },

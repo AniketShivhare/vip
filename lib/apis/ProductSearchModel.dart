@@ -8,7 +8,7 @@ class Product2 {
   String description;
   String returnPeriod;
   String replacementPeriod;
-
+  String barCodeNumber;
 
   Product2({
     required this.id,
@@ -20,19 +20,21 @@ class Product2 {
     required this.description,
     required this.returnPeriod,
     required this.replacementPeriod,
+    required this.barCodeNumber
   });
 
   factory Product2.fromJson(Map<String, dynamic> json) {
     return Product2(
       id: json['_id'] ?? "",
       productName: json['productName'] ?? "",
-      Url: (json['images']!=null) ? List<String>.from(json['images']) : [],
+      Url: (json['images'] != null) ? List<String>.from(json['images']) : [],
       category: json['category'] ?? "",
       description: json['description'] ?? "",
       returnPeriod: json['returnPeriod'] ?? "",
       replacementPeriod: json['replacementPeriod'] ?? "",
       subCategory1: json['subCategory1'] ?? "",
       subCategory2: json['subCategory2'] ?? "",
+      barCodeNumber: json['barCodeNumber'] ?? "",
     );
   }
 }

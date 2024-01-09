@@ -257,7 +257,7 @@ class _ProductDetailsScreenState extends State<GlobalProductScreen> {
                   MaterialPageRoute(
                     builder: (context) => AddProduct(
                       productName: '',
-                      productDescription: '', productDetails:  [], itemOptions: [],
+                      productDescription: '', productDetails:  [], itemOptions: [], barCodeNumber: '',
                     ),
                   ));
             },
@@ -268,7 +268,7 @@ class _ProductDetailsScreenState extends State<GlobalProductScreen> {
                 children: [
                   Icon(Icons.add,size: 17,color: Colors.white,),
                   SizedBox(width: 5), // Add some spacing between icon and text
-                  Text('Add New Product',style: TextStyle(fontSize: 17,color: Colors.white),),
+                  Text('Product',style: TextStyle(fontSize: 17,color: Colors.white),),
                 ],
               ),
             ),

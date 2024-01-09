@@ -151,7 +151,7 @@ class _RecentAddedProductState extends State<SearchProduct> {
                                                           MaterialPageRoute(
                                                               builder: (context) => AddProduct(
                                                                 productName: prod.productName,
-                                                                productDescription: prod.description, productDetails: [], itemOptions: [],
+                                                                productDescription: prod.description, productDetails: [], itemOptions: [], barCodeNumber: prod.barCodeNumber,
                                                               ),
                                                           ));
                                                     },

@@ -12,20 +12,22 @@ import 'addFromExistingProduct.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'apis/ProductSearchModel.dart';
-
-
+import 'package:e_commerce/update_product.dart';
 
 class AddProduct extends StatefulWidget {
   final String productName;
   final String productDescription;
   final List productDetails;
   final List<ItemOption> itemOptions;
-   AddProduct(
+  final String barCodeNumber;
+
+  AddProduct(
       {Key? key,
       required this.productName,
       required this.productDescription,
       required this.productDetails,
-      required this.itemOptions})
+      required this.itemOptions,
+      required this.barCodeNumber})
       : super(key: key);
 
   @override
@@ -38,14 +40,17 @@ class _AddProductState extends State<AddProduct> {
 
   TextEditingController productNameContt = TextEditingController();
   TextEditingController _searchController = TextEditingController();
+  TextEditingController _barcodeController = TextEditingController();
+  TextEditingController _brandNameController = TextEditingController();
+  List<TextEditingController> searchKeywordsListController = [
+    TextEditingController()
+  ];
   List<Product2> _suggestions = [];
-
-
 
   String category = "";
   String subCategory1 = "";
   String subCategory2 = "";
-   List<ItemOption> itemOptions =[];
+  List<ItemOption> itemOptions = [];
   TextEditingController productDescriptionController = TextEditingController();
   PageController pageController = PageController();
   String AllpCategory = "";
@@ -67,16 +72,18 @@ class _AddProductState extends State<AddProduct> {
   void initState() {
     print("Token = ${TokenId.token}");
     print("id = ${TokenId.id}");
-    valueUpdate(widget.productName, widget.productDescription);
-    category=ProductId.cat;
+    valueUpdate();
+    category = ProductId.cat;
     subCategory1 = ProductId.subCat1;
     subCategory2 = ProductId.subCat2;
-    itemOptions=[ItemOption(
-      price: "",
-      quantity: "",
-      unit: 'kg',
-      offerPrice: "",
-    )];
+    itemOptions = [
+      ItemOption(
+        price: "",
+        quantity: "",
+        unit: 'KG',
+        offerPrice: "",
+      )
+    ];
   }
 
   @override
@@ -112,13 +119,13 @@ class _AddProductState extends State<AddProduct> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               InkWell(
-                onTap: (){
+                onTap: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => ProductSelectionPage()));
                 },
-                child:  Text(
+                child: Text(
                   "Add Product",
                   style: TextStyle(
                     color: Colors.black,
@@ -208,7 +215,8 @@ class _AddProductState extends State<AddProduct> {
                         height: 10,
                       ),
                       Container(
-                        margin: const EdgeInsets.only(left: 15, right: 20, top: 5),
+                        margin:
+                            const EdgeInsets.only(left: 15, right: 20, top: 5),
                         child: const Text(
                           'Fill your product details correctly',
                           style: TextStyle(
@@ -244,24 +252,26 @@ class _AddProductState extends State<AddProduct> {
                             )
                           : Container(),
                       const SizedBox(height: 10),
-                      ProductId.categoryCheck==false ?
-                      Container(
-                        margin: const EdgeInsets.only(left: 20, right: 20),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Choose Category'),
-                                  content: categoryDialog(),
-                                );
-                              },
-                            );
-                          },
-                          child: const Text('Choose Category'),
-                        ),
-                      ):Container(),
+                      ProductId.categoryCheck == false
+                          ? Container(
+                              margin:
+                                  const EdgeInsets.only(left: 20, right: 20),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text('Choose Category'),
+                                        content: categoryDialog(),
+                                      );
+                                    },
+                                  );
+                                },
+                                child: const Text('Choose Category'),
+                              ),
+                            )
+                          : Container(),
                       Container(
                         margin:
                             const EdgeInsets.only(right: 20, top: 20, left: 20),
@@ -319,7 +329,7 @@ class _AddProductState extends State<AddProduct> {
                                       return Stack(
                                         children: [
                                           Container(
-                                            height:100,
+                                            height: 100,
                                             width: 100,
                                             child: Hero(
                                               tag: 'image_$index',
@@ -359,42 +369,43 @@ class _AddProductState extends State<AddProduct> {
                         ],
                       ),
                       category == "Food"
-                      ?
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin:
-                                const EdgeInsets.only(left: 20, right: 20, top: 25),
-                            child: const Text(
-                              'Product Type (Veg/Non-veg,/in case if applicable)',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontFamily: 'Poppins',
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(left: 20, right: 20),
-                            child: DropdownButton(
-                              value: productType,
-                              icon: const Icon(Icons.keyboard_arrow_down),
-                              items: items2.map((String items2) {
-                                return DropdownMenuItem(
-                                  value: items2,
-                                  child: Text(items2),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  productType = newValue!;
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ): Container(),
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20, right: 20, top: 25),
+                                  child: const Text(
+                                    'Product Type (Veg/Non-veg,/in case if applicable)',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontFamily: 'Poppins',
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20, right: 20),
+                                  child: DropdownButton(
+                                    value: productType,
+                                    icon: const Icon(Icons.keyboard_arrow_down),
+                                    items: items2.map((String items2) {
+                                      return DropdownMenuItem(
+                                        value: items2,
+                                        child: Text(items2),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        productType = newValue!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Container(),
                       Container(
                         child: Form(
                           key: _formkey,
@@ -405,7 +416,7 @@ class _AddProductState extends State<AddProduct> {
                               Container(
                                 margin: const EdgeInsets.only(
                                     left: 20, right: 20, top: 20),
-                                child:  Row(
+                                child: Row(
                                   children: [
                                     Text(
                                       'Product Name',
@@ -415,31 +426,34 @@ class _AddProductState extends State<AddProduct> {
                                         color: Colors.black,
                                       ),
                                     ),
-                                    if(ProductId.categoryCheck)Spacer(),
-                                    if(ProductId.categoryCheck)
-                                        IconButton(
-                                          icon: Icon(
-                                            Icons.cancel_outlined,
-                                            color: Colors.red,
-                                          ),
-                                          onPressed: () {
-                                            ProductId.reset();
-                                            Navigator.pop(context);
-                                            // removeImage(index);
-                                          },
+                                    if (ProductId.categoryCheck) Spacer(),
+                                    if (ProductId.categoryCheck)
+                                      IconButton(
+                                        icon: Icon(
+                                          Icons.cancel_outlined,
+                                          color: Colors.red,
                                         ),
+                                        onPressed: () {
+                                          ProductId.reset();
+                                          Navigator.pop(context);
+                                          // removeImage(index);
+                                        },
+                                      ),
                                   ],
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(left:20.0,right:20),
+                                padding: const EdgeInsets.only(
+                                    left: 20.0, right: 20),
                                 child: TextFormField(
                                   controller: _searchController,
-                                  enabled: (ProductId.categoryCheck) ?false:true,
+                                  enabled:
+                                      (ProductId.categoryCheck) ? false : true,
                                   onChanged: _onSearchChanged,
                                   style: const TextStyle(
                                       color: Colors.black87,
-                                      fontFamily: 'Poppins', fontSize: 15),
+                                      fontFamily: 'Poppins',
+                                      fontSize: 15),
                                   decoration: InputDecoration(
                                     hintText: 'Write the productName',
                                     focusedBorder: OutlineInputBorder(
@@ -449,12 +463,52 @@ class _AddProductState extends State<AddProduct> {
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 10,),
+                              SizedBox(
+                                height: 10,
+                              ),
                               Stack(
                                 children: [
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(
+                                            left: 20, right: 20, top: 5),
+                                        child: Text(
+                                          'Product Barcode Number',
+                                          style: TextStyle(
+                                            fontSize: 17,
+                                            fontFamily: 'Poppins',
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 20.0, right: 20),
+                                        child: TextFormField(
+                                          controller: _barcodeController,
+                                          enabled: (ProductId.categoryCheck)
+                                              ? false
+                                              : true,
+                                          style: const TextStyle(
+                                              color: Colors.black87,
+                                              fontFamily: 'Poppins',
+                                              fontSize: 15),
+                                          decoration: InputDecoration(
+                                            hintText:
+                                                'Write the product BarCode Number',
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.teal.shade900),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                       Container(
                                         margin: EdgeInsets.only(
                                             left: 20, right: 20, top: 5),
@@ -472,16 +526,160 @@ class _AddProductState extends State<AddProduct> {
                                             left: 20, right: 20, bottom: 10),
                                         child: TextFormField(
                                           controller:
-                                          productDescriptionController,
-                                          enabled: (ProductId.categoryCheck) ?false:true,
+                                              productDescriptionController,
+                                          enabled: (ProductId.categoryCheck)
+                                              ? false
+                                              : true,
                                           style: TextStyle(
                                               color: Colors.black87,
-                                              fontFamily: 'Poppins', fontSize: 15),
+                                              fontFamily: 'Poppins',
+                                              fontSize: 15),
                                           decoration: InputDecoration(
-                                            hintText: (ProductId.categoryCheck==false)?'Write Product Description(Optional)':"",
+                                            hintText: (ProductId
+                                                        .categoryCheck ==
+                                                    false)
+                                                ? 'Write Product Description(Optional)'
+                                                : "",
                                             focusedBorder: OutlineInputBorder(
                                               borderSide: BorderSide(
                                                   color: Colors.teal.shade900),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(
+                                            left: 20, right: 20, top: 5),
+                                        child: Text(
+                                          'Product Brand Name',
+                                          style: TextStyle(
+                                            fontSize: 17,
+                                            fontFamily: 'Poppins',
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 20.0, right: 20),
+                                        child: TextFormField(
+                                          controller: _brandNameController,
+                                          enabled: (ProductId.categoryCheck)
+                                              ? false
+                                              : true,
+                                          style: const TextStyle(
+                                              color: Colors.black87,
+                                              fontFamily: 'Poppins',
+                                              fontSize: 15),
+                                          decoration: InputDecoration(
+                                            hintText:
+                                                'Write the product Brand Name',
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.teal.shade900),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(
+                                            left: 20, right: 20, top: 5),
+                                        child: Text(
+                                          'Search Keywords',
+                                          style: TextStyle(
+                                            fontSize: 17,
+                                            fontFamily: 'Poppins',
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                      ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemCount:
+                                            searchKeywordsListController.length,
+                                        itemBuilder: (context, index) {
+                                          return Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 20, right: 20),
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Container(
+                                                    child: TextFormField(
+                                                      controller:
+                                                          searchKeywordsListController[
+                                                              index],
+                                                      style: const TextStyle(
+                                                          color: Colors.black87,
+                                                          fontFamily: 'Poppins',
+                                                          fontSize: 15),
+                                                      decoration:
+                                                          InputDecoration(
+                                                        hintText:
+                                                            'Enter Search Keywords',
+                                                        focusedBorder:
+                                                            OutlineInputBorder(
+                                                          borderSide: BorderSide(
+                                                              color: Colors.teal
+                                                                  .shade900),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 5,
+                                                ),
+                                                index != 0
+                                                    ? GestureDetector(
+                                                        onTap: () {
+                                                          setState(() {
+                                                            searchKeywordsListController[
+                                                                    index]
+                                                                .clear();
+                                                            searchKeywordsListController[
+                                                                    index]
+                                                                .dispose();
+                                                            searchKeywordsListController
+                                                                .removeAt(
+                                                                    index);
+                                                          });
+                                                        },
+                                                        child: const Icon(
+                                                          Icons.delete,
+                                                          color: Colors.black,
+                                                        ),
+                                                      )
+                                                    : const SizedBox()
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            searchKeywordsListController
+                                                .add(TextEditingController());
+                                          });
+                                        },
+                                        child: Center(
+                                          child: Container(
+                                            height: 35,
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 7),
+                                            decoration: BoxDecoration(
+                                                color: Colors.blue,
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            child: Text(
+                                              "Add More Keywords",
+                                              style: TextStyle(
+                                                  color: Colors.white),
                                             ),
                                           ),
                                         ),
@@ -501,8 +699,8 @@ class _AddProductState extends State<AddProduct> {
                                       PriceQuantitySpinnerRow(
                                         options: itemOptions,
                                         onOptionAdded: handleOptionAdded,
-                                        updateInitialValue:
-                                            (pControllers, oController, qController) {},
+                                        updateInitialValue: (pControllers,
+                                            oController, qController) {},
                                       ),
                                     ],
                                   ),
@@ -511,16 +709,20 @@ class _AddProductState extends State<AddProduct> {
                                       color: Colors.white,
                                       elevation: 4.0,
                                       child: Container(
-                                        height: (_suggestions.length * 45.0)%250,
+                                        height:
+                                            (_suggestions.length * 45.0) % 250,
                                         child: ListView.builder(
                                           itemCount: _suggestions.length,
                                           itemExtent: 40.0,
                                           itemBuilder: (context, index) {
-                                            final suggestion = _suggestions[index];
+                                            final suggestion =
+                                                _suggestions[index];
                                             return ListTile(
-                                              title: Text(suggestion.productName),
+                                              title:
+                                                  Text(suggestion.productName),
                                               onTap: () {
-                                                _onSuggestionSelected(suggestion);
+                                                _onSuggestionSelected(
+                                                    suggestion);
                                               },
                                             );
                                           },
@@ -533,7 +735,8 @@ class _AddProductState extends State<AddProduct> {
                                 height: 20,
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(left:8.0,right:8.0),
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0),
                                 child: Container(
                                   width: double.infinity,
                                   height: 45,
@@ -542,13 +745,14 @@ class _AddProductState extends State<AddProduct> {
                                     onPressed: () {
                                       if (_formkey.currentState!.validate() &&
                                           productNameContt.text.isNotEmpty &&
-                                          productDescriptionController.text.isNotEmpty &&
-                                          category.isNotEmpty
-                                      ) {
+                                          productDescriptionController
+                                              .text.isNotEmpty &&
+                                          category.isNotEmpty) {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) => ReviewListed(
+                                              builder: (context) =>
+                                                  ReviewListed(
                                                 Gpid: '',
                                                 itemOptions: itemOptions,
                                                 productName:
@@ -561,6 +765,11 @@ class _AddProductState extends State<AddProduct> {
                                                 category: category,
                                                 subCategory1: subCategory1,
                                                 subCategory2: subCategory2,
+                                                barCodeNumber:
+                                                    _barcodeController.text,
+                                                brandName:
+                                                    _brandNameController.text,
+                                                searchKeywordsList: searchKeywordsListController
                                               ),
                                             ));
                                       }
@@ -593,6 +802,7 @@ class _AddProductState extends State<AddProduct> {
       ),
     );
   }
+
   Widget categoryDialog() {
     return Container(
       height: 600,
@@ -660,6 +870,7 @@ class _AddProductState extends State<AddProduct> {
       ),
     );
   }
+
   Widget subCategory1Dialog() {
     return Container(
       height: 600,
@@ -730,6 +941,7 @@ class _AddProductState extends State<AddProduct> {
       ),
     );
   }
+
   Widget subCategory2Dialog() {
     return Container(
       height: 600,
@@ -757,7 +969,8 @@ class _AddProductState extends State<AddProduct> {
                     setState(() {});
                   });
                   return Center(
-                    child: Text("No subcategories available for the selected criteria."),
+                    child: Text(
+                        "No subcategories available for the selected criteria."),
                   );
                 } else {
                   return Column(
@@ -786,6 +999,7 @@ class _AddProductState extends State<AddProduct> {
       ),
     );
   }
+
   Future<void> showCameraDeleteConfirmationDialog(int index) async {
     return showDialog(
       context: context,
@@ -812,11 +1026,13 @@ class _AddProductState extends State<AddProduct> {
       },
     );
   }
+
   void removeCameraImage(int index) {
     setState(() {
       imageFileList.removeAt(index);
     });
   }
+
   Widget PageDialog() {
     return AlertDialog(
       content: PageView(controller: pageController, children: [
@@ -826,11 +1042,13 @@ class _AddProductState extends State<AddProduct> {
       ]),
     );
   }
+
   void handleOptionAdded(ItemOption newItem) {
     setState(() {
       itemOptions.add(newItem);
     });
   }
+
   void selectImages() async {
     final List<XFile>? selectedImages = await imagePicker.pickMultiImage();
     if (selectedImages!.isNotEmpty) {
@@ -839,12 +1057,14 @@ class _AddProductState extends State<AddProduct> {
     print("Image List Length:" + imageFileList.length.toString());
     setState(() {});
   }
-  void valueUpdate(String pname, String desc) {
-    productNameContt.text = pname;
-    _searchController.text = pname;
-    productDescriptionContt.text = desc;
-    productDescriptionController.text = desc;
-    if(ProductId.categoryCheck) {
+
+  void valueUpdate() {
+    productNameContt.text = widget.productName;
+    _searchController.text = widget.productName;
+    _barcodeController.text = widget.barCodeNumber;
+    productDescriptionContt.text = widget.productDescription;
+    productDescriptionController.text = widget.productDescription;
+    if (ProductId.categoryCheck) {
       productNameContt.removeListener(() {});
       productDescriptionContt.removeListener(() {});
       productDescriptionController.removeListener(() {});
@@ -853,6 +1073,7 @@ class _AddProductState extends State<AddProduct> {
       itemOptions = widget.itemOptions;
     });
   }
+
   void showCameraImageExpansion(int index) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -877,7 +1098,16 @@ class _AddProductState extends State<AddProduct> {
 
   void _onSearchChanged(String query) async {
     print("sadfdf");
-    productNameContt.text=_searchController.text;
+    productNameContt.text = _searchController.text;
+    List<Product2> suggestions = await fetchSuggestions(query);
+    setState(() {
+      _suggestions = suggestions;
+    });
+  }
+
+  void _onSearchChangedBarcode(String query) async {
+    print("sadfdf");
+    _barcodeController.text = _searchController.text;
     List<Product2> suggestions = await fetchSuggestions(query);
     setState(() {
       _suggestions = suggestions;
@@ -889,21 +1119,25 @@ class _AddProductState extends State<AddProduct> {
     return List.generate(15, (index) => '$query suggestion ${index + 1}');
   }
 
-  void _onSuggestionSelected( Product2 selectedSuggestion) {
+  void _onSuggestionSelected(Product2 selectedSuggestion) {
     _searchController.text = selectedSuggestion.productName;
-    ProductId.cat=selectedSuggestion.category;
-    ProductId.subCat1=selectedSuggestion.subCategory1;
-    ProductId.subCat2=selectedSuggestion.subCategory2;
-    ProductId.categoryCheck=true;
+    ProductId.cat = selectedSuggestion.category;
+    ProductId.subCat1 = selectedSuggestion.subCategory1;
+    ProductId.subCat2 = selectedSuggestion.subCategory2;
+    ProductId.categoryCheck = true;
     Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => AddProduct(
             productName: selectedSuggestion.productName,
-            productDescription: selectedSuggestion.description, productDetails: [], itemOptions: [],
+            productDescription: selectedSuggestion.description,
+            productDetails: [],
+            itemOptions: [],
+            barCodeNumber: selectedSuggestion.barCodeNumber,
           ),
         ));
   }
+
   void _onScreenTap() {
     setState(() {
       _suggestions = [];
@@ -913,14 +1147,12 @@ class _AddProductState extends State<AddProduct> {
   Future<List<Product2>> fetchSuggestions(String query) async {
     print("querydiwakar singh chauhan ");
     print(query);
-    if(query.isEmpty)return[];
+    if (query.isEmpty) return [];
     List<Product2> prods = await UserApi.fetchGlobalProduct(query);
     print(prods.length);
     return prods;
   }
-
 }
-
 
 class ItemOption {
   String price;
@@ -942,208 +1174,5 @@ class ItemOption {
       'unit': unit,
       'offerPrice': offerPrice,
     };
-  }
-}
-
-
-
-class PriceQuantitySpinnerRow extends StatefulWidget {
-  final List<ItemOption> options;
-  final ValueChanged<ItemOption> onOptionAdded;
-  final Function(List<TextEditingController>, List<TextEditingController>,
-      List<TextEditingController>) updateInitialValue;
-
-  PriceQuantitySpinnerRow({
-    required this.options,
-    required this.onOptionAdded,
-    required this.updateInitialValue,
-  });
-
-  @override
-  _PriceQuantitySpinnerRowState createState() =>
-      _PriceQuantitySpinnerRowState();
-}
-
-class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
-  ItemOption newItem = ItemOption(
-    price: "",
-    quantity: "",
-    unit: 'kg',
-    offerPrice: "",
-  );
-  List<String> dropDownItems = [
-    "kg",
-    "litre",
-    "piece",
-    "packet",
-    "box",
-    "bottle",
-    "can",
-    "bag",
-    "sack",
-    "tin",
-    "other",
-  ];
-
-  bool _validate4 = false;
-  bool _validate5 = false;
-  bool _validate6 = false;
-
-  @override
-  void initstate() {
-    super.initState();
-    widget.onOptionAdded(newItem);
-  }
-
-  void addOption() {
-    widget.onOptionAdded(newItem);
-    newItem = ItemOption(
-      price: "",
-      quantity: "",
-      unit: 'kg',
-      offerPrice: "",
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Column(
-          children: widget.options.map((option) {
-            return Container(
-              child: Padding(
-                padding: EdgeInsets.all(12),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            keyboardType: TextInputType.number,
-                            controller:
-                            TextEditingController(text: option.quantity.toString()),
-                            onChanged: (value) => option.quantity = value,
-                            decoration: InputDecoration(
-                              hintText: 'Quantity',
-                              label: const Text('Quantity'),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              errorText:
-                              _validate4 ? 'Value Can\'t Be Empty' : null,
-                            ),
-                            style: TextStyle(
-                              color: Colors.black.withOpacity(1.0),
-                              fontSize: 16,
-                              fontFamily: 'Urbanist',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 16),
-                        Container(
-                          height: 60,
-                          padding: EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              width: 1,
-                              color: Colors.black,
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: DropdownButton<String>(
-                            value: option.unit,
-                            onChanged: (String? value) {
-                              setState(() {
-                                option.unit = value!;
-                              });
-                            },
-                            items: dropDownItems.map((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(
-                                  value,
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontFamily: 'Urbanist',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            keyboardType: TextInputType.number,
-                            controller:
-                            TextEditingController(text: option.price.toString()),
-                            onChanged: (value) => option.price = value,
-                            decoration: InputDecoration(
-                              hintText: 'Price (In Rs.)',
-                              label: const Text('Price (In Rs.)'),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              errorText:
-                              _validate5 ? 'Value Can\'t Be Empty' : null,
-                            ),
-                            style: TextStyle(
-                              color: Colors.black.withOpacity(1.0),
-                              fontSize: 16,
-                              fontFamily: 'Urbanist',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 16),
-                        Expanded(
-                          child: TextFormField(
-                            keyboardType: TextInputType.number,
-                            controller:
-                            TextEditingController(text: option.offerPrice.toString()),
-                            onChanged: (value) => option.offerPrice = value,
-                            decoration: InputDecoration(
-                              hintText: 'Offer Price',
-                              label: const Text('Offer Price'),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              errorText:
-                              _validate6 ? 'Value Can\'t Be Empty' : null,
-                            ),
-                            style: TextStyle(
-                              color: Colors.black.withOpacity(1.0),
-                              fontSize: 16,
-                              fontFamily: 'Urbanist',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-        Container(
-            margin: EdgeInsets.only(left: 20),
-            child: ElevatedButton(
-              onPressed: addOption,
-              child: Text("Add items"),
-            )),
-      ],
-    );
   }
 }

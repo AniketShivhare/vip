@@ -13,7 +13,6 @@ import 'main.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 
-
 class ReviewListed extends StatefulWidget {
   List<XFile> imageFileList = [];
   List<ItemOption> itemOptions = [];
@@ -24,44 +23,56 @@ class ReviewListed extends StatefulWidget {
   String subCategory1 = '';
   String subCategory2 = '';
   String Gpid = '';
+  String barCodeNumber = '';
+  String brandName = '';
+  List<TextEditingController> searchKeywordsList = [];
 
-  ReviewListed({Key? key,
-    required this.imageFileList,
-    required this.itemOptions,
-    required this.productName,
-    required this.productType,
-    required this.description,
-    required this.category,
-    required this.subCategory1,
-    required this.subCategory2,
-    required this.Gpid
-  }) : super(key: key);
+  ReviewListed(
+      {Key? key,
+      required this.imageFileList,
+      required this.itemOptions,
+      required this.productName,
+      required this.productType,
+      required this.description,
+      required this.category,
+      required this.subCategory1,
+      required this.subCategory2,
+      required this.Gpid,
+      required this.barCodeNumber,
+      required this.brandName,
+      required this.searchKeywordsList})
+      : super(key: key);
 
   @override
   _ReviewListedState createState() => _ReviewListedState();
 }
 
 class _ReviewListedState extends State<ReviewListed> {
-
   @override
   Widget build(BuildContext context) {
     String pName = widget.productName;
-    String pType  = widget.productType;
-    String pDescription  = widget.description;
+    String pType = widget.productType;
+    String pDescription = widget.description;
     String token = TokenId.token;
     String id = TokenId.id;
-    List dummyProductList =[];
+    List dummyProductList = [];
     Future<void> postProductData() async {
-      final url = Uri.parse('https://api.pehchankidukan.com/seller/$id/products');
+      final url =
+          Uri.parse('https://api.pehchankidukan.com/seller/$id/products');
       // Create item options
       final itemOptions = widget.itemOptions;
       itemOptions.forEach((itemOption) {
-        dummyProductList.add(QuantityPricing(offerPrice: double.parse(itemOption.offerPrice),
-            quantity: (itemOption.quantity), mrpPrice: double.parse(itemOption.price), unit: itemOption.unit, inStock: false));
+        dummyProductList.add(QuantityPricing(
+            offerPrice: double.parse(itemOption.offerPrice),
+            quantity: (itemOption.quantity),
+            mrpPrice: double.parse(itemOption.price),
+            unit: itemOption.unit,
+            inStock: false));
       });
       print("pidddd1");
-      if(ProductId.categoryCheck==true)
-      {
+      print("barcodeNmber");
+      print(widget.barCodeNumber);
+      if (ProductId.categoryCheck == true) {
         final pid = await UserApi.createProduct(
             widget.Gpid,
             pName,
@@ -75,18 +86,30 @@ class _ReviewListedState extends State<ReviewListed> {
       }
       try {
         // Add each image file to the request
-        if (ProductId.categoryCheck==false) {
-          final url1 = 'https://api.pehchankidukan.com/seller/${TokenId.id}/products';
+        if (ProductId.categoryCheck == false) {
+          final url1 =
+              'https://api.pehchankidukan.com/seller/${TokenId.id}/products';
           var request = http.MultipartRequest('POST', (Uri.parse(url1)));
           request.headers['Authorization'] = 'Bearer ${TokenId.token}';
           request.fields['productName'] = pName;
           request.fields['category'] = widget.category;
           request.fields['subCategory1'] = widget.subCategory1;
           request.fields['subCategory2'] = widget.subCategory2;
+          List<String> KeywordsList =
+              widget.searchKeywordsList.map((e) => e.text).toList();
+          if (KeywordsList.length > 0) {
+            String keywordsJson = jsonEncode(KeywordsList);
+            request.fields['searchKeywords'] = keywordsJson;
+          }
+          print("barcodeNmber");
+          print(widget.barCodeNumber);
+          if (widget.barCodeNumber.length > 0)
+            request.fields['barCodeNumber'] = widget.barCodeNumber;
+          if (widget.brandName.length > 0)
+            request.fields['brandName'] = widget.brandName;
           print("length");
           print(widget.imageFileList.length);
-          if (widget.imageFileList.length >0)
-          {
+          if (widget.imageFileList.length > 0) {
             for (var imageFile in widget.imageFileList) {
               int length = await imageFile.length();
               String fileName = basename(imageFile.path);
@@ -101,20 +124,18 @@ class _ReviewListedState extends State<ReviewListed> {
             }
           }
           final response = await request.send();
-            if (response.statusCode == 200) {
-              print('POST images request successful');
-              print('Response: ${await response.stream.bytesToString()}');
-            } else {
-              print('Failed to make POST request: ${response.statusCode}');
-              print('Response: ${await response.stream.bytesToString()}');
-            }
-
+          if (response.statusCode == 200) {
+            print('POST images request successful');
+            print('Response: ${await response.stream.bytesToString()}');
+          } else {
+            print('Failed to make POST request: ${response.statusCode}');
+            print('Response: ${await response.stream.bytesToString()}');
+          }
         }
-        } catch (error) {
-          print('Error: $error');
-        }
+      } catch (error) {
+        print('Error: $error');
       }
-
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -131,30 +152,32 @@ class _ReviewListedState extends State<ReviewListed> {
               ),
             ),
             Spacer(),
-            Expanded(child: Icon(Icons.notifications,color: Colors.white,)),
+            Expanded(
+                child: Icon(
+              Icons.notifications,
+              color: Colors.white,
+            )),
           ],
         ),
         centerTitle: true,
         backgroundColor: Colors.lightBlue.shade900,
         iconTheme: IconThemeData(color: Colors.white),
       ),
-
       backgroundColor: Colors.grey.shade200,
-
       body: Container(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               Container(
                 height: 45,
-
                 decoration: BoxDecoration(
                     color: Colors.lightBlue.shade900,
-                    borderRadius: BorderRadius.only(bottomRight: Radius.circular(30),bottomLeft: Radius.circular(30))
-                ),
-                child: Center(child: Row(
+                    borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(30),
+                        bottomLeft: Radius.circular(30))),
+                child: Center(
+                    child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
@@ -162,35 +185,52 @@ class _ReviewListedState extends State<ReviewListed> {
                       width: 23,
                       decoration: BoxDecoration(
                           color: Colors.black,
-                          borderRadius: BorderRadius.all(Radius.circular(6))
-                      ),
-                      child: Center(child: Text('1',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),)),
+                          borderRadius: BorderRadius.all(Radius.circular(6))),
+                      child: Center(
+                          child: Text(
+                        '1',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      )),
                     ),
-                    Text('-----------',style: TextStyle(color: Colors.white),),
+                    Text(
+                      '-----------',
+                      style: TextStyle(color: Colors.white),
+                    ),
                     Container(
                       height: 23,
                       width: 23,
                       decoration: BoxDecoration(
                           color: Colors.black,
-                          borderRadius: BorderRadius.all(Radius.circular(6))
-                      ),
-                      child: Center(child: Text('2',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),)),
+                          borderRadius: BorderRadius.all(Radius.circular(6))),
+                      child: Center(
+                          child: Text(
+                        '2',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      )),
                     ),
-                    Text('-----------',style: TextStyle(color: Colors.white),),
+                    Text(
+                      '-----------',
+                      style: TextStyle(color: Colors.white),
+                    ),
                     Container(
                       height: 23,
                       width: 23,
                       decoration: BoxDecoration(
                           color: Colors.grey,
-                          borderRadius: BorderRadius.all(Radius.circular(6))
-                      ),
-                      child: Center(child: Text('3',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),)),
+                          borderRadius: BorderRadius.all(Radius.circular(6))),
+                      child: Center(
+                          child: Text(
+                        '3',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      )),
                     ),
                     //Text('Add Product',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 15,fontFamily: 'Poppins', ),),
                   ],
                 )),
               ),
-
               Container(
                 margin: EdgeInsets.only(right: 20, left: 20, top: 30),
                 child: Row(
@@ -203,16 +243,13 @@ class _ReviewListedState extends State<ReviewListed> {
                             fontSize: 25,
                             fontFamily: 'Poppins',
                             color: Colors.black87,
-                            fontWeight: FontWeight.bold
-                        ),
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
                 ),
               ),
-
               Container(
-
                 width: double.maxFinite,
                 child: SingleChildScrollView(
                   child: Column(
@@ -248,70 +285,91 @@ class _ReviewListedState extends State<ReviewListed> {
                       //       ],
                       //     )),
                       Container(
-                          margin: EdgeInsets.only(left: 20,right: 20,top: 15),
+                          margin: EdgeInsets.only(left: 20, right: 20, top: 15),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Product Category:",textScaleFactor: 1.0,style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text(widget.category,textScaleFactor: 1.2),
+                              Text("Product Category:",
+                                  textScaleFactor: 1.0,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text(widget.category, textScaleFactor: 1.2),
                             ],
                           )),
                       Container(
-                          margin: EdgeInsets.only(left: 20,right: 20,top: 15),
+                          margin: EdgeInsets.only(left: 20, right: 20, top: 15),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Product SubCategory1:",textScaleFactor: 1.0,style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text(widget.subCategory1,textScaleFactor: 1.2),
+                              Text("Product SubCategory1:",
+                                  textScaleFactor: 1.0,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text(widget.subCategory1, textScaleFactor: 1.2),
                             ],
                           )),
                       Container(
-                          margin: EdgeInsets.only(left: 20,right: 20,top: 15),
+                          margin: EdgeInsets.only(left: 20, right: 20, top: 15),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Product SubCategory2:",textScaleFactor: 1.0,style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text(widget.subCategory2,textScaleFactor: 1.2),
+                              Text("Product SubCategory2:",
+                                  textScaleFactor: 1.0,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text(widget.subCategory2, textScaleFactor: 1.2),
                             ],
                           )),
                       Container(
-                          margin: EdgeInsets.only(left: 20,right: 20,top: 15),
+                          margin: EdgeInsets.only(left: 20, right: 20, top: 15),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Product Name:",textScaleFactor: 1,style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text(pName,textScaleFactor: 1.2),
+                              Text("Product Name:",
+                                  textScaleFactor: 1,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text(pName, textScaleFactor: 1.2),
                             ],
                           )),
 
                       Container(
-                          margin: EdgeInsets.only(left: 20,right: 20,top: 15),
+                          margin: EdgeInsets.only(left: 20, right: 20, top: 15),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Product Type:",textScaleFactor: 1,style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text(pType,textScaleFactor: 1.2),
+                              Text("Product Type:",
+                                  textScaleFactor: 1,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text(pType, textScaleFactor: 1.2),
                             ],
                           )),
                       Container(
-                          margin: EdgeInsets.only(left: 20,right: 20,top: 15),
+                          margin: EdgeInsets.only(left: 20, right: 20, top: 15),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Product Description:",textScaleFactor: 1,style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text(pDescription,textScaleFactor: 1.2),
+                              Text("Product Description:",
+                                  textScaleFactor: 1,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text(pDescription, textScaleFactor: 1.2),
                             ],
                           )),
                       Container(
-                          margin: EdgeInsets.only(left: 20,right: 20,top: 15),
+                          margin: EdgeInsets.only(left: 20, right: 20, top: 15),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Product Variants:",textScaleFactor: 1,style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text("Product Variants:",
+                                  textScaleFactor: 1,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
                             ],
                           )),
                       Container(
-                        margin: EdgeInsets.only(left: 20,right: 20),
+                        margin: EdgeInsets.only(left: 20, right: 20),
                         child: const ListTile(
                           title: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -327,55 +385,70 @@ class _ReviewListedState extends State<ReviewListed> {
                       ),
                       Container(
                         height: 100,
-                        margin: EdgeInsets.only(left: 20,right: 20),
+                        margin: EdgeInsets.only(left: 20, right: 20),
                         child: ListView.builder(
                           itemCount: widget.itemOptions.length,
                           itemBuilder: (BuildContext context, int index) {
                             return ListTile(
                               title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('${(index+1).toString()}'),
-                                  Text(widget.itemOptions[index].price .toString()),
-                                  Text(widget.itemOptions[index].offerPrice.toString()),
-                                  Text(widget.itemOptions[index].quantity.toString()),
+                                  Text('${(index + 1).toString()}'),
+                                  Text(widget.itemOptions[index].price
+                                      .toString()),
+                                  Text(widget.itemOptions[index].offerPrice
+                                      .toString()),
+                                  Text(widget.itemOptions[index].quantity
+                                      .toString()),
                                   Text(widget.itemOptions[index].unit),
                                 ],
                               ),
-
                             );
                           },
-                        ),),
-
-
-
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
-
-
               Container(
                 width: double.maxFinite,
-                margin: EdgeInsets.only(left: 20,right: 20,top: 30 ),
-                child: MaterialButton(onPressed: (){
-                  Navigator.pop(context);
-                }, child: Text('Edit',style: TextStyle(color: Colors.white,fontSize: 18),)
-                  ,color: Colors.lightBlue.shade500,
+                margin: EdgeInsets.only(left: 20, right: 20, top: 30),
+                child: MaterialButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    'Edit',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                  color: Colors.lightBlue.shade500,
                   height: 40,
                 ),
               ),
-
-
               Container(
                 width: double.maxFinite,
-                margin: EdgeInsets.only(left: 20,right: 20,top: 30,bottom: 30),
-                child: MaterialButton(onPressed: (){
-                  ProductId.categoryCheck=false;
-                  postProductData();
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SuccessfulAdd(token: TokenId.token, id: TokenId.id,),));
-                }, child: Text('Review And Post',style: TextStyle(color: Colors.white,fontSize: 18),)
-                  ,color: Colors.lightBlue.shade700,
+                margin:
+                    EdgeInsets.only(left: 20, right: 20, top: 30, bottom: 30),
+                child: MaterialButton(
+                  onPressed: () {
+                    ProductId.categoryCheck = false;
+                    postProductData();
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SuccessfulAdd(
+                            token: TokenId.token,
+                            id: TokenId.id,
+                          ),
+                        ));
+                  },
+                  child: Text(
+                    'Review And Post',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                  color: Colors.lightBlue.shade700,
                   height: 40,
                 ),
               )
@@ -384,9 +457,5 @@ class _ReviewListedState extends State<ReviewListed> {
         ),
       ),
     );
-
-
   }
-
-
 }
