@@ -4,6 +4,7 @@ class QuantityPricing {
   double mrpPrice;
   String unit;
   bool inStock;
+  double maxOrderQuantity;
 
   QuantityPricing({
     required this.offerPrice,
@@ -11,17 +12,19 @@ class QuantityPricing {
     required this.mrpPrice,
     required this.unit,
     required this.inStock,
+    required this.maxOrderQuantity
   });
 
   factory QuantityPricing.fromJson(Map<String, dynamic> json) {
     return QuantityPricing(
-      offerPrice: (json['offerPrice'] != null)
-          ? json['offerPrice'].toDouble()
-          : 0.0,
+      offerPrice:
+          (json['offerPrice'] != null) ? json['offerPrice'].toDouble() : 0.0,
       quantity: (json['quantity'] != null) ? json['quantity'].toString() : '',
       unit: json['unit'] ?? 'kg',
       mrpPrice: (json['mrpPrice'] != null) ? json['mrpPrice'].toDouble() : 0.0,
-      inStock:  true,
+      inStock: true,
+      maxOrderQuantity: (json['maxOrderQuantity'] != null) ? json['maxOrderQuantity'].toDouble() : 0.0,
+
     );
   }
   Map<String, dynamic> toJson() {
@@ -30,14 +33,13 @@ class QuantityPricing {
       'quantity': quantity,
       'mrpPrice': mrpPrice,
       'unit': unit,
-      'inStock':inStock
+      'inStock': inStock,
+      'maxOrderQuantity':maxOrderQuantity
     };
   }
 }
 
-
-
-  class Product {
+class Product {
   String id;
   String sellerID;
   String productName;
@@ -65,14 +67,30 @@ class QuantityPricing {
       id: json['_id'] ?? '',
       sellerID: json['sellerID'] ?? '',
       productName: json['productName'] ?? 'd',
-      globalProductID: (json['globalProductInfo']!=null && json['globalProductInfo'].length>0) ?  GlobalProductID.fromJson(json['globalProductInfo'][0]) : GlobalProductID(id: "657939947955a237931d8622", productName: "", category: "", subCategory1: "", subCategory2: "", images: [], description: "",),
-      inStock: json['inStock']?? false,
-      productDetails: (json['productDetails'] == null) ? [] : List<QuantityPricing>.from(json['productDetails'].map((x) => QuantityPricing.fromJson(x))) ,
+      globalProductID: (json['globalProductInfo'] != null &&
+              json['globalProductInfo'].length > 0)
+          ? GlobalProductID.fromJson(json['globalProductInfo'][0])
+          : GlobalProductID(
+              id: "657939947955a237931d8622",
+              productName: "",
+              category: "",
+              subCategory1: "",
+              subCategory2: "",
+              images: [],
+              description: "",
+            ),
+      inStock: json['inStock'] ?? false,
+      productDetails: (json['productDetails'] == null)
+          ? []
+          : List<QuantityPricing>.from(
+              json['productDetails'].map((x) => QuantityPricing.fromJson(x))),
       // createdAt: DateTime.parse(json['createdAt']),
       // updatedAt: DateTime.parse(json['updatedAt']),
-      minMrpPrice: (json['minMrpPrice']!=null) ?((json['minMrpPrice'] is int)
-          ? (json['minMrpPrice'] as int).toDouble()
-          : json['minMrpPrice'].toDouble()):0,
+      minMrpPrice: (json['minMrpPrice'] != null)
+          ? ((json['minMrpPrice'] is int)
+              ? (json['minMrpPrice'] as int).toDouble()
+              : json['minMrpPrice'].toDouble())
+          : 0,
     );
   }
 }
@@ -107,11 +125,10 @@ class GlobalProductID {
       category: json['category'] ?? '',
       subCategory1: json['subCategory1'] ?? '',
       subCategory2: json['subCategory2'] ?? '',
-      images: (json['images']!=null) ?List<String>.from(json['images']) : [],
+      images: (json['images'] != null) ? List<String>.from(json['images']) : [],
       description: json['description'] ?? '',
       // createdAt: DateTime.parse(json['createdAt']),
       // updatedAt: DateTime.parse(json['updatedAt']),
     );
   }
 }
-

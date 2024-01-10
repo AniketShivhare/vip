@@ -387,6 +387,7 @@ class UserApi {
         'quantity': item.quantity,
         'unit': item.unit,
         'offerPrice': item.offerPrice,
+        'maxOrderQuantity': item.maxOrderQuantity
       };
     }).toList();
     final Map<String, dynamic> productJson = {
@@ -446,6 +447,8 @@ class UserApi {
         'mrpPrice': (item.mrpPrice),
         'offerPrice': (item.offerPrice),
         'unit': item.unit,
+        'maxOrderQuantity': (item.maxOrderQuantity),
+        'maxOrderQuantity': (item.maxOrderQuantity),
         "inStock": true
       };
     }).toList();

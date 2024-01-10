@@ -66,7 +66,7 @@ dependencies:
   telephony: ^0.2.0
   permission_handler: ^11.1.0
   flutter_barcode_scanner: ^2.0.0
-  permission_handler: ^11.0.1
+  
 
 
 dev_dependencies:

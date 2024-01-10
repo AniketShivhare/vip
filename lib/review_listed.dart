@@ -66,13 +66,17 @@ class _ReviewListedState extends State<ReviewListed> {
             offerPrice: double.parse(itemOption.offerPrice),
             quantity: (itemOption.quantity),
             mrpPrice: double.parse(itemOption.price),
+            maxOrderQuantity: double.parse(itemOption.maxOrderQuantity),
             unit: itemOption.unit,
             inStock: false));
       });
       print("pidddd1");
       print("barcodeNmber");
       print(widget.barCodeNumber);
+      print(ProductId.categoryCheck);
       if (ProductId.categoryCheck == true) {
+        print("mAXQuantityyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+        print(dummyProductList);
         final pid = await UserApi.createProduct(
             widget.Gpid,
             pName,
@@ -83,6 +87,7 @@ class _ReviewListedState extends State<ReviewListed> {
             token,
             id,
             dummyProductList);
+        print("mAXQuantityyzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
       }
       try {
         // Add each image file to the request
@@ -402,6 +407,8 @@ class _ReviewListedState extends State<ReviewListed> {
                                   Text(widget.itemOptions[index].quantity
                                       .toString()),
                                   Text(widget.itemOptions[index].unit),
+                                  Text(widget
+                                      .itemOptions[index].maxOrderQuantity)
                                 ],
                               ),
                             );

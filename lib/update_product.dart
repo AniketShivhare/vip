@@ -572,7 +572,8 @@ class _UpdateProductsState extends State<UpdateProducts> {
                           options: itemOptions,
                           onOptionAdded: handleOptionAdded,
                           updateInitialValue:
-                              (pControllers, oController, qController) {}),
+                              (pControllers, oController,
+                              qController, mqController) {}),
                       Container(
                         width: double.maxFinite,
                         margin: const EdgeInsets.only(
@@ -651,7 +652,8 @@ class _UpdateProductsState extends State<UpdateProducts> {
           offerPrice: double.parse(itemOption.offerPrice),
           quantity: (itemOption.quantity),
           mrpPrice: double.parse(itemOption.price),
-          unit: itemOption.unit, inStock: true));
+          maxOrderQuantity: double.parse(itemOption.maxOrderQuantity),
+          unit: itemOption.unit, inStock: true));         
     });
     itemOptions = [];
     print(dummyProductList.length);
@@ -1013,6 +1015,7 @@ class PriceQuantitySpinnerRow extends StatefulWidget {
    List<ItemOption> options;
   final ValueChanged<ItemOption> onOptionAdded;
   final Function(List<TextEditingController>, List<TextEditingController>,
+      List<TextEditingController>,
       List<TextEditingController>) updateInitialValue;
 
   PriceQuantitySpinnerRow({
@@ -1034,6 +1037,7 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
     quantity: "",
     unit: 'KG',
     offerPrice: "",
+      maxOrderQuantity: ""
   );
   List<String> dropDownItems = ["KG", "G", "L", "ML", "PACK OF", "BOX", "BAG", "CAN"];
 
@@ -1044,12 +1048,14 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
       quantity: "",
       unit: 'KG',
       offerPrice: "",
+      maxOrderQuantity: ""
     );
   }
 
   bool _validate4 = false;
   bool _validate5 = false;
   bool _validate6 = false;
+  bool _validate7 = false;
   List<ItemOption> options=[];// = widget.options;
   @override
   void initstate() {
@@ -1190,6 +1196,28 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                         ),
                       ),
                     ],
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  TextFormField(
+                    controller: TextEditingController(
+                        text: option.maxOrderQuantity.toString()),
+                    onChanged: (value) => option.maxOrderQuantity = value,
+                    decoration: InputDecoration(
+                      hintText: 'Max Order Quantity',
+                      label: const Text('Max Order Quantity'),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      errorText: _validate7 ? 'Value Can\'t Be Empty' : null,
+                    ),
+                    style: TextStyle(
+                      color: Colors.black.withOpacity(1.0),
+                      fontSize: 16,
+                      fontFamily: 'Urbanist',
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ],
               ),

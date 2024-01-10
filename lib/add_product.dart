@@ -82,6 +82,7 @@ class _AddProductState extends State<AddProduct> {
         quantity: "",
         unit: 'KG',
         offerPrice: "",
+          maxOrderQuantity: ""
       )
     ];
   }
@@ -700,7 +701,9 @@ class _AddProductState extends State<AddProduct> {
                                         options: itemOptions,
                                         onOptionAdded: handleOptionAdded,
                                         updateInitialValue: (pControllers,
-                                            oController, qController) {},
+                                            oController,
+                                            qController,
+                                            mqController) {},
                                       ),
                                     ],
                                   ),
@@ -751,26 +754,25 @@ class _AddProductState extends State<AddProduct> {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ReviewListed(
-                                                Gpid: '',
-                                                itemOptions: itemOptions,
-                                                productName:
-                                                    productNameContt.text,
-                                                imageFileList: imageFileList,
-                                                productType: productType,
-                                                description:
-                                                    productDescriptionController
-                                                        .text,
-                                                category: category,
-                                                subCategory1: subCategory1,
-                                                subCategory2: subCategory2,
-                                                barCodeNumber:
-                                                    _barcodeController.text,
-                                                brandName:
-                                                    _brandNameController.text,
-                                                searchKeywordsList: searchKeywordsListController
-                                              ),
+                                              builder: (context) => ReviewListed(
+                                                  Gpid: '',
+                                                  itemOptions: itemOptions,
+                                                  productName:
+                                                      productNameContt.text,
+                                                  imageFileList: imageFileList,
+                                                  productType: productType,
+                                                  description:
+                                                      productDescriptionController
+                                                          .text,
+                                                  category: category,
+                                                  subCategory1: subCategory1,
+                                                  subCategory2: subCategory2,
+                                                  barCodeNumber:
+                                                      _barcodeController.text,
+                                                  brandName:
+                                                      _brandNameController.text,
+                                                  searchKeywordsList:
+                                                      searchKeywordsListController),
                                             ));
                                       }
                                     },
@@ -1159,12 +1161,14 @@ class ItemOption {
   String quantity;
   String unit;
   String offerPrice;
+  String maxOrderQuantity;
 
   ItemOption({
     required this.price,
     required this.quantity,
     required this.unit,
     required this.offerPrice,
+      required this.maxOrderQuantity
   });
 
   Map<String, dynamic> toJson() {
@@ -1173,6 +1177,7 @@ class ItemOption {
       'quantity': quantity,
       'unit': unit,
       'offerPrice': offerPrice,
+      'maxOrderQuantity': maxOrderQuantity
     };
   }
 }
