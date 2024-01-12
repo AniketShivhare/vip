@@ -68,6 +68,8 @@ class _AddProductState extends State<AddProduct> {
   FocusNode descriptionFocusNode = FocusNode();
 // Initialize the FocusNode in your build method or constructor.
 
+  FocusNode _focusNode = FocusNode();
+
   @override
   void initState() {
     print("Token = ${TokenId.token}");
@@ -78,12 +80,11 @@ class _AddProductState extends State<AddProduct> {
     subCategory2 = ProductId.subCat2;
     itemOptions = [
       ItemOption(
-        price: "",
-        quantity: "",
-        unit: 'KG',
-        offerPrice: "",
-          maxOrderQuantity: ""
-      )
+          price: "",
+          quantity: "",
+          unit: 'KG',
+          offerPrice: "",
+          maxOrderQuantity: "")
     ];
   }
 
@@ -121,10 +122,10 @@ class _AddProductState extends State<AddProduct> {
             children: [
               InkWell(
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ProductSelectionPage()));
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => ProductSelectionPage()));
                 },
                 child: Text(
                   "Add Product",
@@ -447,6 +448,11 @@ class _AddProductState extends State<AddProduct> {
                                 padding: const EdgeInsets.only(
                                     left: 20.0, right: 20),
                                 child: TextFormField(
+                                  focusNode: _focusNode,
+                                  onEditingComplete: () {
+                                    _onScreenTap();
+                                    _focusNode.unfocus();
+                                  },
                                   controller: _searchController,
                                   enabled:
                                       (ProductId.categoryCheck) ? false : true,
@@ -492,6 +498,9 @@ class _AddProductState extends State<AddProduct> {
                                         padding: const EdgeInsets.only(
                                             left: 20.0, right: 20),
                                         child: TextFormField(
+                                          onTap: () {
+                                            _onScreenTap();
+                                          },
                                           controller: _barcodeController,
                                           enabled: (ProductId.categoryCheck)
                                               ? false
@@ -526,6 +535,9 @@ class _AddProductState extends State<AddProduct> {
                                         margin: EdgeInsets.only(
                                             left: 20, right: 20, bottom: 10),
                                         child: TextFormField(
+                                          onTap: () {
+                                            _onScreenTap();
+                                          },
                                           controller:
                                               productDescriptionController,
                                           enabled: (ProductId.categoryCheck)
@@ -564,6 +576,9 @@ class _AddProductState extends State<AddProduct> {
                                         padding: const EdgeInsets.only(
                                             left: 20.0, right: 20),
                                         child: TextFormField(
+                                          onTap: () {
+                                            _onScreenTap();
+                                          },
                                           controller: _brandNameController,
                                           enabled: (ProductId.categoryCheck)
                                               ? false
@@ -608,6 +623,9 @@ class _AddProductState extends State<AddProduct> {
                                                 Expanded(
                                                   child: Container(
                                                     child: TextFormField(
+                                                      onTap: () {
+                                                        _onScreenTap();
+                                                      },
                                                       controller:
                                                           searchKeywordsListController[
                                                               index],
@@ -698,13 +716,13 @@ class _AddProductState extends State<AddProduct> {
                                         ),
                                       ),
                                       PriceQuantitySpinnerRow(
-                                        options: itemOptions,
-                                        onOptionAdded: handleOptionAdded,
-                                        updateInitialValue: (pControllers,
-                                            oController,
-                                            qController,
-                                            mqController) {},
-                                      ),
+                                          options: itemOptions,
+                                          onOptionAdded: handleOptionAdded,
+                                          updateInitialValue: (pControllers,
+                                              oController,
+                                              qController,
+                                              mqController) {},
+                                          ontabButton: _onScreenTap),
                                     ],
                                   ),
                                   if (_suggestions.isNotEmpty)
@@ -1163,13 +1181,12 @@ class ItemOption {
   String offerPrice;
   String maxOrderQuantity;
 
-  ItemOption({
-    required this.price,
-    required this.quantity,
-    required this.unit,
-    required this.offerPrice,
-      required this.maxOrderQuantity
-  });
+  ItemOption(
+      {required this.price,
+      required this.quantity,
+      required this.unit,
+      required this.offerPrice,
+      required this.maxOrderQuantity});
 
   Map<String, dynamic> toJson() {
     return {

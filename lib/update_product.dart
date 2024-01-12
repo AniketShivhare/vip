@@ -43,7 +43,7 @@ class UpdateProducts extends StatefulWidget {
       required this.description,
       required this.quantityPricing,
       required this.prod,
-      required  this.imageList})
+      required this.imageList})
       : super(key: key);
 
   @override
@@ -52,10 +52,9 @@ class UpdateProducts extends StatefulWidget {
 
 class _UpdateProductsState extends State<UpdateProducts> {
   void callSetState() {
-    setState(() {
-
-    });
+    setState(() {});
   }
+
   List<ItemOption> itemOptions = [];
   late List dummyProductList;
 
@@ -84,8 +83,16 @@ class _UpdateProductsState extends State<UpdateProducts> {
   ];
 
   String units = 'kg';
-  List<String> dropDownItems =
-    ["KG", "G", "L", "ML", "PACK OF", "BOX", "BAG", "CAN"];
+  List<String> dropDownItems = [
+    "KG",
+    "G",
+    "L",
+    "ML",
+    "PACK OF",
+    "BOX",
+    "BAG",
+    "CAN"
+  ];
 
   final qController = TextEditingController();
 
@@ -110,7 +117,6 @@ class _UpdateProductsState extends State<UpdateProducts> {
 
   List<String> imgList = [];
 
-
   @override
   void initState() {
     super.initState();
@@ -121,7 +127,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
 
   @override
   Widget build(BuildContext context) {
-    if(widget.prod.globalProductID.images.length>0)
+    if (widget.prod.globalProductID.images.length > 0)
       imgList = widget.prod.globalProductID.images;
     dummyProductList = widget.quantityPricing;
     print("dummyProductList1234");
@@ -187,13 +193,18 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                 activeColor: Colors.green,
                                 value: _switchValue,
                                 onChanged: (bool value) {
-                                  s = value == false ? 'In stock' : 'Out of stock';
+                                  s = value == false
+                                      ? 'In stock'
+                                      : 'Out of stock';
                                   showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
                                       return AlertDialog(
-                                        title: const Text('Update Product Stock'),
-                                        content: StockUpdateDialog(prod: widget.prod, callSetState: callSetState),
+                                        title:
+                                            const Text('Update Product Stock'),
+                                        content: StockUpdateDialog(
+                                            prod: widget.prod,
+                                            callSetState: callSetState),
                                       );
                                     },
                                   );
@@ -221,83 +232,95 @@ class _UpdateProductsState extends State<UpdateProducts> {
                             children: [
                               Text("Product Images:",
                                   textScaleFactor: 1.2,
-                                  style: TextStyle(fontWeight: FontWeight.bold)),
-                              (imgList.length>0) ?
-                              Container(
-                                height: 120,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: GridView.builder(
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount: imgList.length,
-                                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1, mainAxisSpacing: 5),
-                                      itemBuilder: (BuildContext context, int index) {
-                                        return Stack(
-                                          children: [
-                                            Container(
-                                              height:100,
-                                              width: 100,
-                                              child: Hero(
-                                                tag: 'image_$index',
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    showImageExpansion(index);
-                                                  },
-                                                  child: Image.network(
-                                                    imgList[index],
-                                                    fit: BoxFit.cover,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              (imgList.length > 0)
+                                  ? Container(
+                                      height: 120,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: GridView.builder(
+                                            scrollDirection: Axis.horizontal,
+                                            itemCount: imgList.length,
+                                            gridDelegate:
+                                                SliverGridDelegateWithFixedCrossAxisCount(
+                                                    crossAxisCount: 1,
+                                                    mainAxisSpacing: 5),
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              return Stack(
+                                                children: [
+                                                  Container(
+                                                    height: 100,
+                                                    width: 100,
+                                                    child: Hero(
+                                                      tag: 'image_$index',
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          showImageExpansion(
+                                                              index);
+                                                        },
+                                                        child: Image.network(
+                                                          imgList[index],
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                    ),
                                                   ),
-                                                ),
-                                              ),
-                                            ),
-                                            Positioned(
-                                              top: -10,
-                                              right: -5,
-                                              child: IconButton(
-                                                icon: Icon(
-                                                  Icons.cancel_outlined,
-                                                  color: Colors.cyanAccent,
-                                                ),
-                                                onPressed: () {
-                                                  showDeleteConfirmationDialog(index);
-                                                  // removeImage(index);
-                                                },
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      }),
-                                ),
-                              ) :
-                              Center(
-                                child: Container(
-                                    height:20,
-                                    child: Text('No Images Available',style: TextStyle(fontSize: 17),)),
-                              ),
+                                                  Positioned(
+                                                    top: -10,
+                                                    right: -5,
+                                                    child: IconButton(
+                                                      icon: Icon(
+                                                        Icons.cancel_outlined,
+                                                        color:
+                                                            Colors.cyanAccent,
+                                                      ),
+                                                      onPressed: () {
+                                                        showDeleteConfirmationDialog(
+                                                            index);
+                                                        // removeImage(index);
+                                                      },
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            }),
+                                      ),
+                                    )
+                                  : Center(
+                                      child: Container(
+                                          height: 20,
+                                          child: Text(
+                                            'No Images Available',
+                                            style: TextStyle(fontSize: 17),
+                                          )),
+                                    ),
                             ],
                           )),
                       pCategory.isNotEmpty
-                          ?Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(left: 20, right: 20, top: 20),
-                            child: const Text(
-                              'Category :',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontFamily: 'Poppins',
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          Container(
-                            margin: EdgeInsets.only(left: 20, right: 20),
-                            child: Text(AllpCategory.toString()),
-                          ),
-                        ],
-                      )
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(
+                                      left: 20, right: 20, top: 20),
+                                  child: const Text(
+                                    'Category :',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontFamily: 'Poppins',
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Container(
+                                  margin: EdgeInsets.only(left: 20, right: 20),
+                                  child: Text(AllpCategory.toString()),
+                                ),
+                              ],
+                            )
                           : Container(),
                       // SizedBox(height: 15),
                       Container(
@@ -318,7 +341,8 @@ class _UpdateProductsState extends State<UpdateProducts> {
                           enabled: false,
                           style: TextStyle(
                               color: Colors.black87,
-                              fontFamily: 'Poppins', fontSize: 15),
+                              fontFamily: 'Poppins',
+                              fontSize: 15),
                           decoration: InputDecoration(
                             focusedBorder: OutlineInputBorder(
                                 borderSide:
@@ -327,43 +351,45 @@ class _UpdateProductsState extends State<UpdateProducts> {
                         ),
                       ),
 
-                      pCategory == 'Food'?
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(left: 20, right: 20, top: 25),
-                            child: const Text(
-                              'Product Type (Veg/Non-veg,/in case if applicable)',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontFamily: 'Poppins',
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(left: 20, right: 20),
-                            child: DropdownButton(
-                              value: pType,
-                              icon: const Icon(Icons.keyboard_arrow_down),
-                              items: items2.map((String items2) {
-                                return DropdownMenuItem(
-                                  value: items2,
-                                  child: Text(items2),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  pType = newValue!;
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ):Container(),
+                      pCategory == 'Food'
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(
+                                      left: 20, right: 20, top: 25),
+                                  child: const Text(
+                                    'Product Type (Veg/Non-veg,/in case if applicable)',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontFamily: 'Poppins',
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.only(left: 20, right: 20),
+                                  child: DropdownButton(
+                                    value: pType,
+                                    icon: const Icon(Icons.keyboard_arrow_down),
+                                    items: items2.map((String items2) {
+                                      return DropdownMenuItem(
+                                        value: items2,
+                                        child: Text(items2),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        pType = newValue!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Container(),
                       Container(
-                        margin: EdgeInsets.only(left: 20, right: 20,top: 10),
+                        margin: EdgeInsets.only(left: 20, right: 20, top: 10),
                         child: Text(
                           'Product Description',
                           style: TextStyle(
@@ -381,7 +407,8 @@ class _UpdateProductsState extends State<UpdateProducts> {
                           enabled: false,
                           style: TextStyle(
                               color: Colors.black87,
-                              fontFamily: 'Poppins', fontSize: 15),
+                              fontFamily: 'Poppins',
+                              fontSize: 15),
                           decoration: InputDecoration(
                             focusedBorder: OutlineInputBorder(
                                 borderSide:
@@ -436,7 +463,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                               // onChanged: (value) => option.quantity = value,
                                               onChanged: (value) {
                                                 itemOptions[index].quantity =
-                                                    value ;
+                                                    value;
                                               },
                                               decoration: InputDecoration(
                                                 hintText: 'Quantity',
@@ -492,22 +519,26 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                               }).toList(),
                                             ),
                                           ),
-                                          SizedBox(width: 20,),
+                                          SizedBox(
+                                            width: 20,
+                                          ),
                                           InkWell(
                                             onTap: () {
-
-                                             setState(() {
-                                               showDeleteConfirmationVarient(index);
-                                             });
+                                              setState(() {
+                                                showDeleteConfirmationVarient(
+                                                    index);
+                                              });
                                             },
                                             child: Icon(
-                                              size:35,
+                                              size: 35,
                                               Icons.delete_outlined,
                                             ),
                                           )
                                         ],
                                       ),
-                                      SizedBox(height: 8,),
+                                      SizedBox(
+                                        height: 8,
+                                      ),
                                       Row(
                                         children: [
                                           Expanded(
@@ -515,19 +546,24 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                               keyboardType:
                                                   TextInputType.number,
                                               controller: TextEditingController(
-                                                  text: product.mrpPrice.toString()),
+                                                  text: product.mrpPrice
+                                                      .toString()),
                                               onChanged: (value) {
-                                                itemOptions[index].price = value;
+                                                itemOptions[index].price =
+                                                    value;
                                               },
                                               decoration: InputDecoration(
                                                 hintText: 'Price (In Rs.)',
-                                                label: const Text('Price (In Rs.)'),
+                                                label: const Text(
+                                                    'Price (In Rs.)'),
                                                 border: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(15),
+                                                  borderRadius:
+                                                      BorderRadius.circular(15),
                                                 ),
                                               ),
                                               style: TextStyle(
-                                                color: Colors.black.withOpacity(1.0),
+                                                color: Colors.black
+                                                    .withOpacity(1.0),
                                                 fontSize: 16,
                                                 fontFamily: 'Urbanist',
                                                 fontWeight: FontWeight.w400,
@@ -537,21 +573,27 @@ class _UpdateProductsState extends State<UpdateProducts> {
                                           SizedBox(width: 16),
                                           Expanded(
                                             child: TextFormField(
-                                              keyboardType: TextInputType.number,
+                                              keyboardType:
+                                                  TextInputType.number,
                                               controller: TextEditingController(
-                                                  text: product.offerPrice.toString()),
+                                                  text: product.offerPrice
+                                                      .toString()),
                                               onChanged: (value) {
-                                                itemOptions[index].offerPrice = value;
+                                                itemOptions[index].offerPrice =
+                                                    value;
                                               },
                                               decoration: InputDecoration(
                                                 hintText: 'Offer Price',
-                                                label: const Text('Offer Price'),
+                                                label:
+                                                    const Text('Offer Price'),
                                                 border: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(15),
+                                                  borderRadius:
+                                                      BorderRadius.circular(15),
                                                 ),
                                               ),
                                               style: TextStyle(
-                                                color: Colors.black.withOpacity(1.0),
+                                                color: Colors.black
+                                                    .withOpacity(1.0),
                                                 fontSize: 16,
                                                 fontFamily: 'Urbanist',
                                                 fontWeight: FontWeight.w400,
@@ -569,11 +611,12 @@ class _UpdateProductsState extends State<UpdateProducts> {
                         ),
                       ),
                       PriceQuantitySpinnerRow(
-                          options: itemOptions,
-                          onOptionAdded: handleOptionAdded,
-                          updateInitialValue:
-                              (pControllers, oController,
-                              qController, mqController) {}),
+                        options: itemOptions,
+                        onOptionAdded: handleOptionAdded,
+                        updateInitialValue: (pControllers, oController,
+                            qController, mqController) {},
+                        ontabButton: () {},
+                      ),
                       Container(
                         width: double.maxFinite,
                         margin: const EdgeInsets.only(
@@ -581,8 +624,16 @@ class _UpdateProductsState extends State<UpdateProducts> {
                         // color: Colors.lightBlue.shade500,
                         child: ElevatedButton(
                           onPressed: () {
-                            saveProductData(imageFileList!, pName, pSCategory2, description,
-                                token, id, widget.pid, dummyProductList, true);
+                            saveProductData(
+                                imageFileList!,
+                                pName,
+                                pSCategory2,
+                                description,
+                                token,
+                                id,
+                                widget.pid,
+                                dummyProductList,
+                                true);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors
@@ -604,9 +655,8 @@ class _UpdateProductsState extends State<UpdateProducts> {
       ),
     );
   }
-  void DeleteExistedVarient(int index) {
 
-  }
+  void DeleteExistedVarient(int index) {}
 
 //update Stock only
   Future<void> updateStock(bool value) async {
@@ -644,8 +694,15 @@ class _UpdateProductsState extends State<UpdateProducts> {
   }
 
   Future<void> saveProductData(
-  List<XFile> imageFileList, TextEditingController pName, String pSCategory2, TextEditingController
-      description, String token, String id, String pid, dummyProductList, toSave) async {
+      List<XFile> imageFileList,
+      TextEditingController pName,
+      String pSCategory2,
+      TextEditingController description,
+      String token,
+      String id,
+      String pid,
+      dummyProductList,
+      toSave) async {
     print("dummyProductList");
     itemOptions.forEach((itemOption) {
       dummyProductList.add(QuantityPricing(
@@ -653,7 +710,8 @@ class _UpdateProductsState extends State<UpdateProducts> {
           quantity: double.parse(itemOption.quantity),
           mrpPrice: double.parse(itemOption.price),
           maxOrderQuantity: double.parse(itemOption.maxOrderQuantity),
-          unit: itemOption.unit, inStock: true));         
+          unit: itemOption.unit,
+          inStock: true));
     });
     itemOptions = [];
     print(dummyProductList.length);
@@ -670,12 +728,12 @@ class _UpdateProductsState extends State<UpdateProducts> {
     }
   }
 
-
   Future<void> removeImage(int index) async {
     //we have to change condition this one later
     print("lengthhh");
     print(widget.prod.globalProductID.images.length);
-    await UserApi.deleteImage(widget.prod.globalProductID.images[index], widget.pid);
+    await UserApi.deleteImage(
+        widget.prod.globalProductID.images[index], widget.pid);
     setState(() {
       imgList.removeAt(index);
       widget.prod.globalProductID.images.removeAt(index);
@@ -683,6 +741,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
       print(widget.prod.globalProductID.images.length);
     });
   }
+
   Future<void> showDeleteConfirmationDialog(int index) async {
     return showDialog(
       context: context,
@@ -709,6 +768,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
       },
     );
   }
+
   Future<void> showDeleteConfirmationVarient(int index) async {
     return showDialog(
       context: context,
@@ -739,7 +799,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
   }
 
   void showImageExpansion(int index) {
-    Navigator.of(context ).push(
+    Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (BuildContext context) {
           return Scaffold(
@@ -760,14 +820,16 @@ class _UpdateProductsState extends State<UpdateProducts> {
       ),
     );
   }
+
   void removeCameraImage(int index) {
     setState(() {
       imageFileList!.removeAt(index);
     });
   }
+
   Future<void> showCameraDeleteConfirmationDialog(int index) async {
     return showDialog(
-      context: context ,
+      context: context,
       builder: (context) {
         return AlertDialog(
           title: Text('Delete Image?'),
@@ -791,8 +853,9 @@ class _UpdateProductsState extends State<UpdateProducts> {
       },
     );
   }
+
   void showCameraImageExpansion(int index) {
-    Navigator.of(context ).push(
+    Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (BuildContext context) {
           return Scaffold(
@@ -812,6 +875,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
       ),
     );
   }
+
   Widget categoryDialog() {
     return Container(
       height: 600,
@@ -879,6 +943,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
       ),
     );
   }
+
   Widget subCategory1Dialog() {
     return Container(
       height: 600,
@@ -949,6 +1014,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
       ),
     );
   }
+
   Widget subCategory2Dialog() {
     return Container(
       height: 600,
@@ -976,7 +1042,8 @@ class _UpdateProductsState extends State<UpdateProducts> {
                     setState(() {});
                   });
                   return Center(
-                    child: Text("No subcategories available for the selected criteria."),
+                    child: Text(
+                        "No subcategories available for the selected criteria."),
                   );
                 } else {
                   return Column(
@@ -1005,23 +1072,23 @@ class _UpdateProductsState extends State<UpdateProducts> {
       ),
     );
   }
-
 }
 
-
-
-
 class PriceQuantitySpinnerRow extends StatefulWidget {
-   List<ItemOption> options;
+  List<ItemOption> options;
   final ValueChanged<ItemOption> onOptionAdded;
-  final Function(List<TextEditingController>, List<TextEditingController>,
+  final Function(
+      List<TextEditingController>,
+      List<TextEditingController>,
       List<TextEditingController>,
       List<TextEditingController>) updateInitialValue;
+  final Function ontabButton;
 
   PriceQuantitySpinnerRow({
     required this.options,
     required this.onOptionAdded,
     required this.updateInitialValue,
+    required this.ontabButton,
   });
 
   @override
@@ -1030,33 +1097,39 @@ class PriceQuantitySpinnerRow extends StatefulWidget {
 }
 
 class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
-
-
   ItemOption newItem = ItemOption(
-    price: "",
-    quantity: "",
-    unit: 'KG',
-    offerPrice: "",
-      maxOrderQuantity: ""
-  );
-  List<String> dropDownItems = ["KG","GM","L","ML","PACK OF","BOX","BAG","CAN","PIECE"];
-
-  void addOption() {
-    widget.onOptionAdded(newItem);
-    newItem = ItemOption(
       price: "",
       quantity: "",
       unit: 'KG',
       offerPrice: "",
-      maxOrderQuantity: ""
-    );
+      maxOrderQuantity: "");
+  List<String> dropDownItems = [
+    "KG",
+    "GM",
+    "L",
+    "ML",
+    "PACK OF",
+    "BOX",
+    "BAG",
+    "CAN",
+    "PIECE"
+  ];
+
+  void addOption() {
+    widget.onOptionAdded(newItem);
+    newItem = ItemOption(
+        price: "",
+        quantity: "",
+        unit: 'KG',
+        offerPrice: "",
+        maxOrderQuantity: "");
   }
 
   bool _validate4 = false;
   bool _validate5 = false;
   bool _validate6 = false;
   bool _validate7 = false;
-  List<ItemOption> options=[];// = widget.options;
+  List<ItemOption> options = []; // = widget.options;
   @override
   void initstate() {
     options = widget.options;
@@ -1068,7 +1141,7 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
     return Column(
       children: [
         Column(
-         children: options.asMap().entries.map((entry) {
+          children: options.asMap().entries.map((entry) {
             int index = entry.key;
             ItemOption option = entry.value;
             return Padding(
@@ -1079,16 +1152,20 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                     children: [
                       Expanded(
                         child: TextFormField(
-                          controller:
-                          TextEditingController(text: option.quantity.toString()),
-                          onChanged: (value) => option.quantity = value ,
+                          onTap: () {
+                            widget.ontabButton();
+                          },
+                          controller: TextEditingController(
+                              text: option.quantity.toString()),
+                          onChanged: (value) => option.quantity = value,
                           decoration: InputDecoration(
                             hintText: 'Quantity',
                             label: const Text('Quantity'),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),
-                            errorText: _validate4 ? 'Value Can\'t Be Empty' : null,
+                            errorText:
+                                _validate4 ? 'Value Can\'t Be Empty' : null,
                           ),
                           style: TextStyle(
                             color: Colors.black.withOpacity(1.0),
@@ -1132,14 +1209,16 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                           }).toList(),
                         ),
                       ),
-                      SizedBox(width: 25,),
+                      SizedBox(
+                        width: 25,
+                      ),
                       InkWell(
                         onTap: () {
                           print("asdfdfadsfasdfasdfads");
                           showDeleteConfirmationVarient1(index);
                         },
                         child: Icon(
-                          size:35,
+                          size: 35,
                           Icons.delete_outlined,
                         ),
                       )
@@ -1152,9 +1231,12 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                     children: [
                       Expanded(
                         child: TextFormField(
-                          controller:
-                          TextEditingController(text: option.price.toString()),
-                          onChanged: (value) => option.price = value ,
+                          onTap: () {
+                            widget.ontabButton();
+                          },
+                          controller: TextEditingController(
+                              text: option.price.toString()),
+                          onChanged: (value) => option.price = value,
                           decoration: InputDecoration(
                             hintText: 'Price (In Rs.)',
                             label: const Text('Price (In Rs.)'),
@@ -1162,7 +1244,7 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                               borderRadius: BorderRadius.circular(15),
                             ),
                             errorText:
-                            _validate5 ? 'Value Can\'t Be Empty' : null,
+                                _validate5 ? 'Value Can\'t Be Empty' : null,
                           ),
                           style: TextStyle(
                             color: Colors.black.withOpacity(1.0),
@@ -1175,6 +1257,9 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                       SizedBox(width: 16),
                       Expanded(
                         child: TextFormField(
+                          onTap: () {
+                            widget.ontabButton();
+                          },
                           controller: TextEditingController(
                               text: option.offerPrice.toString()),
                           onChanged: (value) => option.offerPrice = value,
@@ -1185,7 +1270,7 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             errorText:
-                            _validate6 ? 'Value Can\'t Be Empty' : null,
+                                _validate6 ? 'Value Can\'t Be Empty' : null,
                           ),
                           style: TextStyle(
                             color: Colors.black.withOpacity(1.0),
@@ -1201,6 +1286,9 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
                     height: 8,
                   ),
                   TextFormField(
+                    onTap: () {
+                      widget.ontabButton();
+                    },
                     controller: TextEditingController(
                         text: option.maxOrderQuantity.toString()),
                     onChanged: (value) => option.maxOrderQuantity = value,
@@ -1225,14 +1313,15 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
           }).toList(),
         ),
         Center(
-          // margin: EdgeInsets.only(left: 20),
+            // margin: EdgeInsets.only(left: 20),
             child: ElevatedButton(
-              onPressed: addOption,
-              child: Text("Add items"),
-            )),
+          onPressed: addOption,
+          child: Text("Add items"),
+        )),
       ],
     );
   }
+
   Future<void> showDeleteConfirmationVarient1(int index) async {
     return showDialog(
       context: context,
@@ -1261,6 +1350,4 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
       },
     );
   }
-
 }
-
