@@ -650,7 +650,7 @@ class _UpdateProductsState extends State<UpdateProducts> {
     itemOptions.forEach((itemOption) {
       dummyProductList.add(QuantityPricing(
           offerPrice: double.parse(itemOption.offerPrice),
-          quantity: (itemOption.quantity),
+          quantity: double.parse(itemOption.quantity),
           mrpPrice: double.parse(itemOption.price),
           maxOrderQuantity: double.parse(itemOption.maxOrderQuantity),
           unit: itemOption.unit, inStock: true));         
@@ -1039,7 +1039,7 @@ class _PriceQuantitySpinnerRowState extends State<PriceQuantitySpinnerRow> {
     offerPrice: "",
       maxOrderQuantity: ""
   );
-  List<String> dropDownItems = ["KG", "G", "L", "ML", "PACK OF", "BOX", "BAG", "CAN"];
+  List<String> dropDownItems = ["KG","GM","L","ML","PACK OF","BOX","BAG","CAN","PIECE"];
 
   void addOption() {
     widget.onOptionAdded(newItem);

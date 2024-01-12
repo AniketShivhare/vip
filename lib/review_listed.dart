@@ -56,6 +56,11 @@ class _ReviewListedState extends State<ReviewListed> {
     String token = TokenId.token;
     String id = TokenId.id;
     List dummyProductList = [];
+    String brandname = widget.brandName;
+    String barcode = widget.barCodeNumber;
+    List<String> KeywordsList =
+        widget.searchKeywordsList.map((e) => e.text).toList();
+    String keywords = jsonEncode(KeywordsList);
     Future<void> postProductData() async {
       final url =
           Uri.parse('https://api.pehchankidukan.com/seller/$id/products');
@@ -64,7 +69,7 @@ class _ReviewListedState extends State<ReviewListed> {
       itemOptions.forEach((itemOption) {
         dummyProductList.add(QuantityPricing(
             offerPrice: double.parse(itemOption.offerPrice),
-            quantity: (itemOption.quantity),
+            quantity: double.parse(itemOption.quantity),
             mrpPrice: double.parse(itemOption.price),
             maxOrderQuantity: double.parse(itemOption.maxOrderQuantity),
             unit: itemOption.unit,
@@ -100,11 +105,15 @@ class _ReviewListedState extends State<ReviewListed> {
           request.fields['category'] = widget.category;
           request.fields['subCategory1'] = widget.subCategory1;
           request.fields['subCategory2'] = widget.subCategory2;
-          List<String> KeywordsList =
-              widget.searchKeywordsList.map((e) => e.text).toList();
+
+          print("keywordList:");
+          print(KeywordsList);
           if (KeywordsList.length > 0) {
-            String keywordsJson = jsonEncode(KeywordsList);
-            request.fields['searchKeywords'] = keywordsJson;
+            // String keywordsJson = jsonEncode(KeywordsList);
+            // request.fields['searchKeywords'] = keywordsJson;
+            for (int i = 0; i < KeywordsList.length; i++) {
+              request.fields['searchKeywords[$i]'] = KeywordsList[i];
+            }
           }
           print("barcodeNmber");
           print(widget.barCodeNumber);
@@ -112,6 +121,20 @@ class _ReviewListedState extends State<ReviewListed> {
             request.fields['barCodeNumber'] = widget.barCodeNumber;
           if (widget.brandName.length > 0)
             request.fields['brandName'] = widget.brandName;
+          print('dummyProductList');
+          print(dummyProductList);
+
+          print(jsonEncode(dummyProductList));
+
+          for (int i = 0; i < dummyProductList.length; i++) {
+            final product = dummyProductList[i];
+            final productJson = product.toJson();
+            for (var key in productJson.keys) {
+              request.fields['productDetails[$i][$key]'] =
+                  productJson[key].toString();
+            }
+          }
+
           print("length");
           print(widget.imageFileList.length);
           if (widget.imageFileList.length > 0) {
@@ -128,8 +151,10 @@ class _ReviewListedState extends State<ReviewListed> {
               ));
             }
           }
+          print("bbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaa");
           final response = await request.send();
-          if (response.statusCode == 200) {
+          print("bbbbbbbbbbbbbbb");
+          if (response.statusCode == 201) {
             print('POST images request successful');
             print('Response: ${await response.stream.bytesToString()}');
           } else {
@@ -337,6 +362,18 @@ class _ReviewListedState extends State<ReviewListed> {
                               Text(pName, textScaleFactor: 1.2),
                             ],
                           )),
+                      Container(
+                          margin: EdgeInsets.only(left: 20, right: 20, top: 15),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Product Barcode Number:",
+                                  textScaleFactor: 1,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text(barcode, textScaleFactor: 1.2),
+                            ],
+                          )),
 
                       Container(
                           margin: EdgeInsets.only(left: 20, right: 20, top: 15),
@@ -367,6 +404,30 @@ class _ReviewListedState extends State<ReviewListed> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Text("Product Brand Name:",
+                                  textScaleFactor: 1,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text(brandname, textScaleFactor: 1.2),
+                            ],
+                          )),
+                      Container(
+                          margin: EdgeInsets.only(left: 20, right: 20, top: 15),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Search Keywords:",
+                                  textScaleFactor: 1,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text(keywords, textScaleFactor: 1.2),
+                            ],
+                          )),
+                      Container(
+                          margin: EdgeInsets.only(left: 20, right: 20, top: 15),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                               Text("Product Variants:",
                                   textScaleFactor: 1,
                                   style:
@@ -374,7 +435,7 @@ class _ReviewListedState extends State<ReviewListed> {
                             ],
                           )),
                       Container(
-                        margin: EdgeInsets.only(left: 20, right: 20),
+                        // margin: EdgeInsets.only(left: 10, right: 10),
                         child: const ListTile(
                           title: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -384,6 +445,7 @@ class _ReviewListedState extends State<ReviewListed> {
                               Text('Offer'),
                               Text('Quantity'),
                               Text('Unit'),
+                              Text('Max'),
                             ],
                           ),
                         ),

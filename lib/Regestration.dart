@@ -379,10 +379,6 @@ class _SellerRegistrationPageState extends State<Regest> {
                         fontSize: 18,
                       ),
                     ),
-                    const Text(
-                      '*',
-                      style: TextStyle(fontSize: 18, color: Colors.red),
-                    )
                   ],
                 ),
                 TextFormField(

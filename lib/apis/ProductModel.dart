@@ -1,6 +1,6 @@
 class QuantityPricing {
   double offerPrice;
-  String quantity;
+  double quantity;
   double mrpPrice;
   String unit;
   bool inStock;
@@ -19,7 +19,7 @@ class QuantityPricing {
     return QuantityPricing(
       offerPrice:
           (json['offerPrice'] != null) ? json['offerPrice'].toDouble() : 0.0,
-      quantity: (json['quantity'] != null) ? json['quantity'].toString() : '',
+      quantity: (json['quantity'] != null) ? json['quantity'].toDouble() : 0.0,
       unit: json['unit'] ?? 'kg',
       mrpPrice: (json['mrpPrice'] != null) ? json['mrpPrice'].toDouble() : 0.0,
       inStock: true,
